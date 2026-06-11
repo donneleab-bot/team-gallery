@@ -1,90 +1,258 @@
-<style>
-.gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 15px;
-  padding: 20px;
-}
-.card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  aspect-ratio: 1;
-  cursor: pointer;
-  transition: transform 0.3s;
-}
-.card:hover { transform: scale(1.02); }
-.card img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-.overlay {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  background: linear-gradient(transparent, rgba(0,0,0,0.8));
-  color: white;
-  padding: 20px;
-  transform: translateY(100%);
-  transition: 0.3s;
-}
-.card:hover .overlay { transform: translateY(0); }
-.artist { font-size: 1.2em; font-weight: bold; }
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Красивая Галерея</title>
+    <style>
+        /* Общие стили */
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0d1117; /* Темная тема как на GitHub */
+            color: #c9d1d9;
+            padding: 20px;
+        }
 
-/* Лайтбокс */
-.lightbox {
-  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center;
-  align-items: center; flex-direction: column;
-}
-.lightbox.active { display: flex; }
-.lightbox img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
-.lightbox .info { color: white; text-align: center; margin-top: 15px; }
-.close { position: absolute; top: 20px; right: 30px; color: white; 
-  font-size: 40px; cursor: pointer; }
-</style>
+        /* Сетка галереи */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-<div class="gallery" id="gallery"></div>
-<div class="lightbox" id="lightbox">
-  <span class="close" onclick="closeLightbox()">&times;</span>
-  <img id="lightbox-img" src="" alt="">
-  <div class="info" id="lightbox-info"></div>
-</div>
+        /* Карточка изображения */
+        .gallery-item {
+            position: relative;
+            background: #161b22;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+        }
 
-<script>
-const arts = [
-  { img: "https://drive.google.com/file/d/1MVIzYnjs6obb51kEYszE7qp4OiXsOhoY/view?usp=drive_link", artist: "ХУЙ", role: "АААААААА", desc: "АААААААААА" },
-  { img: "ССЫЛКА_НА_АРТ_2", artist: "Имя Художника 2", role: "Фоны", desc: "Локация - Замок" },
-  { img: "ССЫЛКА_НА_АРТ_3", artist: "Имя Художника 3", role: "Анимация", desc: "Ключевой кадр" }
-  // ДОБАВЬ СВОИ АРТЫ ПО ТАКОМУ ЖЕ ПРИНЦИПУ
-];
+        /* Эффект при наведении на карточку */
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border-color: #58a6ff;
+        }
 
-function loadGallery() {
-  const gallery = document.getElementById('gallery');
-  arts.forEach(art => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.onclick = () => openLightbox(art);
-    card.innerHTML = `
-      <img src="${art.img}" alt="${art.desc}" loading="lazy">
-      <div class="overlay">
-        <div class="artist">${art.artist}</div>
-        <div>${art.role}</div>
-      </div>`;
-    gallery.appendChild(card);
-  });
-}
+        /* Контейнер для фото */
+        .img-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: #0d1117;
+            cursor: pointer;
+        }
 
-function openLightbox(art) {
-  document.getElementById('lightbox').classList.add('active');
-  document.getElementById('lightbox-img').src = art.img;
-  document.getElementById('lightbox-info').innerHTML = 
-    `<h2>${art.artist}</h2><p>${art.role} — ${art.desc}</p>`;
-}
+        .img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
 
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('active');
-}
+        .gallery-item:hover .img-container img {
+            transform: scale(1.05);
+        }
 
-document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
-window.onload = loadGallery;
-</script>
+        /* Блок с описанием под фото */
+        .item-info {
+            padding: 15px;
+        }
+
+        .item-info h3 {
+            margin: 0 0 4px 0;
+            font-size: 1.1rem;
+            color: #f0f6fc;
+        }
+
+        /* Ссылка на автора */
+        .author-link {
+            display: inline-block;
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .author-link:hover {
+            text-decoration: underline;
+        }
+
+        .item-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #8b949e;
+            line-height: 1.4;
+        }
+
+        /* Стили для всплывающего окна (Lightbox) */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 12, 16, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 9999;
+        }
+
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox-img {
+            max-width: 90%;
+            max-height: 75vh;
+            border-radius: 8px;
+            box-shadow: 0 0 32px rgba(0,0,0,0.5);
+        }
+
+        .lightbox-caption {
+            margin-top: 15px;
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .lightbox-caption h3 {
+            margin: 0 0 4px 0;
+            color: #fff;
+            font-size: 1.3rem;
+        }
+
+        .lightbox-caption a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        .lightbox-caption a:hover {
+            text-decoration: underline;
+        }
+
+        .lightbox-caption p {
+            margin: 5px 0 0 0;
+            color: #8b949e;
+        }
+
+        /* Кнопка закрытия */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 35px;
+            font-weight: 300;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: #58a6ff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Сетка с карточками галереи -->
+    <div class="gallery-grid" id="galleryGrid"></div>
+
+    <!-- Всплывающее окно просмотра -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <span class="close-btn">&times;</span>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
+    <script>
+        // СПИСОК ВАШИХ РАБОТ / КАРТИНОК
+        // Сюда вы добавляете свои ссылки на Google Диск
+        const arts = [
+            {
+                img: "https://drive.google.com/file/d/1MVIzYnjs6obb51kEYszE7qp4OiXsOhoY/view?usp=drive_link", 
+                title: "Локация — Замок", 
+                authorName: "Имя Художника 1",
+                authorUrl: "https://github.com", // Ссылка на портфолио/соцсеть автора
+                desc: "Описание первого изображения. Здесь можно подробно рассказать о проекте, процессе создания или используемом софте."
+            },
+            {
+                img: "https://drive.google.com/file/d/11uCe-sHsRXvR--5S3pQGDRzduZTopvtW/view?usp=drive_link", 
+                title: "Анимация сцены", 
+                authorName: "Имя Художника 2",
+                authorUrl: "https://github.com", // Ссылка на портфолио/соцсеть автора
+                desc: "Описание второго изображения. Ключевой кадр финального ролика галереи."
+            }
+        ];
+
+        const galleryGrid = document.getElementById('galleryGrid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+
+        // Вспомогательная функция для конвертации ссылок Google Drive
+        function getDirectImgUrl(url) {
+            if (url.includes('drive.google.com')) {
+                const matches = url.match(/\/d\/([^/]+)/);
+                if (matches && matches[1]) {
+                    return `https://googleusercontent.com{matches[1]}`;
+                }
+            }
+            return url;
+        }
+
+        // Автоматически генерируем карточки на основе массива данных
+        arts.forEach((art, index) => {
+            const finalImgUrl = getDirectImgUrl(art.img);
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+
+            item.innerHTML = `
+                <div class="img-container" onclick="openLightbox(${index})">
+                    <img src="${finalImgUrl}" alt="${art.title}">
+                </div>
+                <div class="item-info">
+                    <h3>${art.title}</h3>
+                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <p>${art.desc}</p>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
+        });
+
+        // Функция открытия картинки на весь экран
+        function openLightbox(index) {
+            const art = arts[index];
+            const finalImgUrl = getDirectImgUrl(art.img);
+            lightboxImg.src = finalImgUrl;
+            lightboxCaption.innerHTML = `
+                <h3>${art.title}</h3>
+                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+                <p>${art.desc}</p>
+            `;
+            lightbox.classList.add('active');
+        }
+
+        // Функция закрытия окна (срабатывает при клике на фон или крестик)
+        function closeLightbox(event) {
+            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
+                lightbox.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
