@@ -3,70 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Адаптивная Галерея</title>
+    <title>Красивая Галерея</title>
     <style>
-        /* Разрешаем элементам свободно растягивать страницу вниз */
-        html, body {
+        body {
             margin: 0;
-            padding: 0;
-            background: transparent;
-            width: 100%;
-            min-height: 100%;
-            overflow-x: hidden;
-            overflow-y: visible; /* Прокрутка идет вместе со страницей */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0d1117; 
+            color: #c9d1d9;
+            padding: 20px;
         }
-
-        /* Сетка галереи */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
-            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            box-sizing: border-box;
-            padding: 10px;
         }
-
-        /* Карточка изображения */
         .gallery-item {
+            position: relative;
             background: #161b22;
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid #30363d;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
-        /* Контейнер для фото */
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border-color: #58a6ff;
+        }
         .img-container {
             width: 100%;
-            height: auto;
+            height: 200px;
+            overflow: hidden;
+            background: #0d1117;
             cursor: pointer;
-            background: transparent;
         }
-
         .img-container img {
             width: 100%;
-            height: auto;
-            max-height: 400px;
-            object-fit: contain;
-            display: block;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
         }
-
-        /* Блок с описанием под фото */
+        .gallery-item:hover .img-container img {
+            transform: scale(1.05);
+        }
         .item-info {
             padding: 15px;
         }
-
         .item-info h3 {
             margin: 0 0 4px 0;
             font-size: 1.1rem;
             color: #f0f6fc;
         }
-
         .author-link {
             display: inline-block;
             color: #58a6ff;
@@ -75,22 +65,22 @@
             font-weight: 500;
             margin-bottom: 8px;
         }
-
+        .author-link:hover {
+            text-decoration: underline;
+        }
         .item-info p {
             margin: 0;
             font-size: 0.9rem;
             color: #8b949e;
             line-height: 1.4;
         }
-
-        /* АДАПТИРОВАННОЕ ВСплывающее ОКНО (Открытый арт) */
         .lightbox {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(10, 12, 16, 0.98);
+            background-color: rgba(10, 12, 16, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -98,54 +88,42 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
-            z-index: 99999;
-            box-sizing: border-box;
-            padding: 20px;
+            z-index: 9999;
         }
-
         .lightbox.active {
             opacity: 1;
             pointer-events: auto;
         }
-
-        /* Картинка внутри лайтбокса подстраивается под экран телефона */
         .lightbox-img {
-            max-width: 100%;
-            max-height: 65vh; /* Занимает не более 65% высоты экрана, оставляя место тексту */
-            object-fit: contain;
+            max-width: 90%;
+            max-height: 75vh;
             border-radius: 8px;
+            box-shadow: 0 0 32px rgba(0,0,0,0.5);
         }
-
         .lightbox-caption {
             margin-top: 15px;
             text-align: center;
-            width: 100%;
-            max-width: 500px;
-            color: #f0f6fc;
+            max-width: 80%;
         }
-
         .lightbox-caption h3 {
             margin: 0 0 4px 0;
-            font-size: 1.2rem;
+            color: #fff;
+            font-size: 1.3rem;
         }
-
         .lightbox-caption a {
             color: #58a6ff;
             text-decoration: none;
         }
-
         .lightbox-caption p {
-            margin: 6px 0 0 0;
+            margin: 5px 0 0 0;
             color: #8b949e;
-            font-size: 0.9rem;
         }
-
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            color: #ffffff;
-            font-size: 34px;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 35px;
             cursor: pointer;
             user-select: none;
         }
@@ -162,7 +140,6 @@
     </div>
 
     <script>
-        // Список ваших работ
         const arts = [
             {
                 img: "НовыйХолст3фывфывфыв.png", 
@@ -188,7 +165,6 @@
         arts.forEach((art, index) => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
-
             item.innerHTML = `
                 <div class="img-container" onclick="openLightbox(${index})">
                     <img src="${art.img}" alt="${art.title}">
