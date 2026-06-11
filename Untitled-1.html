@@ -1,0 +1,90 @@
+<style>
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+.card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  aspect-ratio: 1;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.card:hover { transform: scale(1.02); }
+.card img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  color: white;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: 0.3s;
+}
+.card:hover .overlay { transform: translateY(0); }
+.artist { font-size: 1.2em; font-weight: bold; }
+
+/* Лайтбокс */
+.lightbox {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center;
+  align-items: center; flex-direction: column;
+}
+.lightbox.active { display: flex; }
+.lightbox img { max-width: 90%; max-height: 80vh; border-radius: 8px; }
+.lightbox .info { color: white; text-align: center; margin-top: 15px; }
+.close { position: absolute; top: 20px; right: 30px; color: white; 
+  font-size: 40px; cursor: pointer; }
+</style>
+
+<div class="gallery" id="gallery"></div>
+<div class="lightbox" id="lightbox">
+  <span class="close" onclick="closeLightbox()">&times;</span>
+  <img id="lightbox-img" src="" alt="">
+  <div class="info" id="lightbox-info"></div>
+</div>
+
+<script>
+const arts = [
+  { img: "https://drive.google.com/file/d/1MVIzYnjs6obb51kEYszE7qp4OiXsOhoY/view?usp=drive_link", artist: "ХУЙ", role: "АААААААА", desc: "АААААААААА" },
+  { img: "ССЫЛКА_НА_АРТ_2", artist: "Имя Художника 2", role: "Фоны", desc: "Локация - Замок" },
+  { img: "ССЫЛКА_НА_АРТ_3", artist: "Имя Художника 3", role: "Анимация", desc: "Ключевой кадр" }
+  // ДОБАВЬ СВОИ АРТЫ ПО ТАКОМУ ЖЕ ПРИНЦИПУ
+];
+
+function loadGallery() {
+  const gallery = document.getElementById('gallery');
+  arts.forEach(art => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => openLightbox(art);
+    card.innerHTML = `
+      <img src="${art.img}" alt="${art.desc}" loading="lazy">
+      <div class="overlay">
+        <div class="artist">${art.artist}</div>
+        <div>${art.role}</div>
+      </div>`;
+    gallery.appendChild(card);
+  });
+}
+
+function openLightbox(art) {
+  document.getElementById('lightbox').classList.add('active');
+  document.getElementById('lightbox-img').src = art.img;
+  document.getElementById('lightbox-info').innerHTML = 
+    `<h2>${art.artist}</h2><p>${art.role} — ${art.desc}</p>`;
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
+window.onload = loadGallery;
+</script>
