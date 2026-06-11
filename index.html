@@ -205,17 +205,16 @@
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
 
-    // Вспомогательная функция для конвертации ссылок Google Drive
-function getDirectImgUrl(url) {
-    if (url.includes('drive.google.com')) {
+ function getDirectImgUrl(url) {
+    if (url.includes('://google.com')) {
         const matches = url.match(/\/d\/([^/]+)/);
         if (matches && matches[1]) {
-            // Новый официальный рабочий формат для отображения картинок на сайтах
-            return `https://google.com{matches[1]}`;
+            return `https://://google.com/thumbnail?sz=w1000&id=${matches[1]}`;
         }
     }
     return url;
 }
+
 
 
         // Автоматически генерируем карточки на основе массива данных
