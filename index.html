@@ -217,37 +217,36 @@
 
 
 
-        // Автоматически генерируем карточки на основе массива данных
-        arts.forEach((art, index) => {
-            const finalImgUrl = getDirectImgUrl(art.img);
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
+       // Автоматически генерируем карточки на основе массива данных
+arts.forEach((art, index) => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
 
-            item.innerHTML = `
-                <div class="img-container" onclick="openLightbox(${index})">
-                    <img src="${finalImgUrl}" alt="${art.title}">
-                </div>
-                <div class="item-info">
-                    <h3>${art.title}</h3>
-                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                    <p>${art.desc}</p>
-                </div>
-            `;
-            galleryGrid.appendChild(item);
-        });
+    item.innerHTML = `
+        <div class="img-container" onclick="openLightbox(${index})">
+            <img src="${art.img}" alt="${art.title}">
+        </div>
+        <div class="item-info">
+            <h3>${art.title}</h3>
+            <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+            <p>${art.desc}</p>
+        </div>
+    `;
+    galleryGrid.appendChild(item);
+});
 
-        // Функция открытия картинки на весь экран
-        function openLightbox(index) {
-            const art = arts[index];
-            const finalImgUrl = getDirectImgUrl(art.img);
-            lightboxImg.src = finalImgUrl;
-            lightboxCaption.innerHTML = `
-                <h3>${art.title}</h3>
-                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
-                <p>${art.desc}</p>
-            `;
-            lightbox.classList.add('active');
-        }
+// Функция открытия картинки на весь экран
+function openLightbox(index) {
+    const art = arts[index];
+    lightboxImg.src = art.img;
+    lightboxCaption.innerHTML = `
+        <h3>${art.title}</h3>
+        <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+        <p>${art.desc}</p>
+    `;
+    lightbox.classList.add('active');
+}
+
 
         // Функция закрытия окна (срабатывает при клике на фон или крестик)
         function closeLightbox(event) {
