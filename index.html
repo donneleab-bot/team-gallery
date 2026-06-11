@@ -3,64 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Красивая Галерея</title>
+    <title>Адаптивная Галерея</title>
     <style>
-              /* Общие стили */
-        body {
+        /* Разрешаем элементам свободно растягивать страницу вниз */
+        html, body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: transparent; /* Делает фон невидимым */
-            color: #c9d1d9;
-            padding: 20px;
+            padding: 0;
+            background: transparent;
+            width: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+            overflow-y: visible; /* Прокрутка идет вместе со страницей */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-
 
         /* Сетка галереи */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
+            box-sizing: border-box;
+            padding: 10px;
         }
 
         /* Карточка изображения */
         .gallery-item {
-            position: relative;
             background: #161b22;
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid #30363d;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Эффект при наведении на карточку */
-        .gallery-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border-color: #58a6ff;
+        /* Контейнер для фото */
+        .img-container {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+            background: transparent;
         }
 
-        /* Адаптивный контейнер для картинок на телефонах */
-.img-container {
-    width: 100%;
-    height: auto; /* Высота подстроится автоматически */
-    max-height: 350px; /* Ограничение, чтобы фото не было гигантским */
-    overflow: hidden;
-    background: transparent;
-    cursor: pointer;
-}
-
-.img-container img {
-    width: 100%;
-    height: auto;
-    object-fit: contain; /* Картинка не сожмется и не обрежется */
-    display: block;
-}
-
-        .gallery-item:hover .img-container img {
-            transform: scale(1.05);
+        .img-container img {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: contain;
+            display: block;
         }
 
         /* Блок с описанием под фото */
@@ -74,7 +67,6 @@
             color: #f0f6fc;
         }
 
-        /* Ссылка на автора */
         .author-link {
             display: inline-block;
             color: #58a6ff;
@@ -84,10 +76,6 @@
             margin-bottom: 8px;
         }
 
-        .author-link:hover {
-            text-decoration: underline;
-        }
-
         .item-info p {
             margin: 0;
             font-size: 0.9rem;
@@ -95,14 +83,14 @@
             line-height: 1.4;
         }
 
-        /* Стили для всплывающего окна (Lightbox) */
+        /* АДАПТИРОВАННОЕ ВСплывающее ОКНО (Открытый арт) */
         .lightbox {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(10, 12, 16, 0.95);
+            background-color: rgba(10, 12, 16, 0.98);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -110,7 +98,9 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
-            z-index: 9999;
+            z-index: 99999;
+            box-sizing: border-box;
+            padding: 20px;
         }
 
         .lightbox.active {
@@ -118,23 +108,25 @@
             pointer-events: auto;
         }
 
+        /* Картинка внутри лайтбокса подстраивается под экран телефона */
         .lightbox-img {
-            max-width: 90%;
-            max-height: 75vh;
+            max-width: 100%;
+            max-height: 65vh; /* Занимает не более 65% высоты экрана, оставляя место тексту */
+            object-fit: contain;
             border-radius: 8px;
-            box-shadow: 0 0 32px rgba(0,0,0,0.5);
         }
 
         .lightbox-caption {
             margin-top: 15px;
             text-align: center;
-            max-width: 80%;
+            width: 100%;
+            max-width: 500px;
+            color: #f0f6fc;
         }
 
         .lightbox-caption h3 {
             margin: 0 0 4px 0;
-            color: #fff;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
         .lightbox-caption a {
@@ -142,39 +134,27 @@
             text-decoration: none;
         }
 
-        .lightbox-caption a:hover {
-            text-decoration: underline;
-        }
-
         .lightbox-caption p {
-            margin: 5px 0 0 0;
+            margin: 6px 0 0 0;
             color: #8b949e;
+            font-size: 0.9rem;
         }
 
-        /* Кнопка закрытия */
         .close-btn {
             position: absolute;
-            top: 20px;
-            right: 25px;
-            color: #fff;
-            font-size: 35px;
-            font-weight: 300;
+            top: 15px;
+            right: 20px;
+            color: #ffffff;
+            font-size: 34px;
             cursor: pointer;
             user-select: none;
-            transition: color 0.2s;
-        }
-
-        .close-btn:hover {
-            color: #58a6ff;
         }
     </style>
 </head>
 <body>
 
-    <!-- Сетка с карточками галереи -->
     <div class="gallery-grid" id="galleryGrid"></div>
 
-    <!-- Всплывающее окно просмотра -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
         <span class="close-btn">&times;</span>
         <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
@@ -182,50 +162,21 @@
     </div>
 
     <script>
-        // СПИСОК ВАШИХ РАБОТ / КАРТИНОК
-        // Сюда вы добавляете свои ссылки на Google Диск
+        // Список ваших работ
         const arts = [
             {
-                img: "Screenshot_9.png", 
-                title: "Родители Шарптанг", 
+                img: "НовыйХолст3фывфывфыв.png", 
+                title: "Прототип родителей Шарптанг", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0#h.gt5otbnjlyop", // Ссылка на портфолио/соцсеть автора
-                desc: "Прототип родителей Шарптанг от 30.03.2026, 02:14"
+                authorUrl: "https://github.com", 
+                desc: "30.03.2026, 02:14"
             },
             {
                 img: "НовыйХолст4ываываываывфыв.png", 
-                title: "Анимация сцены", 
-                authorName: "Имя Художника 2",
-                authorUrl: "", // Ссылка на портфолио/соцсеть автора
-                desc: ""
-            },
-             {
-                img: "НовыйХолст4ываываываывфыв.png", 
-                title: "Анимация сцены", 
-                authorName: "Имя Художника 2",
-                authorUrl: "", // Ссылка на портфолио/соцсеть автора
-                desc: "Описание второго изображения. Ключевой кадр финального ролика галереи."
-            },
-             {
-                img: "НовыйХолст4ываываываывфыв.png", 
-                title: "Анимация сцены", 
-                authorName: "Имя Художника 2",
-                authorUrl: "", // Ссылка на портфолио/соцсеть автора
-                desc: "Описание второго изображения. Ключевой кадр финального ролика галереи."
-            },
-             {
-                img: "НовыйХолст4ываываываывфыв.png", 
-                title: "Анимация сцены", 
-                authorName: "Имя Художника 2",
-                authorUrl: "", // Ссылка на портфолио/соцсеть автора
-                desc: "Описание второго изображения. Ключевой кадр финального ролика галереи."
-            },
-             {
-                img: "НовыйХолст4ываываываывфыв.png", 
-                title: "Анимация сцены", 
-                authorName: "Имя Художника 2",
-                authorUrl: "", // Ссылка на портфолио/соцсеть автора
-                desc: "Описание второго изображения. Ключевой кадр финального ролика галереи."
+                title: "Название второго арта", 
+                authorName: "Star Harlen",
+                authorUrl: "https://github.com", 
+                desc: "Описание второго арта"
             }
         ];
 
@@ -234,50 +185,34 @@
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
 
- function getDirectImgUrl(url) {
-    if (url.includes('://google.com')) {
-        const matches = url.match(/\/d\/([^/]+)/);
-        if (matches && matches[1]) {
-            return `https://://google.com/thumbnail?sz=w1000&id=${matches[1]}`;
+        arts.forEach((art, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+
+            item.innerHTML = `
+                <div class="img-container" onclick="openLightbox(${index})">
+                    <img src="${art.img}" alt="${art.title}">
+                </div>
+                <div class="item-info">
+                    <h3>${art.title}</h3>
+                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <p>${art.desc}</p>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
+        });
+
+        function openLightbox(index) {
+            const art = arts[index];
+            lightboxImg.src = art.img;
+            lightboxCaption.innerHTML = `
+                <h3>${art.title}</h3>
+                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+                <p>${art.desc}</p>
+            `;
+            lightbox.classList.add('active');
         }
-    }
-    return url;
-}
 
-
-
-       // Автоматически генерируем карточки на основе массива данных
-arts.forEach((art, index) => {
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-
-    item.innerHTML = `
-        <div class="img-container" onclick="openLightbox(${index})">
-            <img src="${art.img}" alt="${art.title}">
-        </div>
-        <div class="item-info">
-            <h3>${art.title}</h3>
-            <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-            <p>${art.desc}</p>
-        </div>
-    `;
-    galleryGrid.appendChild(item);
-});
-
-// Функция открытия картинки на весь экран
-function openLightbox(index) {
-    const art = arts[index];
-    lightboxImg.src = art.img;
-    lightboxCaption.innerHTML = `
-        <h3>${art.title}</h3>
-        <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
-        <p>${art.desc}</p>
-    `;
-    lightbox.classList.add('active');
-}
-
-
-        // Функция закрытия окна (срабатывает при клике на фон или крестик)
         function closeLightbox(event) {
             if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
                 lightbox.classList.remove('active');
