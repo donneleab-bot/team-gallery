@@ -54,7 +54,7 @@
             background: #30363d;
         }
         .gallery-item.hidden {
-            display: none;
+            display: none !important;
         }
 
         .gallery-grid {
@@ -202,35 +202,35 @@
                 img: "Screenshot_9.png", 
                 title: "Прототип родителей Шарптанг", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                authorUrl: "https://google.com", 
                 desc: "30.03.2026, 02:14"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                authorUrl: "https://google.com", 
                 desc: "30.03.2026, 01:17"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Набросок дизайна матери Мунстрайк", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                authorUrl: "https://google.com", 
                 desc: "30.03.2026, 00:25"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                authorUrl: "https://google.com", 
                 desc: "30.03.2026, 01:17"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                authorUrl: "https://google.com", 
                 desc: "30.03.2026, 01:17"
             }
         ];
@@ -242,22 +242,25 @@
         const searchInput = document.getElementById('searchInput');
         const clearSearch = document.getElementById('clearSearch');
 
-        // Выводим все карточки из вашего исходного кода
-        arts.forEach((art, index) => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.innerHTML = `
-                <div class="img-container" onclick="openLightbox(${index})">
-                    <img src="${art.img}" alt="${art.title}">
-                </div>
-                <div class="item-info">
-                    <h3>${art.title}</h3>
-                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                    <p>${art.desc}</p>
-                </div>
-            `;
-            galleryGrid.appendChild(item);
-        });
+        // Функция рендеринга карточек
+        function initGallery() {
+            galleryGrid.innerHTML = '';
+            arts.forEach((art, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `
+                    <div class="img-container" onclick="openLightbox(${index})">
+                        <img src="${art.img}" alt="${art.title}">
+                    </div>
+                    <div class="item-info">
+                        <h3>${art.title}</h3>
+                        <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                        <p>${art.desc}</p>
+                    </div>
+                `;
+                galleryGrid.appendChild(item);
+            });
+        }
 
         // Функция фильтрации для поиска
         function filterGallery() {
@@ -277,15 +280,24 @@
             });
         }
 
+        // Слушатели событий
         searchInput.addEventListener('input', filterGallery);
+        
         clearSearch.addEventListener('click', () => {
-            searchInput.value = '';
-            filterGallery();
+            searchInput.value = ''; // Очищаем поле ввода
+            filterGallery();        // Возвращаем все карточки на место
         });
 
         function openLightbox(index) {
-            const art = arts[index];
-            lightboxImg.src = art.img;
-            lightboxCaption.innerHTML = `
-                <h3>${art.title}</h3>
-                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+const art = arts[index];
+lightboxImg.src = art.img;
+lightboxCaption.innerHTML = <h3>${art.title}</h3> <a href="${art.authorUrl}"
+target="_blank">Автор: ${art.authorName}</a> <p>${art.desc}</p>;
+lightbox.classList.add('active');
+}
+function closeLightbox(event) {
+if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
+lightbox.classList.remove('active');
+}
+}
+        // Запуск генерации при загрузке страницыinitGallery();
