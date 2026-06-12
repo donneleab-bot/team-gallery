@@ -210,22 +210,21 @@ const ROTATE_FACE = 'flip'; // Оставляем 'flip', раз голова р
         const side = Math.random() < 0.5 ? 0 : 1; // 0 - лево, 1 - право
         const randomY = Math.floor(Math.random() * 60) + 15;
 
-        // Исходные базовые развороты для левой стороны
-        let sx = (ROTATE_BUTT === 'normal') ? 1 : -1;
-        let fx = (ROTATE_FACE === 'normal') ? 1 : -1;
-
+        let sx = 1;
+        let fx = 1;
 
         if (side === 0) {
             // ЛЕВЫЙ КРАЙ
-            el.style.left = '-120px'; // Прячем попу наполовину в стену
+            el.style.left = '-120px'; 
             el.style.top = randomY + 'vh';
+            sx = 1;   // Попа хвостом на страницу
+            fx = -1;  // Лицо смотрит на страницу
         } else {
             // ПРАВЫЙ КРАЙ
-            el.style.right = '-120px'; // Прячем попу наполовину в стену
+            el.style.right = '-120px'; 
             el.style.top = randomY + 'vh';
-            // Если перешли на правую сторону — зеркалим оба состояния от исходных
-            sx = -sx;
-            fx = -fx;
+            sx = -1;  // ПРИНУДИТЕЛЬНО РАЗВОРАЧИВАЕМ ПОПУ ХВОСТОМ НА СТРАНИЦУ
+            fx = 1;   // Лицо смотрит на страницу
         }
 
         // Сохраняем значения в элемент
