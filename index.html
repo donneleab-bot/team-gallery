@@ -176,7 +176,8 @@
             z-index: 99999;
             cursor: pointer;
             user-select: none;
-            transition: background-image 0.1s ease, transform 0.1s ease;
+            /* УБРАЛИ ЛИШНИЕ АНИМАЦИИ ДВИЖЕНИЯ, ОСТАВИЛИ ТОЛЬКО КАРТИНКУ */
+            transition: background-image 0.1s ease; 
         }
         .shaking-egg {
             animation: shakeEggAnim 0.15s ease-in-out infinite;
@@ -198,17 +199,15 @@
         el.style.top = 'auto';
         el.style.bottom = 'auto';
 
-        const side = Math.random() < 0.5 ? 0 : 1; // 0 - лево, 1 - право
+        const side = Math.random() < 0.5 ? 0 : 1; 
         const randomY = Math.floor(Math.random() * 60) + 15;
         el.style.top = randomY + 'vh';
 
         if (side === 0) {
-            // ЛЕВЫЙ КРАЙ
             el.style.left = '-65px'; 
             el.style.transform = 'scaleX(-1)';
             el.style.setProperty('--s', '-1');
         } else {
-            // ПРАВЫЙ КРАЙ
             el.style.right = '-125px'; 
             el.style.transform = 'scaleX(1)';
             el.style.setProperty('--s', '1');
@@ -236,13 +235,11 @@
                 el.style.backgroundImage = 'none'; 
                 
                 if (side === 0) {
-                    // ЛЕВО: Координаты ОСТАЮТСЯ как у попы (-65px)
-                    el.style.left = '-65px'; 
+                    el.style.left = '-145px'; 
                     el.style.transform = 'scaleX(-1)';
                     el.style.setProperty('--s', '-1');
                 } else {
-                    // ПРАВО: Координаты ОСТАЮТСЯ как у попы (-125px)
-                    el.style.right = '-125px'; 
+                    el.style.right = '-205px'; 
                     el.style.transform = 'scaleX(1)';
                     el.style.setProperty('--s', '1');
                 }
@@ -259,6 +256,7 @@
 })();
 </script>
 <!-- Конец пасхалки -->
+
 
 
 
