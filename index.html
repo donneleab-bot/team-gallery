@@ -70,7 +70,7 @@
         }
         /* Класс для скрытия элементов при поиске */
         .gallery-item.hidden {
-            display: none;
+            display: none !important;
         }
         .gallery-item:hover {
             transform: translateY(-5px);
@@ -213,87 +213,99 @@
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
     </div>
 
-    <div class="gallery-grid" id="galleryGrid"></div>
+    <!-- Карточки прописаны сразу в HTML, они гарантированно загрузятся -->
+    <div class="gallery-grid" id="galleryGrid">
+        
+        <!-- Карточка 1 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox(0)">
+                <img src="Screenshot_9.png" alt="Прототип родителей Шарптанг">
+            </div>
+            <div class="item-info">
+                <h3>Прототип родителей Шарптанг</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 02:14</p>
+                <div class="view-count">👁️ <span id="view-span-0">0</span></div>
+            </div>
+        </div>
 
-    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-        <span class="close-btn">&times;</span>
-        <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
-        <div class="lightbox-caption" id="lightboxCaption"></div>
+        <!-- Карточка 2 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox(1)">
+                <img src="Screenshot_10.png" alt="Прототип родителей Прауда">
+            </div>
+            <div class="item-info">
+                <h3>Прототип родителей Прауда</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 01:17</p>
+                <div class="view-count">👁️ <span id="view-span-1">0</span></div>
+            </div>
+        </div>
+
+        <!-- Карточка 3 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox(2)">
+                <img src="Screenshot_10.png" alt="Набросок дизайна матери Мунстрайк">
+            </div>
+            <div class="item-info">
+                <h3>Набросок дизайна матери Мунстрайк</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 00:25</p>
+                <div class="view-count">👁️ <span id="view-span-2">0</span></div>
+            </div>
+        </div>
+
+        <!-- Карточка 4 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox(3)">
+                <img src="Screenshot_10.png" alt="Прототип родителей Прауда">
+            </div>
+            <div class="item-info">
+                <h3>Прототип родителей Прауда</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 01:17</p>
+                <div class="view-count">👁️ <span id="view-span-3">0</span></div>
+            </div>
+        </div>
+
+        <!-- Карточка 5 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox(4)">
+                <img src="Screenshot_10.png" alt="Прототип родителей Прауда">
+            </div>
+            <div class="item-info">
+                <h3>Прототип родителей Прауда</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 01:17</p>
+                <div class="view-count">👁️ <span id="view-span-4">0</span></div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Кнопка Наверх -->
-    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()">↑</button>
+    <!-- Лайтбокс -->
 
-    <script>
-        const arts = [
-            {
-                img: "Screenshot_9.png", 
-                title: "Прототип родителей Шарптанг", 
-                authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 02:14",
-                views: 0
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 01:17",
-                views: 0
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Набросок дизайна матери Мунстрайк", 
-                authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 00:25",
-                views: 0
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 01:17",
-                views: 0
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 01:17",
-                views: 0
-            }
-        ];
 
-        const galleryGrid = document.getElementById('galleryGrid');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        const lightboxCaption = document.getElementById('lightboxCaption');
-        const searchInput = document.getElementById('searchInput');
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
+×
 
-        // Генерируем карточки
-        arts.forEach((art, index) => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.innerHTML = `
-                <div class="img-container" onclick="openLightbox(${index})">
-                    <img src="${art.img}" alt="${art.title}">
-                </div>
-                <div class="item-info">
-                    <h3>${art.title}</h3>
-                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                    <p>${art.desc}</p>
 
-👁️ ${art.views}
 
-`;
-galleryGrid.appendChild(item);
-});
-// Логика фильтрации при вводе в поиск (ваша исходная)
+↑
+
+const arts = [
+{ img: "Screenshot_9.png", title: "Прототип родителей Шарптанг", authorName: "Star Harlen", authorUrl: "google.com", desc: "30.03.2026, 02:14", views: 0 },
+{ img: "Screenshot_10.png", title: "Прототип родителей Прауда", authorName: "Star Harlen", authorUrl: "google.com", desc: "30.03.2026, 01:17", views: 0 },
+{ img: "Screenshot_10.png", title: "Набросок дизайна матери Мунстрайк", authorName: "Star Harlen", authorUrl: "google.com", desc: "30.03.2026, 00:25", views: 0 },
+{ img: "Screenshot_10.png", title: "Прототип родителей Прауда", authorName: "Star Harlen", authorUrl: "google.com", desc: "30.03.2026, 01:17", views: 0 },
+{ img: "Screenshot_10.png", title: "Прототип родителей Прауда", authorName: "Star Harlen", authorUrl: "google.com", desc: "30.03.2026, 01:17", views: 0 }
+];
+const galleryGrid = document.getElementById('galleryGrid');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+const searchInput = document.getElementById('searchInput');
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+// Логика фильтрации при вводе в поиск
 searchInput.addEventListener('input', () => {
 const filterValue = searchInput.value.toLowerCase().trim();
 const items = galleryGrid.querySelectorAll('.gallery-item');
@@ -329,9 +341,9 @@ hideLightbox();
 // Кнопка Наверх
 window.onscroll = function() {
 if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-scrollTopBtn.style.display = "flex";
+scrollTopBtn.style.style.display = "flex";
 } else {
-scrollTopBtn.style.display = "none";
+scrollTopBtn.style.style.display = "none";
 }
 };
 function scrollToTop() {
