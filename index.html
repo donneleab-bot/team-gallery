@@ -12,7 +12,6 @@
             color: #c9d1d9;
             padding: 20px;
         }
-        /* Шапка с кнопкой Назад */
         .header-container {
             max-width: 1200px;
             margin: 0 auto 25px auto;
@@ -95,7 +94,6 @@
             color: #8b949e;
             line-height: 1.4;
         }
-        /* Счетчик просмотров под описанием */
         .view-count {
             display: flex;
             align-items: center;
@@ -156,7 +154,6 @@
             cursor: pointer;
             user-select: none;
         }
-        /* Кнопка Наверх */
         .scroll-top-btn {
             position: fixed;
             bottom: 30px;
@@ -189,8 +186,77 @@
         <button class="back-page-btn" onclick="window.history.back()">← Назад</button>
     </div>
 
-    <div class="gallery-grid" id="galleryGrid"></div>
+    <!-- Карточки теперь встроены прямо в верстку -->
+    <div class="gallery-grid" id="galleryGrid">
+        
+        <!-- Карточка 1 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox('Screenshot_9.png', 'Прототип родителей Шарптанг', '30.03.2026, 02:14', 0)">
+                <img src="Screenshot_9.png" alt="Прототип родителей Шарптанг">
+            </div>
+            <div class="item-info">
+                <h3>Прототип родителей Шарптанг</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 02:14</p>
+                <div class="view-count">👁️ <span id="view-span-0">0</span></div>
+            </div>
+        </div>
 
+        <!-- Карточка 2 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox('Screenshot_10.png', 'Прототип родителей Прауда', '30.03.2026, 01:17', 1)">
+                <img src="Screenshot_10.png" alt="Прототип родителей Прауда">
+            </div>
+            <div class="item-info">
+                <h3>Прототип родителей Прауда</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 01:17</p>
+                <div class="view-count">👁️ <span id="view-span-1">0</span></div>
+            </div>
+        </div>
+
+        <!-- Карточка 3 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox('Screenshot_10.png', 'Набросок дизайна матери Мунстрайк', '30.03.2026, 00:25', 2)">
+                <img src="Screenshot_10.png" alt="Набросок дизайна матери Мунстрайк">
+            </div>
+            <div class="item-info">
+                <h3>Набросок дизайна матери Мунстрайк</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 00:25</p>
+                <div class="view-count">👁️ <span id="view-span-2">0</span></div>
+            </div>
+        </div>
+
+        <!-- Карточка 4 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox('Screenshot_10.png', 'Прототип родителей Прауда', '30.03.2026, 01:17', 3)">
+                <img src="Screenshot_10.png" alt="Прототип родителей Прауда">
+            </div>
+            <div class="item-info">
+                <h3>Прототип родителей Прауда</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 01:17</p>
+                <div class="view-count">👁️ <span id="view-span-3">0</span></div>
+            </div>
+        </div>
+
+        <!-- Карточка 5 -->
+        <div class="gallery-item">
+            <div class="img-container" onclick="openLightbox('Screenshot_10.png', 'Прототип родителей Прауда', '30.03.2026, 01:17', 4)">
+                <img src="Screenshot_10.png" alt="Прототип родителей Прауда">
+            </div>
+            <div class="item-info">
+                <h3>Прототип родителей Прауда</h3>
+                <a href="https://google.com" target="_blank" class="author-link">Автор: Star Harlen</a>
+                <p>30.03.2026, 01:17</p>
+                <div class="view-count">👁️ <span id="view-span-4">0</span></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Лайтбокс -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
         <span class="close-btn">&times;</span>
         <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
@@ -201,99 +267,29 @@
     <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()">↑</button>
 
     <script>
-        // В объекты добавлен базовый параметр views
-        const arts = [
-            {
-                img: "Screenshot_9.png", 
-                title: "Прототип родителей Шарптанг", 
-                authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 02:14",
-                views: 0
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 01:17",
-                views: 0
-            },
-             {
-                img: "Screenshot_10.png", 
-                title: "Набросок дизайна матери Мунстрайк", 
-                authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 00:25",
-                views: 0
-            },
-             {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 01:17",
-                views: 0
-            },
-             {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 01:17",
-                views: 0
-            }
-        ];
+        // Массив только для хранения количества просмотров
+        const viewsCount =;
 
-        const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        const lightboxCaption = document.getElementById('lightboxCaption');
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
 
-        // Оригинальный цикл вывода карточек с добавлением счетчика просмотров в разметку
-        arts.forEach((art, index) => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.innerHTML = `
-                <div class="img-container" onclick="openLightbox(${index})">
-                    <img src="${art.img}" alt="${art.title}">
-                </div>
-                <div class="item-info">
-                    <h3>${art.title}</h3>
-                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                    <p>${art.desc}</p>
-                    <div class="view-count">👁️ <span id="view-span-${index}">${art.views}</span></div>
-                </div>
-            `;
-            galleryGrid.appendChild(item);
-        });
-
-        // Ваша оригинальная функция открытия, дополненная счетчиком
-        function openLightbox(index) {
-            const art = arts[index];
-            
-            // Увеличиваем просмотр при клике
-            art.views += 1;
-            document.getElementById(`view-span-${index}`).textContent = art.views;
-
-            lightboxImg.src = art.img;
-            lightboxCaption.innerHTML = `
-                <h3>${art.title}</h3>
-                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
-                <p>${art.desc}</p>
-
-👁️ Просмотров: ${art.views}
-`;
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+// Облегченная функция открытия лайтбокса
+function openLightbox(imgSrc, title, desc, index) {
+viewsCount[index] += 1;
+document.getElementById(view-span-${index}).textContent = viewsCount[index];
+lightboxImg.src = imgSrc;
+lightboxCaption.innerHTML = <h3>${title}</h3> <a href="https://google.com" target="_blank">Автор: Star Harlen</a> <p>${desc}</p> <p style="font-size: 0.9rem; color: #8b949e; margin-top: 8px;">👁️ Просмотров: ${viewsCount[index]}</p>;
 lightbox.classList.add('active');
 }
-// Ваша оригинальная функция закрытия лайтбокса
+// Ваша оригинальная функция закрытия
 function closeLightbox(event) {
 if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
 lightbox.classList.remove('active');
 }
 }
-// Логика отображения кнопки "Наверх"
+// Кнопка Наверх
 window.onscroll = function() {
 if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
 scrollTopBtn.style.display = "flex";
@@ -301,7 +297,6 @@ scrollTopBtn.style.display = "flex";
 scrollTopBtn.style.display = "none";
 }
 };
-// Плавный скролл наверх
 function scrollToTop() {
 window.scrollTo({
 top: 0,
