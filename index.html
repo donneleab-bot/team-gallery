@@ -12,29 +12,12 @@
             color: #c9d1d9;
             padding: 20px;
         }
-        /* Стили для контейнера поиска и кнопки Назад */
+        /* Стили для контейнера поиска */
         .search-container {
             max-width: 1200px;
             margin: 0 auto 25px auto;
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 15px;
-        }
-        .back-page-btn {
-            background-color: #21262d;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s, border-color 0.2s;
-            white-space: nowrap;
-        }
-        .back-page-btn:hover {
-            background-color: #30363d;
-            border-color: #8b949e;
         }
         .search-input {
             width: 100%;
@@ -58,7 +41,6 @@
             gap: 20px;
             max-width: 1200px;
             margin: 0 auto;
-            min-height: 200px;
         }
         .gallery-item {
             position: relative;
@@ -69,9 +51,9 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        /* Скрытие элементов при поиске */
+        /* Класс для скрытия элементов при поиске */
         .gallery-item.hidden {
-            display: none !important;
+            display: none;
         }
         .gallery-item:hover {
             transform: translateY(-5px);
@@ -114,18 +96,10 @@
             text-decoration: underline;
         }
         .item-info p {
-            margin: 0 0 8px 0;
+            margin: 0;
             font-size: 0.9rem;
             color: #8b949e;
             line-height: 1.4;
-        }
-        /* Стили для счетчика просмотров */
-        .view-count {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.85rem;
-            color: #8b949e;
         }
         .lightbox {
             position: fixed;
@@ -180,172 +154,120 @@
             cursor: pointer;
             user-select: none;
         }
-        /* Кнопка Наверх */
-        .scroll-top-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: #1f6feb;
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 99;
-            transition: background-color 0.2s, transform 0.2s;
-        }
-        .scroll-top-btn:hover {
-            background-color: #58a6ff;
-            transform: scale(1.05);
-        }
     </style>
 </head>
 <body>
 
-    <!-- Поле поиска и кнопка назад -->
+    <!-- Поле поиска -->
     <div class="search-container">
-        <button class="back-page-btn" onclick="window.history.back()">← Назад</button>
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
     </div>
 
-    <!-- Контейнер сетки -->
     <div class="gallery-grid" id="galleryGrid"></div>
 
-    <!-- Лайтбокс -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-        <span class="close-btn" onclick="hideLightbox()">&times;</span>
+        <span class="close-btn">&times;</span>
         <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
         <div class="lightbox-caption" id="lightboxCaption"></div>
     </div>
 
-    <!-- Кнопка Наверх -->
-    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()">↑</button>
-
     <script>
-        // Данные галереи с базовым значением просмотров (views)
         const arts = [
             {
                 img: "Screenshot_9.png", 
                 title: "Прототип родителей Шарптанг", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 02:14",
-                views: 0
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                desc: "30.03.2026, 02:14"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 01:17",
-                views: 0
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                desc: "30.03.2026, 01:17"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Набросок дизайна матери Мунстрайк", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 00:25",
-                views: 0
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                desc: "30.03.2026, 00:25"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 01:17",
-                views: 0
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                desc: "30.03.2026, 01:17"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 01:17",
-                views: 0
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
+                desc: "30.03.2026, 01:17"
             }
         ];
 
-        // Безопасный запуск после полной готовности дерева HTML
-        document.addEventListener("DOMContentLoaded", () => {
-            const galleryGrid = document.getElementById('galleryGrid');
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightboxImg');
-            const lightboxCaption = document.getElementById('lightboxCaption');
-            const searchInput = document.getElementById('searchInput');
-            const scrollTopBtn = document.getElementById('scrollTopBtn');
+        const galleryGrid = document.getElementById('galleryGrid');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+        const searchInput = document.getElementById('searchInput');
 
-            if (!galleryGrid) return;
+        // Генерируем карточки
+        arts.forEach((art, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `
+                <div class="img-container" onclick="openLightbox(${index})">
+                    <img src="${art.img}" alt="${art.title}">
+                </div>
+                <div class="item-info">
+                    <h3>${art.title}</h3>
+                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <p>${art.desc}</p>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
+        });
 
-            // Очищаем сетку на всякий случай перед генерацией
-            galleryGrid.innerHTML = '';
+        // Логика фильтрации при вводе в поиск
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const items = galleryGrid.getElementsByClassName('gallery-item');
 
-            // Генерируем карточки программно
             arts.forEach((art, index) => {
-                const item = document.createElement('div');
+                const matchTitle = art.title.toLowerCase().includes(query);
+                const matchAuthor = art.authorName.toLowerCase().includes(query);
+                const matchDesc = art.desc.toLowerCase().includes(query);
 
-item.className = 'gallery-item';
-item.innerHTML = <div class="img-container" onclick="openLightbox(${index})"> <img src="${art.img}" alt="${art.title}"> </div> <div class="item-info"> <h3>${art.title}</h3> <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a> <p>${art.desc}</p> <div class="view-count">👁️ <span id="view-span-${index}">${art.views}</span></div> </div>;
-galleryGrid.appendChild(item);
-});
-// Функция поиска
-if (searchInput) {
-searchInput.addEventListener('input', () => {
-const filterValue = searchInput.value.toLowerCase().trim();
-const items = galleryGrid.querySelectorAll('.gallery-item');
-items.forEach((item, index) => {
-const art = arts[index];
-const matches = art.title.toLowerCase().includes(filterValue) ||
-art.authorName.toLowerCase().includes(filterValue) ||
-art.desc.toLowerCase().includes(filterValue);
-if (matches) {
-item.classList.remove('hidden');
-} else {
-item.classList.add('hidden');
-}
-});
-});
-}
-// Функции для работы окон просмотра (глобальные, чтобы вызывались из HTML)
-window.openLightbox = function(index) {
-const art = arts[index];
-art.views += 1;
-const span = document.getElementById(view-span-${index});
-if (span) span.textContent = art.views;
-if (lightboxImg) lightboxImg.src = art.img;
-if (lightboxCaption) {
-lightboxCaption.innerHTML = <h3>${art.title}</h3> <p><a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a></p> <p>${art.desc}</p> <p style="font-size: 0.9rem; color: #8b949e; margin-top: 8px;">👁️ Просмотров: ${art.views}</p>;
-}
-if (lightbox) lightbox.classList.add('active');
-};
-window.hideLightbox = function() {
-if (lightbox) lightbox.classList.remove('active');
-};
-window.closeLightbox = function(event) {
-if (event.target === lightbox || event.target.classList.contains('close-btn')) {
-hideLightbox();
-}
-};
-// Логика кнопки Наверх
-window.onscroll = function() {
-if (scrollTopBtn) {
-if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-scrollTopBtn.style.display = "flex";
-} else {
-scrollTopBtn.style.display = "none";
-}
-}
-};
-window.scrollToTop = function() {
-window.scrollTo({
-top: 0,
-behavior: 'smooth'
-});
-};
-});
+                if (matchTitle || matchAuthor || matchDesc) {
+                    items[index].classList.remove('hidden');
+                } else {
+                    items[index].classList.add('hidden');
+                }
+            });
+        });
+
+        function openLightbox(index) {
+            const art = arts[index];
+            lightboxImg.src = art.img;
+            lightboxCaption.innerHTML = `
+                <h3>${art.title}</h3>
+                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+                <p>${art.desc}</p>
+            `;
+            lightbox.classList.add('active');
+        }
+
+        function closeLightbox(event) {
+            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
+                lightbox.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
+
