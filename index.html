@@ -12,12 +12,29 @@
             color: #c9d1d9;
             padding: 20px;
         }
-        /* Стили для контейнера поиска */
+        /* Стили для контейнера поиска и кнопки Назад */
         .search-container {
             max-width: 1200px;
             margin: 0 auto 25px auto;
             display: flex;
             justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        .back-page-btn {
+            background-color: #21262d;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            white-space: nowrap;
+        }
+        .back-page-btn:hover {
+            background-color: #30363d;
+            border-color: #8b949e;
         }
         .search-input {
             width: 100%;
@@ -96,10 +113,18 @@
             text-decoration: underline;
         }
         .item-info p {
-            margin: 0;
+            margin: 0 0 8px 0;
             font-size: 0.9rem;
             color: #8b949e;
             line-height: 1.4;
+        }
+        /* Просмотры */
+        .view-count {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: #8b949e;
         }
         .lightbox {
             position: fixed;
@@ -154,12 +179,37 @@
             cursor: pointer;
             user-select: none;
         }
+        /* Кнопка Наверх */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #1f6feb;
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .scroll-top-btn:hover {
+            background-color: #58a6ff;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
 
-    <!-- Поле поиска -->
+    <!-- Поле поиска и кнопка Назад -->
     <div class="search-container">
+        <button class="back-page-btn" onclick="window.history.back()">← Назад</button>
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
     </div>
 
@@ -171,42 +221,50 @@
         <div class="lightbox-caption" id="lightboxCaption"></div>
     </div>
 
+    <!-- Кнопка Наверх -->
+    <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()">↑</button>
+
     <script>
         const arts = [
             {
                 img: "Screenshot_9.png", 
                 title: "Прототип родителей Шарптанг", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 02:14"
+                authorUrl: "https://google.com", 
+                desc: "30.03.2026, 02:14",
+                views: 0
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 01:17"
+                authorUrl: "https://google.com", 
+                desc: "30.03.2026, 01:17",
+                views: 0
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Набросок дизайна матери Мунстрайк", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 00:25"
+                authorUrl: "https://google.com", 
+                desc: "30.03.2026, 00:25",
+                views: 0
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 01:17"
+                authorUrl: "https://google.com", 
+                desc: "30.03.2026, 01:17",
+                views: 0
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 01:17"
+                authorUrl: "https://google.com", 
+                desc: "30.03.2026, 01:17",
+                views: 0
             }
         ];
 
@@ -215,6 +273,7 @@
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
         const searchInput = document.getElementById('searchInput');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
 
         // Генерируем карточки
         arts.forEach((art, index) => {
@@ -228,10 +287,56 @@
                     <h3>${art.title}</h3>
                     <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
                     <p>${art.desc}</p>
-                </div>
-            `;
-            galleryGrid.appendChild(item);
-        });
 
-        // Логика фильтрации при вводе в поиск
-        searchInput.addEvent"
+👁️ ${art.views}
+
+`;
+galleryGrid.appendChild(item);
+});
+// Логика фильтрации при вводе в поиск (ваша исходная)
+searchInput.addEventListener('input', () => {
+const filterValue = searchInput.value.toLowerCase().trim();
+const items = galleryGrid.querySelectorAll('.gallery-item');
+items.forEach((item, index) => {
+const art = arts[index];
+const matches = art.title.toLowerCase().includes(filterValue) ||
+art.authorName.toLowerCase().includes(filterValue) ||
+art.desc.toLowerCase().includes(filterValue);
+if (matches) {
+item.classList.remove('hidden');
+} else {
+item.classList.add('hidden');
+}
+});
+});
+// Открытие Лайтбокса
+function openLightbox(index) {
+const art = arts[index];
+art.views += 1;
+document.getElementById(view-span-${index}).textContent = art.views;
+lightboxImg.src = art.img;
+lightboxCaption.innerHTML = <h3>${art.title}</h3> <p><a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a></p> <p>${art.desc}</p> <p style="font-size: 0.9rem; color: #8b949e; margin-top: 8px;">👁️ Просмотров: ${art.views}</p>;
+lightbox.classList.add('active');
+}
+function hideLightbox() {
+lightbox.classList.remove('active');
+}
+function closeLightbox(event) {
+if (event.target === lightbox || event.target.classList.contains('close-btn')) {
+hideLightbox();
+}
+}
+// Кнопка Наверх
+window.onscroll = function() {
+if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+scrollTopBtn.style.display = "flex";
+} else {
+scrollTopBtn.style.display = "none";
+}
+};
+function scrollToTop() {
+window.scrollTo({
+top: 0,
+behavior: 'smooth'
+});
+}
