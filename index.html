@@ -161,22 +161,19 @@
  <!-- Начало пасхалки -->
 <script>
 (function() {
-    // Названия ваших картинок
-   const PATH_BUTT = 'PERO1.png';  
-const PATH_FACE = 'PERO2.png';  
-  
+    const PATH_BUTT = 'PERO1.png';  
+    const PATH_FACE = 'PERO2.png';  
 
     let currentState = 0; 
 
-    // Стили пасхалки
     const styles = `
         #secret-butt {
-            position: fixed; /* Намертво прижимает к экрану, не двигается при скролле */
-            width: 200px;    /* Немного уменьшили для мобильных устройств */
+            position: fixed;
+            width: 200px;
             height: 200px;
             background-size: contain;
             background-repeat: no-repeat;
-            z-index: 99999;  /* Поверх всех элементов сайта */
+            z-index: 99999;
             cursor: pointer;
             user-select: none;
             transition: background-image 0.1s ease, transform 0.1s ease;
@@ -195,87 +192,71 @@ const PATH_FACE = 'PERO2.png';
     styleSheet.innerText = styles;
     document.head.appendChild(styleSheet);
 
-        function moveAndOrient(el) {
-        // Сбрасываем старые стили перед перемещением
+    function moveAndOrient(el) {
         el.style.left = 'auto';
         el.style.right = 'auto';
         el.style.top = 'auto';
         el.style.bottom = 'auto';
 
-        // Выбираем сторону экрана: 0 — левый край, 1 — правый край
         const side = Math.random() < 0.5 ? 0 : 1;
-        
-        // Прячем половину тела за экран
         const hideOffset = '-100px'; 
-        
-        // Случайная высота появления
         const randomY = Math.floor(Math.random() * 60) + 15;
 
-        // Переменные разворота: sx — для попы, fx — для лица
         let sx = 1; 
         let fx = 1;
 
         if (side === 0) {
-            // ЛЕВЫЙ КРАЙ ЭКРАНА
             el.style.left = hideOffset;
             el.style.top = randomY + 'vh';
-            sx = -1; // Попа хвостом внутрь экрана
-            fx = 1;  // Лицо смотрит внутрь экрана
+            sx = -1; 
+            fx = 1;  
         } else {
-            // ПРАВЫЙ КРАЙ ЭКРАНА
             el.style.right = hideOffset;
             el.style.top = randomY + 'vh';
-            sx = 1;   // Попа хвостом внутрь экрана
-            fx = -1;  // Лицо смотрит внутрь экрана
+            sx = 1;   
+            fx = -1;  
         }
 
-        // Запоминаем оба разворота прямо в элементе, чтобы использовать при клике
         el.dataset.sx = sx;
         el.dataset.fx = fx;
 
-        // По умолчанию ставим разворот для попы
         el.style.transform = `scaleX(${sx})`;
         el.style.setProperty('--sx', sx);
     }
 
-           el.addEventListener('click', () => {
-            // Включаем тряску
+    window.addEventListener('load', () => {
+        const el = document.createElement('div');
+        el.id = 'secret-butt';
+        el.style.backgroundImage = `url('${PATH_BUTT}')`;
+        document.body.appendChild(el);
+
+        moveAndOrient(el);
+
+        el.addEventListener('click', () => {
             el.classList.add('shaking-egg');
             setTimeout(() => el.classList.remove('shaking-egg'), 300);
 
-            // Получаем направления разворота для текущего края экрана
             const sx = el.dataset.sx;
             const fx = el.dataset.fx;
 
             if (currentState === 0) {
-                // КЛИК ПО ПОПЕ -> Персонаж оборачивается
                 currentState = 1;
-                
-                // Сначала полностью убираем старую картинку попы
                 el.style.backgroundImage = 'none'; 
-                
-                // Ставим разворот для лица и саму картинку с лицом
                 el.style.transform = `scaleX(${fx})`;
                 el.style.setProperty('--sx', fx);
                 el.style.backgroundImage = `url('${PATH_FACE}')`;
             } else {
-                // КЛИК ПО ЛИЦУ -> Персонаж пугается и убегает в другое место
                 currentState = 0;
-                
-                // Полностью очищаем фон лица перед прыжком
                 el.style.backgroundImage = 'none'; 
-                
-                // Возвращаем исходную картинку попы
                 el.style.backgroundImage = `url('${PATH_BUTT}')`;
-                
-                // Перемещаем в случайный угол и задаем новый разворот
                 moveAndOrient(el);
-         }
-         });
+            }
+        });
     });
 })();
-
 </script>
+<!-- Конец пасхалки -->
+
 
 
 
