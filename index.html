@@ -1,423 +1,177 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Красивая Галерея</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0d1117; 
-            color: #c9d1d9;
-            padding: 20px;
+<script>
+    const arts = [
+        {
+            img: "Screenshot_9.png", 
+            title: "Прототип родителей Шарптанг", 
+            authorName: "Star Harlen",
+            authorUrl: "https://google.com", 
+            desc: "30.03.2026, 02:14"
+        },
+        {
+            img: "Screenshot_10.png", 
+            title: "Прототип родителей Прауда", 
+            authorName: "Star Harlen",
+            authorUrl: "https://google.com", 
+            desc: "30.03.2026, 01:17"
+        },
+        {
+            img: "Screenshot_10.png", 
+            title: "Набросок дизайна матери Мунстрайк", 
+            authorName: "Star Harlen",
+            authorUrl: "https://google.com", 
+            desc: "30.03.2026, 00:25"
+        },
+        {
+            img: "Screenshot_10.png", 
+            title: "Прототип родителей Прауда", 
+            authorName: "Star Harlen",
+            authorUrl: "https://google.com", 
+            desc: "30.03.2026, 01:17"
+        },
+        {
+            img: "Screenshot_10.png", 
+            title: "Прототип родителей Прауда", 
+            authorName: "Star Harlen",
+            authorUrl: "https://google.com", 
+            desc: "30.03.2026, 01:17"
         }
-        /* Стили для контейнера управления */
-        .controls-container {
-            max-width: 1200px;
-            margin: 0 auto 25px auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-        .search-input {
-            width: 100%;
-            max-width: 500px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #f0f6fc;
-            outline: none;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .search-input:focus {
-            border-color: #58a6ff;
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
-        }
-        /* Теги авторов */
-        .filter-tags {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .tag-btn {
-            background-color: #21262d;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-        }
-        .tag-btn.active, .tag-btn:hover {
-            background-color: #1f6feb;
-            border-color: #58a6ff;
-            color: #fff;
-        }
-        /* Статистика поиска */
-        .search-stats {
-            font-size: 0.9rem;
-            color: #8b949e;
-        }
-        /* Сетка */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .gallery-item {
-            position: relative;
-            background: #161b22;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #30363d;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .gallery-item.hidden {
-            display: none;
-        }
-        .gallery-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            border-color: #58a6ff;
-        }
-        .img-container {
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-            background: #0d1117;
-            cursor: pointer;
-        }
-        .img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-            user-select: none;
-            -webkit-user-drag: none;
-        }
-        .gallery-item:hover .img-container img {
-            transform: scale(1.05);
-        }
-        .item-info {
-            padding: 15px;
-        }
-        .item-info h3 {
-            margin: 0 0 4px 0;
-            font-size: 1.1rem;
-            color: #f0f6fc;
-        }
-        .author-link {
-            display: inline-block;
-            color: #58a6ff;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-        .author-link:hover {
-            text-decoration: underline;
-        }
-        .item-info p {
-            margin: 0;
-            font-size: 0.9rem;
-            color: #8b949e;
-            line-height: 1.4;
-        }
-        /* Лайтбокс */
-        .lightbox {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(10, 12, 16, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 9999;
-        }
-        .lightbox.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .lightbox-wrapper {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            max-width: 90%;
-            max-height: 75vh;
-        }
-        /* Невидимый защитный слой поверх картинки */
-        .lightbox-protect-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            cursor: default;
-        }
-        .lightbox-img {
-            max-width: 100%;
-            max-height: 75vh;
-            border-radius: 8px;
-            box-shadow: 0 0 32px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease;
-            user-select: none;
-            -webkit-user-drag: none;
-        }
-        /* Кнопки управления в Лайтбоксе */
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            color: #8b949e;
-            font-size: 35px;
-            cursor: pointer;
-            transition: color 0.2s;
-            z-index: 10;
-        }
-        .close-btn:hover { color: #fff; }
+    ];
+
+    let currentImgIndex = 0;
+    let activeAuthorFilter = 'Все';
+
+    const galleryGrid = document.getElementById('galleryGrid');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+    const searchInput = document.getElementById('searchInput');
+    const filterTags = document.getElementById('filterTags');
+    const searchStats = document.getElementById('searchStats');
+
+    // Генерируем карточки галереи
+    function initGallery() {
+        galleryGrid.innerHTML = '';
+        arts.forEach((art, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            // Записываем индекс напрямую для надежности фильтрации
+            item.dataset.index = index; 
+            item.innerHTML = `
+                <div class="img-container" onclick="openLightbox(${index})">
+                    <img src="${art.img}" alt="${art.title}" oncontextmenu="return false;" ondragstart="return false;">
+                </div>
+                <div class="item-info">
+                    <h3>${art.title}</h3>
+                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <p>${art.desc}</p>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
+        });
         
-        .nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(22, 27, 34, 0.7);
-            border: 1px solid #30363d;
-            color: #fff;
-            font-size: 24px;
-            padding: 12px 18px;
-            cursor: pointer;
-            border-radius: 50%;
-            user-select: none;
-            transition: all 0.2s;
-            z-index: 10;
-        }
-        .nav-btn:hover {
-            background: #1f6feb;
-            border-color: #58a6ff;
-        }
-        .prev-btn { left: -80px; }
-        .next-btn { right: -80px; }
+        // Создаем кнопки фильтрации
+        const authors = ['Все', ...new Set(arts.map(art => art.authorName))];
+        filterTags.innerHTML = '';
+        authors.forEach(author => {
+            const btn = document.createElement('button');
+            btn.className = `tag-btn ${author === activeAuthorFilter ? 'active' : ''}`;
+            btn.textContent = author;
+            btn.onclick = () => filterByAuthor(author);
+            filterTags.appendChild(btn);
+        });
+        updateStats(arts.length);
+    }
 
-        .lightbox-caption {
-            margin-top: 15px;
-            text-align: center;
-            max-width: 80%;
-            z-index: 10;
-        }
-        .lightbox-caption h3 {
-            margin: 0 0 4px 0;
-            color: #fff;
-            font-size: 1.3rem;
-        }
-        .lightbox-caption a {
-            color: #58a6ff;
-            text-decoration: none;
-        }
-        .lightbox-caption p {
-            margin: 5px 0 0 0;
-            color: #8b949e;
-        }
+    // Исправленная логика фильтрации (работает стабильно)
+    function filterArts() {
+        const query = searchInput.value.toLowerCase().trim();
+        const items = galleryGrid.getElementsByClassName('gallery-item');
+        let visibleCount = 0;
 
-        @media (max-width: 768px) {
-            .nav-btn { position: static; transform: none; margin: 10px; }
-            .lightbox-wrapper { flex-direction: column; }
-            .prev-btn { order: 2; }
-            .next-btn { order: 3; }
-        }
-    </style>
-</head>
-<body oncontextmenu="return false;"> <!-- Запрет правого клика по всему сайту -->
-
-    <div class="controls-container">
-        <!-- Поле поиска -->
-        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
-        
-        <!-- Фильтры по авторам -->
-        <div class="filter-tags" id="filterTags">
-            <button class="tag-btn active" onclick="filterByAuthor('Все')">Все</button>
-        </div>
-
-        <!-- Счетчик найденного -->
-        <div class="search-stats" id="searchStats">Найдено артов: 5</div>
-    </div>
-
-    <!-- Сетка галереи -->
-    <div class="gallery-grid" id="galleryGrid"></div>
-
-    <!-- Лайтбокс -->
-    <div class="lightbox" id="lightbox" onclick="handleLightboxClick(event)">
-        <span class="close-btn" onclick="closeLightbox()">&times;</span>
-        
-        <div class="lightbox-wrapper">
-            <button class="nav-btn prev-btn" onclick="changeImage(-1)">&#10094;</button>
+        Array.from(items).forEach(item => {
+            const index = parseInt(item.dataset.index);
+            const art = arts[index];
             
-            <!-- Картинка + защитный слой над ней -->
-            <div style="position: relative;">
-                <div class="lightbox-protect-overlay"></div>
-                <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр" oncontextmenu="return false;" ondragstart="return false;">
-            </div>
-            
-            <button class="nav-btn next-btn" onclick="changeImage(1)">&#10095;</button>
-        </div>
+            const matchesSearch = art.title.toLowerCase().includes(query) || 
+                                  art.authorName.toLowerCase().includes(query) || 
+                                  art.desc.toLowerCase().includes(query);
+                                  
+            const matchesAuthor = activeAuthorFilter === 'Все' || art.authorName === activeAuthorFilter;
 
-        <div class="lightbox-caption" id="lightboxCaption"></div>
-    </div>
+            if (matchesSearch && matchesAuthor) {
+                item.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden');
+            }
+        });
 
-    <script>
-        const arts = [
-            {
-                img: "Screenshot_9.png", 
-                title: "Прототип родителей Шарптанг", 
-                authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 02:14"
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 01:17"
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Набросок дизайна матери Мунстрайк", 
-                authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
-                desc: "30.03.2026, 00:25"
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
+        updateStats(visibleCount);
+    }
 
-authorUrl: "google.com",
-desc: "30.03.2026, 01:17"
-},
-{
-img: "Screenshot_10.png",
-title: "Прототип родителей Прауда",
-authorName: "Star Harlen",
-authorUrl: "google.com",
-desc: "30.03.2026, 01:17"
-}
-];
-let currentImgIndex = 0;
-let activeAuthorFilter = 'Все';
-const galleryGrid = document.getElementById('galleryGrid');
-const lightbox = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightboxImg');
-const lightboxCaption = document.getElementById('lightboxCaption');
-const searchInput = document.getElementById('searchInput');
-const filterTags = document.getElementById('filterTags');
-const searchStats = document.getElementById('searchStats');
-// Генерируем карточки галереи
-function initGallery() {
-galleryGrid.innerHTML = '';
-arts.forEach((art, index) => {
-const item = document.createElement('div');
-item.className = 'gallery-item';
-item.setAttribute('data-index', index);
-item.innerHTML = <div class="img-container" onclick="openLightbox(${index})"> <img src="${art.img}" alt="${art.title}" oncontextmenu="return false;" ondragstart="return false;"> </div> <div class="item-info"> <h3>${art.title}</h3> <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a> <p>${art.desc}</p> </div>;
-galleryGrid.appendChild(item);
-});
-// Создаем кнопки фильтрации
-const authors = ['Все', ...new Set(arts.map(art => art.authorName))];
-filterTags.innerHTML = '';
-authors.forEach(author => {
-const btn = document.createElement('button');
-btn.className = tag-btn ${author === activeAuthorFilter ? 'active' : ''};
-btn.textContent = author;
-btn.onclick = () => filterByAuthor(author);
-filterTags.appendChild(btn);
-});
-updateStats();
-}
-// Логика фильтрации
-function filterArts() {
-const query = searchInput.value.toLowerCase();
-const items = galleryGrid.getElementsByClassName('gallery-item');
-let visibleCount = 0;
-Array.from(items).forEach(item => {
-const index = item.getAttribute('data-index');
-const art = arts[index];
-const matchesSearch = art.title.toLowerCase().includes(query) ||
-art.authorName.toLowerCase().includes(query) ||
-art.desc.toLowerCase().includes(query);
-const matchesAuthor = activeAuthorFilter === 'Все' || art.authorName === activeAuthorFilter;
-if (matchesSearch && matchesAuthor) {
-item.classList.remove('hidden');
-visibleCount++;
-} else {
-item.classList.add('hidden');
-}
-});
-updateStats(visibleCount);
-}
-function filterByAuthor(author) {
-activeAuthorFilter = author;
-document.querySelectorAll('.tag-btn').forEach(btn => {
-btn.classList.toggle('active', btn.textContent === author);
-});
-filterArts();
-}
-function updateStats(count = arts.length) {
-searchStats.textContent = Найдено артов: ${count};
-}
-// Управление Лайтбоксом
-function openLightbox(index) {
-currentImgIndex = index;
-const art = arts[index];
-lightboxImg.src = art.img;
-lightboxCaption.innerHTML = <h3>${art.title}</h3> <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a> <p>${art.desc}</p>;
-lightbox.classList.add('active');
-}
-function closeLightbox() {
-lightbox.classList.remove('active');
-}
-function handleLightboxClick(event) {
-// Закрывать только при клике на внешнюю область фона или на защитный оверлей
-if (event.target === lightbox || event.target.classList.contains('lightbox-protect-overlay')) {
-closeLightbox();
-}
-}
-function changeImage(direction) {
-const visibleItems = Array.from(galleryGrid.getElementsByClassName('gallery-item'))
-.filter(item => !item.classList.contains('hidden'));
-if (visibleItems.length === 0) return;
-let currentVisibleIndex = visibleItems.findIndex(item => parseInt(item.getAttribute('data-index')) === currentImgIndex);
-currentVisibleIndex = (currentVisibleIndex + direction + visibleItems.length) % visibleItems.length;
-const nextRealIndex = parseInt(visibleItems[currentVisibleIndex].getAttribute('data-index'));
-lightboxImg.style.transform = 'scale(0.95)';
-setTimeout(() => {
-openLightbox(nextRealIndex);
-lightboxImg.style.transform = 'scale(1)';
-}, 100);
-}
-// Слушатели
-searchInput.addEventListener('input', filterArts);
-document.addEventListener('keydown', (e) => {
-if (!lightbox.classList.contains('active')) return;
-if (e.key === 'Escape') closeLightbox();
-if (e.key === 'ArrowLeft') changeImage(-1);
-if (e.key === 'ArrowRight') changeImage(1);
-});
-initGallery();
+    function filterByAuthor(author) {
+        activeAuthorFilter = author;
+        document.querySelectorAll('.tag-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.textContent === author);
+        });
+        filterArts();
+    }
 
+    function updateStats(count) {
+        searchStats.textContent = `Найдено артов: ${count}`;
+    }
+
+    // Управление Лайтбоксом
+    function openLightbox(index) {
+        currentImgIndex = index;
+        const art = arts[index];
+        
+        lightboxImg.src = art.img;
+        lightboxCaption.innerHTML = `
+            <h3>${art.title}</h3>
+            <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+            <p>${art.desc}</p>
+        `;
+        lightbox.classList.add('active');
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+    }
+
+    function handleLightboxClick(event) {
+        if (event.target === lightbox || event.target.classList.contains('lightbox-protect-overlay')) {
+            closeLightbox();
+        }
+    }
+
+    function changeImage(direction) {
+        const visibleItems = Array.from(galleryGrid.getElementsByClassName('gallery-item'))
+                                  .filter(item => !item.classList.contains('hidden'));
+        
+        if (visibleItems.length === 0) return;
+
+        let currentVisibleIndex = visibleItems.findIndex(item => parseInt(item.dataset.index) === currentImgIndex);
+        currentVisibleIndex = (currentVisibleIndex + direction + visibleItems.length) % visibleItems.length;
+        const nextRealIndex = parseInt(visibleItems[currentVisibleIndex].dataset.index);
+        
+        lightboxImg.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            openLightbox(nextRealIndex);
+            lightboxImg.style.transform = 'scale(1)';
+        }, 100);
+    }
+
+    // Слушатели событий
+    searchInput.addEventListener('input', filterArts);
+
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') changeImage(-1);
+        if (e.key === 'ArrowRight') changeImage(1);
+    });
+
+    // Запуск
+    initGallery();
+</script>
