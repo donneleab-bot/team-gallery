@@ -158,6 +158,104 @@
 </head>
 <body>
 
+    <!-- Начало пасхалки -->
+<script>
+(function() {
+    // 1. НАСТРОЙКА: Укажите точные имена ваших файлов (они видны у вас слева в репозитории)
+    const PATH_BUTT = 'PERO1.png';  // Кадр 1: Только попа
+    const PATH_FACE = 'PERO2.png'; // Кадр 2: Обернулся (переименуйте, если имя другое)
+
+    let currentState = 0; 
+
+    // Стили пасхалки
+    const styles = `
+        #secret-butt {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: -1;
+            cursor: pointer;
+            user-select: none;
+            transition: background-image 0.1s ease, transform 0.1s ease, left 0.2s ease, top 0.2s ease;
+        }
+        .shaking-egg {
+            animation: shakeEggAnim 0.15s ease-in-out infinite;
+        }
+        @keyframes shakeEggAnim {
+            0% { transform: scaleX(var(--sx, 1)) translateX(0); }
+            25% { transform: scaleX(var(--sx, 1)) translateX(-8px); }
+            75% { transform: scaleX(var(--sx, 1)) translateX(8px); }
+            100% { transform: scaleX(var(--sx, 1)) translateX(0); }
+        }
+    `;
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+
+    function moveAndOrient(el) {
+        // Ищем любые карточки/блоки на странице автоматическим селектором
+        const cards = document.querySelectorAll('div[class*="card"], div[class*="item"], div[class*="block"], .gallery div');
+        if (cards.length === 0) {
+            const x = Math.floor(Math.random() * (window.innerWidth - 250));
+            const y = Math.floor(Math.random() * (window.innerHeight - 250));
+            el.style.position = 'fixed';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            return;
+        }
+
+        const randomCard = cards[Math.floor(Math.random() * cards.length)];
+        const cardRect = randomCard.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+        const cardTop = cardRect.top + scrollTop;
+        const cardLeft = cardRect.left + scrollLeft;
+        const side = Math.random() < 0.5 ? 0 : 1;
+        const targetY = cardTop + (cardRect.height / 2) - 125; 
+
+        if (side === 0) {
+            el.style.left = (cardLeft - 250 + 15) + 'px';
+            el.style.top = targetY + 'px';
+            el.style.transform = 'scaleX(-1)';
+            el.style.setProperty('--sx', '-1');
+        } else {
+            el.style.left = (cardLeft + cardRect.width - 15) + 'px';
+            el.style.top = targetY + 'px';
+            el.style.transform = 'scaleX(1)';
+            el.style.setProperty('--sx', '1');
+        }
+    }
+
+    window.addEventListener('load', () => {
+        const el = document.createElement('div');
+        el.id = 'secret-butt';
+        el.style.backgroundImage = `url('${PATH_BUTT}')`;
+        document.body.appendChild(el);
+
+        setTimeout(() => moveAndOrient(el), 300);
+
+        el.addEventListener('click', () => {
+            el.classList.add('shaking-egg');
+            setTimeout(() => el.classList.remove('shaking-egg'), 300);
+
+            if (currentState === 0) {
+                currentState = 1;
+                el.style.backgroundImage = `url('${PATH_FACE}')`;
+            } else {
+                currentState = 0;
+                el.style.backgroundImage = `url('${PATH_BUTT}')`;
+                moveAndOrient(el);
+            }
+        });
+    });
+})();
+</script>
+<!-- Конец пасхалки -->
+
+
     <!-- Поле поиска -->
     <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
