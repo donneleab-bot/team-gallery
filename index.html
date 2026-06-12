@@ -234,40 +234,4 @@
         });
 
         // Логика фильтрации при вводе в поиск
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const items = galleryGrid.getElementsByClassName('gallery-item');
-
-            arts.forEach((art, index) => {
-                const matchTitle = art.title.toLowerCase().includes(query);
-                const matchAuthor = art.authorName.toLowerCase().includes(query);
-                const matchDesc = art.desc.toLowerCase().includes(query);
-
-                if (matchTitle || matchAuthor || matchDesc) {
-                    items[index].classList.remove('hidden');
-                } else {
-                    items[index].classList.add('hidden');
-                }
-            });
-        });
-
-        function openLightbox(index) {
-            const art = arts[index];
-            lightboxImg.src = art.img;
-            lightboxCaption.innerHTML = `
-                <h3>${art.title}</h3>
-                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
-                <p>${art.desc}</p>
-            `;
-            lightbox.classList.add('active');
-        }
-
-        function closeLightbox(event) {
-            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
-                lightbox.classList.remove('active');
-            }
-        }
-    </script>
-</body>
-</html>
-
+        searchInput.addEvent"
