@@ -227,28 +227,48 @@
             el.style.transform = 'scaleX(1)';
             el.style.setProperty('--sx', '1');
         }
+        function moveAndOrient(el) {
+        // Ищем карточки
+        const cards = document.querySelectorAll('div[class*="card"], div[class*="item"], div[class*="block"], .gallery div');
+        if (cards.length === 0) {
+            const x = Math.floor(Math.random() * (window.innerWidth - 250));
+            const y = Math.floor(Math.random() * (window.innerHeight - 250));
+            el.style.position = 'fixed';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            return;
+        }
+
+        const randomCard = cards[Math.floor(Math.random() * cards.length)];
+        
+        // ВАЖНО: Принудительно даем карточке контекст наложения, чтобы лев ушел НАЗАД
+        randomCard.style.position = 'relative';
+        randomCard.style.zIndex = '1';
+
+        const cardRect = randomCard.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+        const cardTop = cardRect.top + scrollTop;
+        const cardLeft = cardRect.left + scrollLeft;
+        const side = Math.random() < 0.5 ? 0 : 1;
+        const targetY = cardTop + (cardRect.height / 2) - 125; 
+
+        if (side === 0) {
+            // ЛЕВЫЙ КРАЙ: Прячем сильнее внутрь карточки (сдвиг +80px вместо +15px)
+            el.style.left = (cardLeft - 250 + 80) + 'px';
+            el.style.top = targetY + 'px';
+            el.style.transform = 'scaleX(-1)';
+            el.style.setProperty('--sx', '-1');
+        } else {
+            // ПРАВЫЙ КРАЙ: Прячем сильнее внутрь карточки (сдвиг -80px вместо -15px)
+            el.style.left = (cardLeft + cardRect.width - 80) + 'px';
+            el.style.top = targetY + 'px';
+            el.style.transform = 'scaleX(1)';
+            el.style.setProperty('--sx', '1');
+        }
     }
 
-    window.addEventListener('load', () => {
-        const el = document.createElement('div');
-        el.id = 'secret-butt';
-        el.style.backgroundImage = `url('${PATH_BUTT}')`;
-        document.body.appendChild(el);
-
-        setTimeout(() => moveAndOrient(el), 300);
-
-        el.addEventListener('click', () => {
-            el.classList.add('shaking-egg');
-            setTimeout(() => el.classList.remove('shaking-egg'), 300);
-
-            if (currentState === 0) {
-                currentState = 1;
-                el.style.backgroundImage = `url('${PATH_FACE}')`;
-            } else {
-                currentState = 0;
-                el.style.backgroundImage = `url('${PATH_BUTT}')`;
-                moveAndOrient(el);
-            }
         });
     });
 })();
