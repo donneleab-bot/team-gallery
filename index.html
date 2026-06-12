@@ -168,8 +168,9 @@
     // НАСТРОЙКА НАПРАВЛЕНИЯ: если картинка смотрит не туда,
     // просто поменяйте 'normal' на 'flip' или наоборот!
     // =======================================================
-    const ROTATE_BUTT = 'normal';    // Направление ПОПЫ ('normal' или 'flip')
-    const ROTATE_FACE = 'flip';  // Направление ЛИЦА ('normal' или 'flip')
+const ROTATE_BUTT = 'flip'; // Изменили 'normal' на 'flip'
+const ROTATE_FACE = 'flip'; // Оставляем 'flip', раз голова работает отлично
+
     // =======================================================
 
     let currentState = 0; 
@@ -210,8 +211,9 @@
         const randomY = Math.floor(Math.random() * 60) + 15;
 
         // Исходные базовые развороты для левой стороны
-        let sx = (ROTATE_BUTT === 'flip') ? 1 : -1;
-        let fx = (ROTATE_FACE === 'flip') ? 1 : -1;
+        let sx = (ROTATE_BUTT === 'normal') ? 1 : -1;
+        let fx = (ROTATE_FACE === 'normal') ? 1 : -1;
+
 
         if (side === 0) {
             // ЛЕВЫЙ КРАЙ
