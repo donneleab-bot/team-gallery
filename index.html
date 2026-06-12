@@ -158,9 +158,10 @@
 </head>
 <body>
 
-  <!-- Начало пасхалки -->
+ <!-- Начало пасхалки -->
 <script>
 (function() {
+    // Названия ваших картинок
     const PATH_BUTT = 'PER01.png';  
     const PATH_FACE = 'PER02.png';  
 
@@ -169,24 +170,24 @@
     // Стили пасхалки
     const styles = `
         #secret-butt {
-            position: fixed; /* Прижимаем намертво к экрану */
-            width: 250px;
-            height: 250px;
+            position: fixed; /* Намертво прижимает к экрану, не двигается при скролле */
+            width: 200px;    /* Немного уменьшили для мобильных устройств */
+            height: 200px;
             background-size: contain;
             background-repeat: no-repeat;
-            z-index: 999; /* Выводим ПОВЕРХ всего, раз таблички виртуальные */
+            z-index: 99999;  /* Поверх всех элементов сайта */
             cursor: pointer;
             user-select: none;
-            transition: background-image 0.1s ease, transform 0.1s ease, left 0.2s ease, right 0.2s ease, top 0.2s ease, bottom 0.2s ease;
+            transition: background-image 0.1s ease, transform 0.1s ease;
         }
         .shaking-egg {
             animation: shakeEggAnim 0.15s ease-in-out infinite;
         }
         @keyframes shakeEggAnim {
-            0% { transform: scaleX(var(--sx, 1)) scaleY(var(--sy, 1)) translateX(0); }
-            25% { transform: scaleX(var(--sx, 1)) scaleY(var(--sy, 1)) translateX(-8px); }
-            75% { transform: scaleX(var(--sx, 1)) scaleY(var(--sy, 1)) translateX(8px); }
-            100% { transform: scaleX(var(--sx, 1)) scaleY(var(--sy, 1)) translateX(0); }
+            0% { transform: scaleX(var(--sx, 1)) translateX(0); }
+            25% { transform: scaleX(var(--sx, 1)) translateX(-8px); }
+            75% { transform: scaleX(var(--sx, 1)) translateX(8px); }
+            100% { transform: scaleX(var(--sx, 1)) translateX(0); }
         }
     `;
     const styleSheet = document.createElement("style");
@@ -194,52 +195,41 @@
     document.head.appendChild(styleSheet);
 
     function moveAndOrient(el) {
-        // Очищаем прошлые координаты перед новым прыжком
+        // Сбрасываем старые стили перед перемещением
         el.style.left = 'auto';
         el.style.right = 'auto';
         el.style.top = 'auto';
         el.style.bottom = 'auto';
 
-        // Выбираем один из 4-х углов экрана: 0 - левый верхний, 1 - правый верхний, 2 - левый нижний, 3 - правый нижний
-        const corner = Math.floor(Math.random() * 4);
+        // Выбираем сторону экрана: 0 — левый край, 1 — правый край (ваши красные линии)
+        const side = Math.random() < 0.5 ? 0 : 1;
         
-        // Смещение, чтобы по красной линии прятать половину тела за пределы экрана
+        // Прячем ровно половину тела за экран (-100px при ширине 200px)
         const hideOffset = '-100px'; 
-        // Случайный сдвиг от угла, чтобы он не сидел строго в вершине
-        const randomShift = Math.floor(Math.random() * 100) + 'px';
+        
+        // Случайная высота появления (от 15% до 75% высоты экрана, чтобы не улетал слишком низко)
+        const randomY = Math.floor(Math.random() * 60) + 15;
 
-        let sx = 1; // Поворот по горизонтали
-        let sy = 1; // Поворот по вертикали
+        let sx = 1; // Переменная для разворота лица
 
-        switch(corner) {
-            case 0: // Левый верхний угол
-                el.style.left = hideOffset;
-                el.style.top = randomShift;
-                sx = -1; // Смотрит вправо (внутрь экрана)
-                break;
-            case 1: // Правый верхний угол
-                el.style.right = hideOffset;
-                el.style.top = randomShift;
-                sx = 1;  // Смотрит влево (внутрь экрана)
-                break;
-            case 2: // Левый нижний угол
-                el.style.left = hideOffset;
-                el.style.bottom = randomShift;
-                sx = -1; // Смотрит вправо
-                break;
-            case 3: // Правый нижний угол
-                el.style.right = hideOffset;
-                el.style.bottom = randomShift;
-                sx = 1;  // Смотрит влево
-                break;
+        if (side === 0) {
+            // ЛЕВЫЙ КРАЙ ЭКРАНА
+            el.style.left = hideOffset;
+            el.style.top = randomY + 'vh';
+            sx = -1; // Разворачиваем вправо (внутрь страницы)
+        } else {
+            // ПРАВЫЙ КРАЙ ЭКРАНА
+            el.style.right = hideOffset;
+            el.style.top = randomY + 'vh';
+            sx = 1;  // Оставляем смотреть влево (внутрь страницы)
         }
 
-        // Применяем разворот к центру экрана
-        el.style.transform = `scaleX(${sx}) scaleY(${sy})`;
+        // Применяем разворот и передаем его в анимацию тряски
+        el.style.transform = `scaleX(${sx})`;
         el.style.setProperty('--sx', sx);
-        el.style.setProperty('--sy', sy);
     }
 
+    // Инициализация при полной загрузке страницы
     window.addEventListener('load', () => {
         const el = document.createElement('div');
         el.id = 'secret-butt';
@@ -248,14 +238,18 @@
 
         moveAndOrient(el);
 
+        // Обработка кликов
         el.addEventListener('click', () => {
+            // Включаем тряску
             el.classList.add('shaking-egg');
             setTimeout(() => el.classList.remove('shaking-egg'), 300);
 
             if (currentState === 0) {
+                // Клик 1: Оборачивается лицом
                 currentState = 1;
                 el.style.backgroundImage = `url('${PATH_FACE}')`;
             } else {
+                // Клик 2: Прячется обратно и меняет край экрана
                 currentState = 0;
                 el.style.backgroundImage = `url('${PATH_BUTT}')`;
                 moveAndOrient(el);
@@ -265,6 +259,7 @@
 })();
 </script>
 <!-- Конец пасхалки -->
+
 
 
 
