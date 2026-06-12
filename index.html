@@ -13,7 +13,7 @@
             padding: 20px;
         }
         
-        /* Стили для строки поиска */
+        /* Стили строки поиска */
         .search-container {
             max-width: 1200px;
             margin: 0 auto 25px auto;
@@ -53,6 +53,8 @@
         .search-clear:hover {
             background: #30363d;
         }
+        
+        /* Класс для скрытия неподходящих карточек */
         .gallery-item.hidden {
             display: none !important;
         }
@@ -119,6 +121,7 @@
             color: #8b949e;
             line-height: 1.4;
         }
+        
         .lightbox {
             position: fixed;
             top: 0;
@@ -176,7 +179,7 @@
 </head>
 <body>
 
-    <!-- СТРОКА ПОИСКА -->
+    <!-- ПОЛЕ ПОИСКА -->
     <div class="search-container">
         <input 
             type="text" 
@@ -242,27 +245,24 @@
         const searchInput = document.getElementById('searchInput');
         const clearSearch = document.getElementById('clearSearch');
 
-        // Функция рендеринга карточек
-        function initGallery() {
-            galleryGrid.innerHTML = '';
-            arts.forEach((art, index) => {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                item.innerHTML = `
-                    <div class="img-container" onclick="openLightbox(${index})">
-                        <img src="${art.img}" alt="${art.title}">
-                    </div>
-                    <div class="item-info">
-                        <h3>${art.title}</h3>
-                        <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                        <p>${art.desc}</p>
-                    </div>
-                `;
-                galleryGrid.appendChild(item);
-            });
-        }
+        // Прямой вывод карточек (в точности как у вас изначально)
+        arts.forEach((art, index) => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            item.innerHTML = `
+                <div class="img-container" onclick="openLightbox(${index})">
+                    <img src="${art.img}" alt="${art.title}">
+                </div>
+                <div class="item-info">
+                    <h3>${art.title}</h3>
+                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <p>${art.desc}</p>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
+        });
 
-        // Функция фильтрации для поиска
+        // Функция фильтрации
         function filterGallery() {
             const query = searchInput.value.toLowerCase().trim();
             const items = galleryGrid.getElementsByClassName('gallery-item');
@@ -280,19 +280,19 @@
             });
         }
 
-        // Слушатели событий
+        // Обработчики событий поиска
         searchInput.addEventListener('input', filterGallery);
         
         clearSearch.addEventListener('click', () => {
-            searchInput.value = ''; // Очищаем поле ввода
-            filterGallery();        // Возвращаем все карточки на место
+            searchInput.value = ''; // Стирает текст из инпута
+            filterGallery();        // Отображает все карточки обратно
         });
 
         function openLightbox(index) {
+
 const art = arts[index];
 lightboxImg.src = art.img;
-lightboxCaption.innerHTML = <h3>${art.title}</h3> <a href="${art.authorUrl}"
-target="_blank">Автор: ${art.authorName}</a> <p>${art.desc}</p>;
+lightboxCaption.innerHTML = <h3>${art.title}</h3> <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a> <p>${art.desc}</p>;
 lightbox.classList.add('active');
 }
 function closeLightbox(event) {
@@ -300,4 +300,3 @@ if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
 lightbox.classList.remove('active');
 }
 }
-        // Запуск генерации при загрузке страницыinitGallery();
