@@ -205,17 +205,18 @@
         let sx = 1; 
         let fx = 1;
 
-        if (side === 0) {
+               if (side === 0) {
             el.style.left = hideOffset;
             el.style.top = randomY + 'vh';
-            sx = -1; 
-            fx = 1;  
+            sx = 1; 
+            fx = -1; 
         } else {
             el.style.right = hideOffset;
             el.style.top = randomY + 'vh';
-            sx = 1;   
-            fx = -1;  
+            sx = -1;  
+            fx = 1;  
         }
+
 
         el.dataset.sx = sx;
         el.dataset.fx = fx;
