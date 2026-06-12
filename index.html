@@ -158,35 +158,35 @@
 </head>
 <body>
 
-   <!-- Начало пасхалки -->
+  <!-- Начало пасхалки -->
 <script>
 (function() {
     const PATH_BUTT = 'PER01.png';  
     const PATH_FACE = 'PER02.png';  
-    const CARD_SELECTOR = '.gallery-item'; 
 
     let currentState = 0; 
 
+    // Стили пасхалки
     const styles = `
         #secret-butt {
-            position: absolute;
+            position: fixed; /* Прижимаем намертво к экрану */
             width: 250px;
             height: 250px;
             background-size: contain;
             background-repeat: no-repeat;
-            z-index: -1;
+            z-index: 999; /* Выводим ПОВЕРХ всего, раз таблички виртуальные */
             cursor: pointer;
             user-select: none;
-            transition: background-image 0.1s ease, transform 0.1s ease, left 0.2s ease, top 0.2s ease;
+            transition: background-image 0.1s ease, transform 0.1s ease, left 0.2s ease, right 0.2s ease, top 0.2s ease, bottom 0.2s ease;
         }
         .shaking-egg {
             animation: shakeEggAnim 0.15s ease-in-out infinite;
         }
         @keyframes shakeEggAnim {
-            0% { transform: scaleX(var(--sx, 1)) translateX(0); }
-            25% { transform: scaleX(var(--sx, 1)) translateX(-8px); }
-            75% { transform: scaleX(var(--sx, 1)) translateX(8px); }
-            100% { transform: scaleX(var(--sx, 1)) translateX(0); }
+            0% { transform: scaleX(var(--sx, 1)) scaleY(var(--sy, 1)) translateX(0); }
+            25% { transform: scaleX(var(--sx, 1)) scaleY(var(--sy, 1)) translateX(-8px); }
+            75% { transform: scaleX(var(--sx, 1)) scaleY(var(--sy, 1)) translateX(8px); }
+            100% { transform: scaleX(var(--sx, 1)) scaleY(var(--sy, 1)) translateX(0); }
         }
     `;
     const styleSheet = document.createElement("style");
@@ -194,41 +194,50 @@
     document.head.appendChild(styleSheet);
 
     function moveAndOrient(el) {
-        const cards = document.querySelectorAll(CARD_SELECTOR);
-        if (cards.length === 0) {
-            const x = Math.floor(Math.random() * (window.innerWidth - 250));
-            const y = Math.floor(Math.random() * (window.innerHeight - 250));
-            el.style.position = 'fixed';
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            return;
-        }
+        // Очищаем прошлые координаты перед новым прыжком
+        el.style.left = 'auto';
+        el.style.right = 'auto';
+        el.style.top = 'auto';
+        el.style.bottom = 'auto';
 
-        const randomCard = cards[Math.floor(Math.random() * cards.length)];
+        // Выбираем один из 4-х углов экрана: 0 - левый верхний, 1 - правый верхний, 2 - левый нижний, 3 - правый нижний
+        const corner = Math.floor(Math.random() * 4);
         
-        randomCard.style.position = 'relative';
-        randomCard.style.zIndex = '1';
+        // Смещение, чтобы по красной линии прятать половину тела за пределы экрана
+        const hideOffset = '-100px'; 
+        // Случайный сдвиг от угла, чтобы он не сидел строго в вершине
+        const randomShift = Math.floor(Math.random() * 100) + 'px';
 
-        const cardRect = randomCard.getBoundingClientRect();
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+        let sx = 1; // Поворот по горизонтали
+        let sy = 1; // Поворот по вертикали
 
-        const cardTop = cardRect.top + scrollTop;
-        const cardLeft = cardRect.left + scrollLeft;
-        const side = Math.random() < 0.5 ? 0 : 1;
-        const targetY = cardTop + (cardRect.height / 2) - 125; 
-
-        if (side === 0) {
-            el.style.left = (cardLeft - 250 + 80) + 'px';
-            el.style.top = targetY + 'px';
-            el.style.transform = 'scaleX(-1)';
-            el.style.setProperty('--sx', '-1');
-        } else {
-            el.style.left = (cardLeft + cardRect.width - 80) + 'px';
-            el.style.top = targetY + 'px';
-            el.style.transform = 'scaleX(1)';
-            el.style.setProperty('--sx', '1');
+        switch(corner) {
+            case 0: // Левый верхний угол
+                el.style.left = hideOffset;
+                el.style.top = randomShift;
+                sx = -1; // Смотрит вправо (внутрь экрана)
+                break;
+            case 1: // Правый верхний угол
+                el.style.right = hideOffset;
+                el.style.top = randomShift;
+                sx = 1;  // Смотрит влево (внутрь экрана)
+                break;
+            case 2: // Левый нижний угол
+                el.style.left = hideOffset;
+                el.style.bottom = randomShift;
+                sx = -1; // Смотрит вправо
+                break;
+            case 3: // Правый нижний угол
+                el.style.right = hideOffset;
+                el.style.bottom = randomShift;
+                sx = 1;  // Смотрит влево
+                break;
         }
+
+        // Применяем разворот к центру экрана
+        el.style.transform = `scaleX(${sx}) scaleY(${sy})`;
+        el.style.setProperty('--sx', sx);
+        el.style.setProperty('--sy', sy);
     }
 
     window.addEventListener('load', () => {
@@ -237,7 +246,7 @@
         el.style.backgroundImage = `url('${PATH_BUTT}')`;
         document.body.appendChild(el);
 
-        setTimeout(() => moveAndOrient(el), 400);
+        moveAndOrient(el);
 
         el.addEventListener('click', () => {
             el.classList.add('shaking-egg');
@@ -256,6 +265,7 @@
 })();
 </script>
 <!-- Конец пасхалки -->
+
 
 
     <!-- Поле поиска -->
