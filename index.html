@@ -195,72 +195,89 @@ const PATH_FACE = 'PERO2.png';
     styleSheet.innerText = styles;
     document.head.appendChild(styleSheet);
 
-    function moveAndOrient(el) {
+        function moveAndOrient(el) {
         // Сбрасываем старые стили перед перемещением
         el.style.left = 'auto';
         el.style.right = 'auto';
         el.style.top = 'auto';
         el.style.bottom = 'auto';
 
-        // Выбираем сторону экрана: 0 — левый край, 1 — правый край (ваши красные линии)
+        // Выбираем сторону экрана: 0 — левый край, 1 — правый край
         const side = Math.random() < 0.5 ? 0 : 1;
         
-        // Прячем ровно половину тела за экран (-100px при ширине 200px)
+        // Прячем половину тела за экран
         const hideOffset = '-100px'; 
         
-        // Случайная высота появления (от 15% до 75% высоты экрана, чтобы не улетал слишком низко)
+        // Случайная высота появления
         const randomY = Math.floor(Math.random() * 60) + 15;
 
-        let sx = 1; // Переменная для разворота лица
+        // Переменные разворота: sx — для попы, fx — для лица
+        let sx = 1; 
+        let fx = 1;
 
-                if (side === 0) {
+        if (side === 0) {
             // ЛЕВЫЙ КРАЙ ЭКРАНА
             el.style.left = hideOffset;
             el.style.top = randomY + 'vh';
-            sx = 1; // МЕНЯЕМ НА 1 (теперь он будет смотреть внутрь экрана)
+            sx = -1; // Попа хвостом внутрь экрана
+            fx = 1;  // Лицо смотрит внутрь экрана
         } else {
             // ПРАВЫЙ КРАЙ ЭКРАНА
             el.style.right = hideOffset;
             el.style.top = randomY + 'vh';
-            sx = -1;  // МЕНЯЕМ НА -1 (теперь он будет смотреть внутрь экрана)
+            sx = 1;   // Попа хвостом внутрь экрана
+            fx = -1;  // Лицо смотрит внутрь экрана
         }
 
+        // Запоминаем оба разворота прямо в элементе, чтобы использовать при клике
+        el.dataset.sx = sx;
+        el.dataset.fx = fx;
 
-        // Применяем разворот и передаем его в анимацию тряски
+        // По умолчанию ставим разворот для попы
         el.style.transform = `scaleX(${sx})`;
         el.style.setProperty('--sx', sx);
     }
 
-    // Инициализация при полной загрузке страницы
-    window.addEventListener('load', () => {
-        const el = document.createElement('div');
-        el.id = 'secret-butt';
-        el.style.backgroundImage = `url('${PATH_BUTT}')`;
-        document.body.appendChild(el);
-
-        moveAndOrient(el);
-
-        // Обработка кликов
-        el.addEventListener('click', () => {
+           el.addEventListener('click', () => {
             // Включаем тряску
             el.classList.add('shaking-egg');
             setTimeout(() => el.classList.remove('shaking-egg'), 300);
 
+            // Получаем направления разворота для текущего края экрана
+            const sx = el.dataset.sx;
+            const fx = el.dataset.fx;
+
             if (currentState === 0) {
-                // Клик 1: Оборачивается лицом
+                // КЛИК ПО ПОПЕ -> Персонаж оборачивается
                 currentState = 1;
+                
+                // Сначала полностью убираем старую картинку попы
+                el.style.backgroundImage = 'none'; 
+                
+                // Ставим разворот для лица и саму картинку с лицом
+                el.style.transform = `scaleX(${fx})`;
+                el.style.setProperty('--sx', fx);
                 el.style.backgroundImage = `url('${PATH_FACE}')`;
             } else {
-                // Клик 2: Прячется обратно и меняет край экрана
+                // КЛИК ПО ЛИЦУ -> Персонаж пугается и убегает в другое место
                 currentState = 0;
+                
+                // Полностью очищаем фон лица перед прыжком
+                el.style.backgroundImage = 'none'; 
+                
+                // Возвращаем исходную картинку попы
                 el.style.backgroundImage = `url('${PATH_BUTT}')`;
+                
+                // Перемещаем в случайный угол и задаем новый разворот
                 moveAndOrient(el);
-            }
-        });
+         }
+         });
     });
 })();
+
 </script>
-<!-- Конец пасхалки -->
+
+
 
 
 
