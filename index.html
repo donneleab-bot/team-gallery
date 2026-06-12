@@ -164,19 +164,27 @@
     const PATH_BUTT = 'PERO1.png';  
     const PATH_FACE = 'PERO2.png';  
 
+    // =======================================================
+    // НАСТРОЙКА НАПРАВЛЕНИЯ: если картинка смотрит не туда,
+    // просто поменяйте 'normal' на 'flip' или наоборот!
+    // =======================================================
+    const ROTATE_BUTT = 'flip';    // Направление ПОПЫ ('normal' или 'flip')
+    const ROTATE_FACE = 'normal';  // Направление ЛИЦА ('normal' или 'flip')
+    // =======================================================
+
     let currentState = 0; 
 
     const styles = `
         #secret-butt {
             position: fixed;
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 250px;
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 99999;
             cursor: pointer;
             user-select: none;
-            transition: background-image 0.1s ease, transform 0.1s ease;
+            transition: background-image 0.1s ease, transform 0.1s ease, left 0.2s ease, right 0.2s ease;
         }
         .shaking-egg {
             animation: shakeEggAnim 0.15s ease-in-out infinite;
@@ -198,29 +206,32 @@
         el.style.top = 'auto';
         el.style.bottom = 'auto';
 
-        const side = Math.random() < 0.5 ? 0 : 1;
-        const hideOffset = '-100px'; 
+        const side = Math.random() < 0.5 ? 0 : 1; // 0 - лево, 1 - право
         const randomY = Math.floor(Math.random() * 60) + 15;
 
-        let sx = 1; 
-        let fx = 1;
+        // Исходные базовые развороты для левой стороны
+        let sx = (ROTATE_BUTT === 'normal') ? 1 : -1;
+        let fx = (ROTATE_FACE === 'normal') ? 1 : -1;
 
-               if (side === 0) {
-            el.style.left = hideOffset;
+        if (side === 0) {
+            // ЛЕВЫЙ КРАЙ
+            el.style.left = '-120px'; // Прячем попу наполовину в стену
             el.style.top = randomY + 'vh';
-            sx = 1; 
-            fx = -1; 
         } else {
-            el.style.right = hideOffset;
+            // ПРАВЫЙ КРАЙ
+            el.style.right = '-120px'; // Прячем попу наполовину в стену
             el.style.top = randomY + 'vh';
-            sx = -1;  
-            fx = 1;  
+            // Если перешли на правую сторону — зеркалим оба состояния от исходных
+            sx = -sx;
+            fx = -fx;
         }
 
-
+        // Сохраняем значения в элемент
+        el.dataset.side = side;
         el.dataset.sx = sx;
         el.dataset.fx = fx;
 
+        // Ставим разворот для попы
         el.style.transform = `scaleX(${sx})`;
         el.style.setProperty('--sx', sx);
     }
@@ -237,14 +248,25 @@
             el.classList.add('shaking-egg');
             setTimeout(() => el.classList.remove('shaking-egg'), 300);
 
-            const sx = el.dataset.sx;
-            const fx = el.dataset.fx;
+            const side = parseInt(el.dataset.side);
+            const sx = parseFloat(el.dataset.sx);
+            const fx = parseFloat(el.dataset.fx);
 
             if (currentState === 0) {
                 currentState = 1;
                 el.style.backgroundImage = 'none'; 
+                
+                // Переключаем разворот на ЛИЦО
                 el.style.transform = `scaleX(${fx})`;
                 el.style.setProperty('--sx', fx);
+
+                // Корректируем отступ, чтобы лицо выехало из стены (с учетом пустых полей холста)
+                if (side === 0) {
+                    el.style.left = '-20px'; 
+                } else {
+                    el.style.right = '-20px';
+                }
+
                 el.style.backgroundImage = `url('${PATH_FACE}')`;
             } else {
                 currentState = 0;
@@ -257,6 +279,7 @@
 })();
 </script>
 <!-- Конец пасхалки -->
+
 
 
 
