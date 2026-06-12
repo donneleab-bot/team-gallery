@@ -176,16 +176,16 @@
             z-index: 99999;
             cursor: pointer;
             user-select: none;
-            transition: background-image 0.1s ease, transform 0.1s ease, left 0.1s ease, right 0.1s ease;
+            transition: background-image 0.1s ease, transform 0.1s ease;
         }
         .shaking-egg {
             animation: shakeEggAnim 0.15s ease-in-out infinite;
         }
         @keyframes shakeEggAnim {
-            0% { transform: translate(0, 0) scale(var(--s, 1)); }
-            25% { transform: translate(-8px, 0) scale(var(--s, 1)); }
-            75% { transform: translate(8px, 0) scale(var(--s, 1)); }
-            100% { transform: translate(0, 0) scale(var(--s, 1)); }
+            0% { transform: translate(0, 0) scaleX(var(--s, 1)); }
+            25% { transform: translate(-8px, 0) scaleX(var(--s, 1)); }
+            75% { transform: translate(8px, 0) scaleX(var(--s, 1)); }
+            100% { transform: translate(0, 0) scaleX(var(--s, 1)); }
         }
     `;
     const styleSheet = document.createElement("style");
@@ -203,15 +203,13 @@
         el.style.top = randomY + 'vh';
 
         if (side === 0) {
-            // ЛЕВЫЙ КРАЙ: прижимаем спину попы к стене
+            // ЛЕВЫЙ КРАЙ
             el.style.left = '-65px'; 
-            // Отзеркаливаем по горизонтали, чтобы спина была слева
             el.style.transform = 'scaleX(-1)';
             el.style.setProperty('--s', '-1');
         } else {
-            // ПРАВЫЙ КРАЙ: прижимаем спину попы к стене
+            // ПРАВЫЙ КРАЙ
             el.style.right = '-125px'; 
-            // Исходное положение (спина справа)
             el.style.transform = 'scaleX(1)';
             el.style.setProperty('--s', '1');
         }
@@ -238,13 +236,13 @@
                 el.style.backgroundImage = 'none'; 
                 
                 if (side === 0) {
-                    // ЛЕВАЯ ГОЛОВА: прячем в стену до глаза
-                    el.style.left = '-155px'; 
+                    // ЛЕВО: Координаты ОСТАЮТСЯ как у попы (-65px)
+                    el.style.left = '-65px'; 
                     el.style.transform = 'scaleX(-1)';
                     el.style.setProperty('--s', '-1');
                 } else {
-                    // ПРАВАЯ ГОЛОВА: прячем в стену до глаза
-                    el.style.right = '-155px'; 
+                    // ПРАВО: Координаты ОСТАЮТСЯ как у попы (-125px)
+                    el.style.right = '-125px'; 
                     el.style.transform = 'scaleX(1)';
                     el.style.setProperty('--s', '1');
                 }
