@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -13,7 +14,7 @@
             padding: 20px;
         }
         
-        /* Стили строки поиска */
+        /* --- Добавленные стили для поиска --- */
         .search-container {
             max-width: 1200px;
             margin: 0 auto 25px auto;
@@ -53,11 +54,10 @@
         .search-clear:hover {
             background: #30363d;
         }
-        
-        /* Класс для скрытия неподходящих карточек */
         .gallery-item.hidden {
             display: none !important;
         }
+        /* ------------------------------------ */
 
         .gallery-grid {
             display: grid;
@@ -121,7 +121,6 @@
             color: #8b949e;
             line-height: 1.4;
         }
-        
         .lightbox {
             position: fixed;
             top: 0;
@@ -179,7 +178,7 @@
 </head>
 <body>
 
-    <!-- ПОЛЕ ПОИСКА -->
+    <!-- Добавлена разметка поиска -->
     <div class="search-container">
         <input 
             type="text" 
@@ -205,35 +204,35 @@
                 img: "Screenshot_9.png", 
                 title: "Прототип родителей Шарптанг", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
                 desc: "30.03.2026, 02:14"
             },
             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
                 desc: "30.03.2026, 01:17"
             },
-            {
+             {
                 img: "Screenshot_10.png", 
                 title: "Набросок дизайна матери Мунстрайк", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
                 desc: "30.03.2026, 00:25"
             },
-            {
+             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
                 desc: "30.03.2026, 01:17"
             },
-            {
+             {
                 img: "Screenshot_10.png", 
                 title: "Прототип родителей Прауда", 
                 authorName: "Star Harlen",
-                authorUrl: "https://google.com", 
+                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
                 desc: "30.03.2026, 01:17"
             }
         ];
@@ -242,10 +241,8 @@
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
-        const searchInput = document.getElementById('searchInput');
-        const clearSearch = document.getElementById('clearSearch');
 
-        // Прямой вывод карточек (в точности как у вас изначально)
+        // Ваш оригинальный цикл генерации карточек
         arts.forEach((art, index) => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
@@ -262,36 +259,39 @@
             galleryGrid.appendChild(item);
         });
 
-        // Функция фильтрации
-        function filterGallery() {
-            const query = searchInput.value.toLowerCase().trim();
-            const items = galleryGrid.getElementsByClassName('gallery-item');
+        // --- Добавленная логика поиска ---
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const cardElements = galleryGrid.getElementsByClassName('gallery-item');
 
+        function doSearch() {
+            const value = searchInput.value.toLowerCase().trim();
+            
             arts.forEach((art, index) => {
-                const matchTitle = art.title.toLowerCase().includes(query);
-                const matchAuthor = art.authorName.toLowerCase().includes(query);
-                const matchDesc = art.desc.toLowerCase().includes(query);
+                const matchTitle = art.title.toLowerCase().includes(value);
+                const matchAuthor = art.authorName.toLowerCase().includes(value);
+                const matchDesc = art.desc.toLowerCase().includes(value);
 
-                if (matchTitle || matchAuthor || matchDesc || query === '') {
-                    items[index].classList.remove('hidden');
+                if (matchTitle || matchAuthor || matchDesc || value === '') {
+                    cardElements[index].classList.remove('hidden');
                 } else {
-                    items[index].classList.add('hidden');
+                    cardElements[index].classList.add('hidden');
                 }
             });
         }
 
-        // Обработчики событий поиска
-        searchInput.addEventListener('input', filterGallery);
+        searchInput.addEventListener('input', doSearch);
         
         clearSearch.addEventListener('click', () => {
-            searchInput.value = ''; // Стирает текст из инпута
-            filterGallery();        // Отображает все карточки обратно
+            searchInput.value = '';
+            doSearch();
         });
+        // ---------------------------------
 
         function openLightbox(index) {
+            const art = arts[index];
+            lightboxImg.src = art.img;
 
-const art = arts[index];
-lightboxImg.src = art.img;
 lightboxCaption.innerHTML = <h3>${art.title}</h3> <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a> <p>${art.desc}</p>;
 lightbox.classList.add('active');
 }
