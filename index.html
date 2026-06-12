@@ -78,7 +78,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        /* Скрываем элементы, которые не прошли фильтр */
         .gallery-item.hidden {
             display: none;
         }
@@ -128,9 +127,8 @@
             color: #8b949e;
             line-height: 1.4;
         }
-        /* Стили для отображения хэштегов (если вы решите выводить их визуально) */
         .hashtags {
-            margin-top: 6px;
+            margin-top: 8px;
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
@@ -224,7 +222,6 @@
     </div>
 
     <script>
-        // ВАШ МАССИВ ДАННЫХ (добавлено поле tags для хэштегов)
         const arts = [
             {
                 img: "Screenshot_9.png", 
@@ -232,7 +229,7 @@
                 authorName: "Star Harlen",
                 authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
                 desc: "30.03.2026, 02:14",
-                tags: ["прототип", "шарптанг", "родители"] // хэштеги
+                tags: ["прототип", "шарптанг", "родители"]
             },
             {
                 img: "Screenshot_10.png", 
@@ -255,146 +252,48 @@
                 title: "Прототип родителей Прауда (вариация)", 
                 authorName: "Star Harlen",
                 authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "30.03.2026, 01:17",
+                desc: "30.03.2026, 00:10",
                 tags: ["прототип", "прауд", "вариация"]
-            },
-            {
-                img: "Screenshot_10.png", 
-                title: "Финальный логотип прайда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://sites.google.com/view/my-pride-the-path-of-lite/%D1%81%D0%BE%D1%81%D1%82%D0%B0%D0%B2-%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D1%8B?authuser=0", 
-                desc: "01.04.2026, 12:00",
-                tags: ["логотип", "финал"]
             }
         ];
 
         const galleryGrid = document.getElementById('galleryGrid');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        const lightboxCaption = document.getElementById('lightboxCaption');
         const searchInput = document.getElementById('searchInput');
-        const clearButton = document.getElementById('clearSearch');
+        const clearSearch = document.getElementById('clearSearch');
 
-        // ---- Функция рендеринга галереи с учётом поиска ----
-        function renderGallery(filterText = '') {
-            galleryGrid.innerHTML = ''; // Очищаем контейнер
-            const searchTerm = filterText.toLowerCase().trim();
-            let visibleCount = 0;
+        // Функция генерации карточек
+        function renderGallery() {
+            galleryGrid.innerHTML = '';
+            arts.forEach((art, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                
+                const tagsHTML = art.tags ? art.tags.map(t => `<span class="hashtag">#${t}</span>`).join('') : '';
+
+                item.innerHTML = `
+                    <div class="img-container" onclick="openLightbox(${index})">
+                        <img src="${art.img}" alt="${art.title}">
+                    </div>
+                    <div class="item-info">
+                        <h3>${art.title}</h3>
+                        <a href="${art.authorUrl}" target="_blank" class="author-link">${art.authorName}</a>
+                        <p>${art.desc}</p>
+                        <div class="hashtags">${tagsHTML}</div>
+                    </div>
+                `;
+                galleryGrid.appendChild(item);
+            });
+        }
+
+        // Поиск/Фильтрация
+        function filterGallery() {
+            const query = searchInput.value.toLowerCase().trim();
+            const items = galleryGrid.getElementsByClassName('gallery-item');
+            let hasResults = false;
+
+            // Удаляем старое сообщение об отсутствии результатов, если оно есть
+            const oldMessage = document.querySelector('.no-results-message');
+            if (oldMessage) oldMessage.remove();
 
             arts.forEach((art, index) => {
-                // Собираем все строки, по которым будет поиск
-                const title = art.title.toLowerCase();
-                const author = art.authorName.toLowerCase();
-                const desc = art.desc.toLowerCase();
-                // Хэштеги в строку через пробел
-                const tagsString = art.tags ? art.tags.join(' ').toLowerCase() : '';
-
-                // Проверяем, содержит ли поисковый запрос префикс #
-                const isHashtagSearch = searchTerm.startsWith('#');
-                let query = searchTerm;
-                if (isHashtagSearch) {
-                    query = searchTerm.slice(1); // убираем # для сравнения с тегами
-                }
-
-                // Если запрос пустой — показываем всё
-                let matches = true;
-                if (query !== '') {
-                    if (isHashtagSearch) {
-                        // Ищем только по хэштегам (точное совпадение тега или частичное)
-                        matches = tagsString.includes(query);
-                    } else {
-                        // Обычный поиск: название, описание, автор, И хэштеги тоже
-                        matches = title.includes(query) || 
-                                  author.includes(query) || 
-                                  desc.includes(query) || 
-                                  tagsString.includes(query);
-                    }
-                }
-
-                if (matches) {
-                    // Создаём элемент карточки
-                    const item = document.createElement('div');
-                    item.className = 'gallery-item';
-                    
-                    // Генерация HTML-кода хэштегов для отображения (опционально)
-                    let tagsHtml = '';
-                    if (art.tags && art.tags.length > 0) {
-                        tagsHtml = '<div class="hashtags">';
-                        art.tags.forEach(tag => {
-                            tagsHtml += `<span class="hashtag">#${tag}</span>`;
-                        });
-                        tagsHtml += '</div>';
-                    }
-
-                    item.innerHTML = `
-                        <div class="img-container" onclick="openLightbox(${index})">
-                            <img src="${art.img}" alt="${art.title}">
-                        </div>
-                        <div class="item-info">
-                            <h3>${art.title}</h3>
-                            <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                            <p>${art.desc}</p>
-                            ${tagsHtml} <!-- Выводим хэштеги -->
-                        </div>
-                    `;
-                    galleryGrid.appendChild(item);
-                    visibleCount++;
-                }
-            });
-
-            // Если ничего не найдено, показываем сообщение
-            if (visibleCount === 0) {
-                const noResults = document.createElement('div');
-                noResults.className = 'no-results-message';
-                noResults.textContent = '😕 Ничего не найдено. Попробуйте изменить запрос.';
-                galleryGrid.appendChild(noResults);
-            }
-        }
-
-        // Обработчик ввода в поле поиска (фильтрация в реальном времени)
-        searchInput.addEventListener('input', function(e) {
-            renderGallery(e.target.value);
-        });
-
-        // Кнопка очистки поиска
-        clearButton.addEventListener('click', function() {
-            searchInput.value = '';
-            renderGallery('');
-            searchInput.focus(); // Возвращаем фокус в поле для удобства
-        });
-
-        // ---- Функции Lightbox (оставлены без изменений) ----
-        function openLightbox(index) {
-            const art = arts[index];
-            lightboxImg.src = art.img;
-            
-            let tagsHtml = '';
-            if (art.tags && art.tags.length > 0) {
-                tagsHtml = '<div class="hashtags" style="justify-content: center; margin-top: 8px;">';
-                art.tags.forEach(tag => {
-                    tagsHtml += `<span class="hashtag">#${tag}</span>`;
-                });
-                tagsHtml += '</div>';
-            }
-
-            lightboxCaption.innerHTML = `
-                <h3>${art.title}</h3>
-                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
-                <p>${art.desc}</p>
-                ${tagsHtml}
-            `;
-            lightbox.classList.add('active');
-        }
-
-        function closeLightbox(event) {
-            // Закрываем только при клике на фон или кнопку закрытия, но не на контент
-            if (event.target.classList.contains('lightbox') || event.target.classList.contains('close-btn')) {
-                lightbox.classList.remove('active');
-            }
-        }
-
-        // Первичный рендер всей галереи при загрузке страницы
-        renderGallery('');
-    </script>
-</body>
-</html>
+                const matchTitle = art.title.toLowerCase().includes(query);
