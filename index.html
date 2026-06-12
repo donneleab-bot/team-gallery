@@ -58,6 +58,7 @@
             gap: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            min-height: 200px;
         }
         .gallery-item {
             position: relative;
@@ -68,7 +69,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        /* Класс для скрытия элементов при поиске */
+        /* Скрытие элементов при поиске */
         .gallery-item.hidden {
             display: none !important;
         }
@@ -207,14 +208,16 @@
 </head>
 <body>
 
-    <!-- Поле поиска и кнопка назад страницы -->
+    <!-- Поле поиска и кнопка назад -->
     <div class="search-container">
         <button class="back-page-btn" onclick="window.history.back()">← Назад</button>
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
     </div>
 
+    <!-- Контейнер сетки -->
     <div class="gallery-grid" id="galleryGrid"></div>
 
+    <!-- Лайтбокс -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
         <span class="close-btn" onclick="hideLightbox()">&times;</span>
         <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
@@ -225,7 +228,7 @@
     <button class="scroll-top-btn" id="scrollTopBtn" onclick="scrollToTop()">↑</button>
 
     <script>
-        // Имена файлов возвращены к оригинальным
+        // Данные галереи с базовым значением просмотров (views)
         const arts = [
             {
                 img: "Screenshot_9.png", 
@@ -269,32 +272,30 @@
             }
         ];
 
-        const galleryGrid = document.getElementById('galleryGrid');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        const lightboxCaption = document.getElementById('lightboxCaption');
-        const searchInput = document.getElementById('searchInput');
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        // Безопасный запуск после полной готовности дерева HTML
+        document.addEventListener("DOMContentLoaded", () => {
+            const galleryGrid = document.getElementById('galleryGrid');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const lightboxCaption = document.getElementById('lightboxCaption');
+            const searchInput = document.getElementById('searchInput');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
 
-        // Генерируем карточки
-        arts.forEach((art, index) => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            item.innerHTML = `
-                <div class="img-container" onclick="openLightbox(${index})">
-                    <img src="${art.img}" alt="${art.title}">
-                </div>
-                <div class="item-info">
-                    <h3>${art.title}</h3>
-                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+            if (!galleryGrid) return;
 
-${art.desc}
-👁️ ${art.views}
+            // Очищаем сетку на всякий случай перед генерацией
+            galleryGrid.innerHTML = '';
 
-`;
+            // Генерируем карточки программно
+            arts.forEach((art, index) => {
+                const item = document.createElement('div');
+
+item.className = 'gallery-item';
+item.innerHTML = <div class="img-container" onclick="openLightbox(${index})"> <img src="${art.img}" alt="${art.title}"> </div> <div class="item-info"> <h3>${art.title}</h3> <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a> <p>${art.desc}</p> <div class="view-count">👁️ <span id="view-span-${index}">${art.views}</span></div> </div>;
 galleryGrid.appendChild(item);
 });
-// Поиск по сайту
+// Функция поиска
+if (searchInput) {
 searchInput.addEventListener('input', () => {
 const filterValue = searchInput.value.toLowerCase().trim();
 const items = galleryGrid.querySelectorAll('.gallery-item');
@@ -310,34 +311,41 @@ item.classList.add('hidden');
 }
 });
 });
-// Открытие Лайтбокса
-function openLightbox(index) {
+}
+// Функции для работы окон просмотра (глобальные, чтобы вызывались из HTML)
+window.openLightbox = function(index) {
 const art = arts[index];
 art.views += 1;
-document.getElementById(view-span-${index}).textContent = art.views;
-lightboxImg.src = art.img;
+const span = document.getElementById(view-span-${index});
+if (span) span.textContent = art.views;
+if (lightboxImg) lightboxImg.src = art.img;
+if (lightboxCaption) {
 lightboxCaption.innerHTML = <h3>${art.title}</h3> <p><a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a></p> <p>${art.desc}</p> <p style="font-size: 0.9rem; color: #8b949e; margin-top: 8px;">👁️ Просмотров: ${art.views}</p>;
-lightbox.classList.add('active');
 }
-function hideLightbox() {
-lightbox.classList.remove('active');
-}
-function closeLightbox(event) {
+if (lightbox) lightbox.classList.add('active');
+};
+window.hideLightbox = function() {
+if (lightbox) lightbox.classList.remove('active');
+};
+window.closeLightbox = function(event) {
 if (event.target === lightbox || event.target.classList.contains('close-btn')) {
 hideLightbox();
 }
-}
-// Кнопка Наверх
+};
+// Логика кнопки Наверх
 window.onscroll = function() {
+if (scrollTopBtn) {
 if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
 scrollTopBtn.style.display = "flex";
 } else {
 scrollTopBtn.style.display = "none";
 }
+}
 };
-function scrollToTop() {
+window.scrollToTop = function() {
 window.scrollTo({
 top: 0,
 behavior: 'smooth'
 });
-}
+};
+});
