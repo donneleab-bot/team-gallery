@@ -117,6 +117,7 @@
             border: 2px solid #30363d;
             cursor: pointer;
             transition: border-color 0.2s ease;
+            object-fit: cover;
         }
         .user-avatar:hover {
             border-color: #58a6ff;
@@ -427,6 +428,142 @@
             transform: translateY(-3px);
         }
 
+        /* === МОДАЛЬНОЕ ОКНО ПРОФИЛЯ === */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 12, 16, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10000;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 25px 30px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            position: relative;
+        }
+        .modal h2 {
+            margin: 0 0 20px 0;
+            color: #f0f6fc;
+            font-size: 1.3rem;
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            color: #8b949e;
+            font-size: 28px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .modal-close:hover {
+            color: #fff;
+        }
+        .modal-avatar-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 3px solid #30363d;
+            object-fit: cover;
+        }
+        .modal-avatar-hint {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-top: 8px;
+            text-align: center;
+        }
+        .modal-label {
+            display: block;
+            color: #8b949e;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            margin-top: 14px;
+        }
+        .modal-input, .modal-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #f0f6fc;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s ease;
+        }
+        .modal-input:focus, .modal-textarea:focus {
+            border-color: #58a6ff;
+        }
+        .modal-textarea {
+            resize: vertical;
+            min-height: 80px;
+            max-height: 200px;
+        }
+        .modal-counter {
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-align: right;
+            margin-top: 4px;
+        }
+        .modal-save-btn {
+            width: 100%;
+            margin-top: 22px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background: #238636;
+            border: 1px solid #2ea043;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .modal-save-btn:hover {
+            background: #2ea043;
+        }
+        .modal-save-btn:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+        .modal-skip-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 10px;
+            font-size: 0.9rem;
+            color: #8b949e;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .modal-skip-btn:hover {
+            color: #c9d1d9;
+        }
+
         @media (max-width: 600px) {
             body { padding: 12px; }
             .top-bar { gap: 8px; padding: 8px 0; justify-content: space-between; }
@@ -485,6 +622,29 @@
             <span class="counter" id="viewCount">👁 0</span>
             <button class="action-btn" id="shareBtn" onclick="shareImage(event)">🔗 Поделиться</button>
             <button class="action-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">⬇ Скачать</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно профиля -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+            <h2 id="profileModalTitle">Заполните профиль</h2>
+
+            <div class="modal-avatar-block">
+                <img class="modal-avatar" id="profileAvatar" src="" alt="Аватар">
+                <div class="modal-avatar-hint">Аватар берётся из Google-аккаунта</div>
+            </div>
+
+            <label class="modal-label">Имя (отображается в комментариях)</label>
+            <input type="text" class="modal-input" id="profileNameInput" maxlength="40" placeholder="Ваше имя">
+
+            <label class="modal-label">О себе (необязательно)</label>
+            <textarea class="modal-textarea" id="profileBioInput" maxlength="200" placeholder="Немного о вас..."></textarea>
+            <div class="modal-counter" id="bioCounter">0 / 200</div>
+
+            <button class="modal-save-btn" id="profileSaveBtn" onclick="saveProfile()">Сохранить</button>
+            <button class="modal-skip-btn" id="profileSkipBtn" onclick="closeProfileModal()">Пропустить</button>
         </div>
     </div>
 
@@ -822,7 +982,7 @@
     </script>
 
     <!-- ============================================================
-         FIREBASE SDK + AUTH
+         FIREBASE SDK + AUTH + PROFILE
          ============================================================ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
@@ -869,10 +1029,7 @@
         };
 
         window.openProfile = function() {
-            if (window.currentUser) {
-                alert("Профиль: " + window.currentUser.displayName + "\nEmail: " + window.currentUser.email);
-                // Здесь потом будет переход на страницу профиля
-            }
+            openProfileModal(false);
         };
 
         // Закрытие меню при клике вне
@@ -899,12 +1056,110 @@
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
                 userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
-                userName.textContent = user.displayName || 'Пользователь';
                 userEmail.textContent = user.email || '';
+
+                // Проверяем, есть ли профиль в базе
+                getDoc(doc(db, "users", user.uid)).then(snap => {
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        userName.textContent = data.displayName || user.displayName || 'Пользователь';
+                    } else {
+                        // Первый вход — показываем форму заполнения
+                        userName.textContent = user.displayName || 'Пользователь';
+                        setTimeout(() => openProfileModal(true), 500);
+                    }
+                });
             } else {
                 loginBtn.style.display = 'inline-flex';
                 userInfo.style.display = 'none';
             }
+        });
+
+        // === ПРОФИЛЬ ===
+        window.openProfileModal = function(isFirstTime) {
+            const user = window.currentUser;
+            if (!user) return;
+
+            const modal = document.getElementById('profileModal');
+            const title = document.getElementById('profileModalTitle');
+            const skipBtn = document.getElementById('profileSkipBtn');
+
+            title.textContent = isFirstTime ? 'Заполните профиль' : 'Мой профиль';
+            skipBtn.style.display = isFirstTime ? 'block' : 'none';
+
+            document.getElementById('profileAvatar').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+            document.getElementById('profileNameInput').value = user.displayName || '';
+            document.getElementById('profileBioInput').value = '';
+            document.getElementById('bioCounter').textContent = '0 / 200';
+
+            // Загружаем профиль из базы, если он есть
+            getDoc(doc(db, "users", user.uid)).then(snap => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.displayName) document.getElementById('profileNameInput').value = data.displayName;
+                    if (data.bio) document.getElementById('profileBioInput').value = data.bio;
+                    document.getElementById('bioCounter').textContent = (data.bio || '').length + ' / 200';
+                }
+            });
+
+            modal.classList.add('active');
+        };
+
+        window.closeProfileModal = function() {
+            document.getElementById('profileModal').classList.remove('active');
+        };
+
+        window.saveProfile = async function() {
+            const user = window.currentUser;
+            if (!user) return;
+
+            const btn = document.getElementById('profileSaveBtn');
+            const name = document.getElementById('profileNameInput').value.trim();
+            const bio = document.getElementById('profileBioInput').value.trim();
+
+            if (!name) {
+                alert("Введите имя.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Сохранение...';
+
+            try {
+                await setDoc(doc(db, "users", user.uid), {
+                    displayName: name,
+                    bio: bio,
+                    email: user.email,
+                    photoURL: user.photoURL || '',
+                    updatedAt: new Date()
+                }, { merge: true });
+
+                // Обновляем имя в меню
+                document.getElementById('userName').textContent = name;
+
+                btn.textContent = '✅ Сохранено!';
+                setTimeout(() => {
+                    closeProfileModal();
+                    btn.disabled = false;
+                    btn.textContent = 'Сохранить';
+                }, 800);
+
+            } catch (error) {
+                console.error("Ошибка сохранения профиля:", error);
+                alert("Не удалось сохранить. Попробуйте позже.");
+                btn.disabled = false;
+                btn.textContent = 'Сохранить';
+            }
+        };
+
+        // Счётчик символов био
+        document.getElementById('profileBioInput').addEventListener('input', (e) => {
+            document.getElementById('bioCounter').textContent = e.target.value.length + ' / 200';
+        });
+
+        // Закрытие модалки при клике на фон
+        document.getElementById('profileModal').addEventListener('click', (e) => {
+            if (e.target.id === 'profileModal') closeProfileModal();
         });
 
         // === FIREBASE-ЛОГИКА (лайки, просмотры) ===
