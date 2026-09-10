@@ -12,7 +12,6 @@
             color: #c9d1d9;
             padding: 20px;
         }
-        /* Стили для контейнера поиска */
         .search-container {
             max-width: 1200px;
             margin: 0 auto 25px auto;
@@ -153,28 +152,73 @@
             cursor: pointer;
             user-select: none;
         }
-        /* Кнопка «Скачать» в лайтбоксе */
-        .download-btn {
+        /* Панель с лайками, просмотрами и скачиванием */
+        .lightbox-actions {
             margin-top: 18px;
-            padding: 10px 22px;
-            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
             font-weight: 600;
-            color: #fff;
-            background: #238636;
-            border: 1px solid #2ea043;
+            color: #c9d1d9;
+            background: #21262d;
+            border: 1px solid #30363d;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.2s ease, transform 0.2s ease;
+            transition: background 0.2s ease, border-color 0.2s ease;
         }
-        .download-btn:hover {
-            background: #2ea043;
-            transform: translateY(-2px);
+        .action-btn:hover {
+            background: #30363d;
+            border-color: #8b949e;
+        }
+        .action-btn.liked {
+            background: #238636;
+            border-color: #2ea043;
+            color: #fff;
+        }
+        .action-btn:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+        .counter {
+            font-size: 0.95rem;
+            color: #8b949e;
+        }
+        /* Кнопка показа хэштегов */
+        .toggle-tags-btn {
+            background: none;
+            border: none;
+            color: #58a6ff;
+            font-size: 0.85rem;
+            cursor: pointer;
+            margin-top: 6px;
+            padding: 0;
+        }
+        .toggle-tags-btn:hover {
+            text-decoration: underline;
+        }
+        .full-tags {
+            display: none;
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        .full-tags.visible {
+            display: block;
         }
     </style>
 </head>
 <body>
 
-    <!-- Поле поиска -->
     <div class="search-container">
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
     </div>
@@ -185,9 +229,14 @@
         <span class="close-btn">&times;</span>
         <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
         <div class="lightbox-caption" id="lightboxCaption"></div>
-        <button class="download-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">
-            ⬇ Скачать
-        </button>
+        
+        <!-- Панель действий: лайк, просмотры, скачать -->
+        <div class="lightbox-actions">
+            <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
+            <span class="counter" id="likeCount">0</span>
+            <span class="counter" id="viewCount">👁 0</span>
+            <button class="action-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">⬇ Скачать</button>
+        </div>
     </div>
 
     <script>
@@ -247,14 +296,23 @@
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
         const searchInput = document.getElementById('searchInput');
+        const likeBtn = document.getElementById('likeBtn');
+        const likeCountEl = document.getElementById('likeCount');
+        const viewCountEl = document.getElementById('viewCount');
 
-        // АВТОСОРТИРОВКА: от новых к старым.
+        let currentArtIndex = -1;
+
         const sortedArts = [...arts].sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
 
-        // Рендер карточек из уже отсортированного массива
+        // Рендер карточек
         sortedArts.forEach((art, index) => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
+            
+            // Обрезаем хэштеги для карточки (первые 3)
+            const tagsArray = art.desc.split(' ');
+            const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
+            
             item.innerHTML = `
                 <div class="img-container" onclick="openLightbox(${index})">
                     <img src="${art.img}" alt="${art.title}">
@@ -262,122 +320,219 @@
                 <div class="item-info">
                     <h3>${art.title}</h3>
                     <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                    <p>${art.desc}</p>
+                    <p>${shortTags}</p>
                 </div>
             `;
             galleryGrid.appendChild(item);
         });
 
-        // Поиск по названию / автору / описанию
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
             const items = galleryGrid.getElementsByClassName('gallery-item');
-
             sortedArts.forEach((art, index) => {
-                const matchTitle = art.title.toLowerCase().includes(query);
-                const matchAuthor = art.authorName.toLowerCase().includes(query);
-                const matchDesc = art.desc.toLowerCase().includes(query);
-
-                if (matchTitle || matchAuthor || matchDesc) {
-                    items[index].classList.remove('hidden');
-                } else {
-                    items[index].classList.add('hidden');
-                }
+                const match = art.title.toLowerCase().includes(query) || 
+                              art.authorName.toLowerCase().includes(query) || 
+                              art.desc.toLowerCase().includes(query);
+                if (match) items[index].classList.remove('hidden');
+                else items[index].classList.add('hidden');
             });
         });
 
         function openLightbox(index) {
+            currentArtIndex = index;
             const art = sortedArts[index];
             lightboxImg.src = art.img;
+
+            // Формируем хэштеги с кнопкой "показать все"
+            const tagsArray = art.desc.split(' ');
+            const shortTags = tagsArray.slice(0, 5).join(' ');
+            const fullTags = art.desc;
+
             lightboxCaption.innerHTML = `
                 <h3>${art.title}</h3>
                 <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
-                <p>${art.desc}</p>
+                <p>${shortTags}</p>
+                <button class="toggle-tags-btn" onclick="toggleTags(this)">Показать все хэштеги</button>
+                <div class="full-tags">${fullTags}</div>
             `;
             lightbox.classList.add('active');
+
+            // Загружаем лайки и просмотры
+            loadStats(art.img);
+            incrementView(art.img);
+        }
+
+        function toggleTags(btn) {
+            const fullTagsDiv = btn.nextElementSibling;
+            fullTagsDiv.classList.toggle('visible');
+            if (fullTagsDiv.classList.contains('visible')) {
+                btn.textContent = 'Скрыть хэштеги';
+            } else {
+                btn.textContent = 'Показать все хэштеги';
+            }
         }
 
         function closeLightbox(event) {
             if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON') {
                 lightbox.classList.remove('active');
+                currentArtIndex = -1;
             }
         }
 
-        // === ЗАПРЕТ ПРАВОГО КЛИКА И ПЕРЕТАСКИВАНИЯ ПО КАРТИНКАМ ===
-        document.addEventListener('contextmenu', (e) => {
-            if (e.target.tagName === 'IMG') e.preventDefault();
-        });
-        document.addEventListener('dragstart', (e) => {
-            if (e.target.tagName === 'IMG') e.preventDefault();
-        });
+        // === ЗАПРЕТ ПРАВОГО КЛИКА И ПЕРЕТАСКИВАНИЯ ===
+        document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+        document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-// === СКАЧИВАНИЕ КАРТИНКИ С ВОДЯНЫМ ЗНАКОМ ЧЕРЕЗ CANVAS ===
-function downloadWithWatermark(event) {
-    event.stopPropagation();
+        // === СКАЧИВАНИЕ ===
+        function downloadWithWatermark(event) {
+            event.stopPropagation();
+            const currentArt = sortedArts[currentArtIndex];
+            if (!currentArt) return;
 
-    // Находим текущий арт (по src картинки в лайтбоксе)
-    const currentArt = sortedArts.find(a => lightboxImg.src.includes(a.img)) || sortedArts[0];
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = lightboxImg.src;
 
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = lightboxImg.src;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
 
-    img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
+                const patternText = 'My Pride Fan';
+                const authorText  = '© ' + currentArt.authorName;
+                const fontSize = Math.max(18, Math.round(canvas.width * 0.035));
+                ctx.font = `bold ${fontSize}px Arial`;
 
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
+                const padding = Math.round(canvas.width * 0.02);
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.lineWidth = 3;
+                ctx.strokeText(authorText, canvas.width - padding, canvas.height - padding);
+                ctx.fillText(authorText, canvas.width - padding, canvas.height - padding);
 
-        const patternText = 'My Pride Fan';
-        const authorText  = '© ' + currentArt.authorName;
-
-        const fontSize = Math.max(18, Math.round(canvas.width * 0.035));
-        ctx.font = `bold ${fontSize}px Arial`;
-
-        // --- Подпись автора в правом нижнем углу (плотная, белая с чёрной обводкой) ---
-        const padding = Math.round(canvas.width * 0.02);
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'bottom';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.lineWidth = 3;
-        ctx.strokeText(authorText, canvas.width - padding, canvas.height - padding);
-        ctx.fillText(authorText, canvas.width - padding, canvas.height - padding);
-
-        // --- Тонкий паттерн по диагонали (чёрный, заметнее чем раньше) ---
-        ctx.save();
-        ctx.globalAlpha = 0.12;             // ← было 0.18, стало заметнее
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = `bold ${fontSize}px Arial`;
-
-        const stepX = canvas.width / 3;
-        const stepY = canvas.height / 3;
-
-        for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
-            for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
                 ctx.save();
-                ctx.translate(x, y);
-                ctx.rotate(-Math.PI / 6);   // -30°
-                ctx.fillText(patternText, 0, 0);
+                ctx.globalAlpha = 0.12;
+                ctx.fillStyle = '#000';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const stepX = canvas.width / 3;
+                const stepY = canvas.height / 3;
+                for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
+                    for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
+                        ctx.save();
+                        ctx.translate(x, y);
+                        ctx.rotate(-Math.PI / 6);
+                        ctx.fillText(patternText, 0, 0);
+                        ctx.restore();
+                    }
+                }
                 ctx.restore();
-            }
+
+                const link = document.createElement('a');
+                link.download = 'art_' + Date.now() + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+            img.onerror = () => alert('Не удалось загрузить картинку.');
         }
-        ctx.restore();
+    </script>
 
-        const link = document.createElement('a');
-        link.download = 'art_' + Date.now() + '.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    };
+    <!-- Firebase SDK (добавьте свой конфиг) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-    img.onerror = () => {
-        alert('Не удалось загрузить картинку для скачивания.');
-    };
-}
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVpWbOBOJbCYfPLh-s8QZMOeRORkZ-gXg",
+            authDomain: "my-pride-fan.firebaseapp.com",
+            projectId: "my-pride-fan",
+            storageBucket: "my-pride-fan.firebasestorage.app",
+            messagingSenderId: "1087688802080",
+            appId: "1:1087688802080:web:2d77a829729f963fcb2145"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function getUserIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip;
+            } catch { return "unknown_ip"; }
+        }
+
+        // Глобальная функция для загрузки статистики
+        window.loadStats = async function(imageId) {
+            // Лайки
+            const imgRef = doc(db, "images", imageId);
+            const imgSnap = await getDoc(imgRef);
+            if (imgSnap.exists()) {
+                document.getElementById('likeCount').textContent = imgSnap.data().likes || 0;
+            } else {
+                document.getElementById('likeCount').textContent = '0';
+            }
+
+            // Просмотры
+            const viewRef = doc(db, "views", imageId);
+            onSnapshot(viewRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    document.getElementById('viewCount').textContent = '👁 ' + (docSnap.data().count || 0);
+                } else {
+                    document.getElementById('viewCount').textContent = '👁 0';
+                }
+            });
+
+            // Проверка лайка по IP
+            const userIP = await getUserIP();
+            const likeRef = doc(db, "likes", `${imageId}_${userIP}`);
+            const likeSnap = await getDoc(likeRef);
+            const btn = document.getElementById('likeBtn');
+            if (likeSnap.exists()) {
+                btn.disabled = true;
+                btn.classList.add('liked');
+                btn.textContent = '❤️ Лайкнуто';
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('liked');
+                btn.textContent = '❤️ Лайк';
+            }
+        };
+
+        window.handleLike = async function(event) {
+            event.stopPropagation();
+            const art = sortedArts[currentArtIndex];
+            if (!art) return;
+
+            const userIP = await getUserIP();
+            const likeId = `${art.img}_${userIP}`;
+            const likeRef = doc(db, "likes", likeId);
+
+            const snap = await getDoc(likeRef);
+            if (snap.exists()) {
+                alert("Вы уже лайкали эту картинку!");
+                return;
+            }
+
+            await setDoc(likeRef, { imageId: art.img, ip: userIP, timestamp: new Date() });
+            const imgRef = doc(db, "images", art.img);
+            await setDoc(imgRef, { likes: increment(1) }, { merge: true });
+
+            const btn = document.getElementById('likeBtn');
+            btn.disabled = true;
+            btn.classList.add('liked');
+            btn.textContent = '❤️ Лайкнуто';
+            window.loadStats(art.img);
+        };
+
+        window.incrementView = async function(imageId) {
+            const viewRef = doc(db, "views", imageId);
+            await setDoc(viewRef, { count: increment(1) }, { merge: true });
+        };
     </script>
 </body>
 </html>
