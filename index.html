@@ -320,7 +320,7 @@
             line-height: 1.4;
         }
 
-        /* === ЛАЙТБОКС === */
+        /* === ЛАЙТБОКС С БОКОВОЙ ПАНЕЛЬЮ КОММЕНТАРИЕВ === */
         .lightbox {
             position: fixed;
             top: 0;
@@ -329,41 +329,37 @@
             height: 100%;
             background-color: rgba(10, 12, 16, 0.98);
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             justify-content: center;
-            align-items: center;
+            align-items: stretch;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
             z-index: 9999;
             overflow: hidden;
-            padding: 20px;
-            box-sizing: border-box;
         }
         .lightbox.active {
             opacity: 1;
             pointer-events: auto;
         }
-        .lightbox-content {
+        .lightbox-left {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-width: 1000px;
-            width: 100%;
-            max-height: 100%;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            padding: 20px;
+            min-width: 0;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 4px;
         }
-        .lightbox-content::-webkit-scrollbar { width: 8px; }
-        .lightbox-content::-webkit-scrollbar-track { background: #0d1117; }
-        .lightbox-content::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        .lightbox-left::-webkit-scrollbar { width: 8px; }
+        .lightbox-left::-webkit-scrollbar-track { background: #0d1117; }
+        .lightbox-left::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
 
         .lightbox-img {
             max-width: 100%;
-            max-height: 55vh;
+            max-height: 65vh;
             width: auto;
             height: auto;
             object-fit: contain;
@@ -373,13 +369,14 @@
             flex-shrink: 0;
         }
         .lightbox-caption {
+            margin-top: 15px;
             text-align: center;
             max-width: 100%;
         }
         .lightbox-caption h3 {
             margin: 0 0 4px 0;
             color: #fff;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
         .lightbox-caption a {
             color: #58a6ff;
@@ -397,7 +394,7 @@
             font-size: 30px;
             cursor: pointer;
             user-select: none;
-            z-index: 10;
+            z-index: 20;
             background: rgba(0,0,0,0.5);
             border-radius: 50%;
             width: 40px;
@@ -411,10 +408,11 @@
             background: rgba(255,255,255,0.1);
         }
         .lightbox-actions {
+            margin-top: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         .action-btn {
@@ -444,11 +442,6 @@
             cursor: default;
             opacity: 0.7;
         }
-        .action-btn.comments-open {
-            background: #1f6feb;
-            border-color: #1f6feb;
-            color: #fff;
-        }
         .counter {
             font-size: 0.95rem;
             color: #8b949e;
@@ -476,89 +469,66 @@
             display: block;
         }
 
-        /* === ЭКРАН КОММЕНТАРИЕВ (полноэкранный) === */
-        .comments-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0d1117;
+        /* === ПАНЕЛЬ КОММЕНТАРИЕВ (боковая) === */
+        .comments-panel {
+            width: 400px;
+            max-width: 40vw;
+            background: #161b22;
+            border-left: 1px solid #30363d;
             display: flex;
             flex-direction: column;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 10001;
+            flex-shrink: 0;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow: hidden;
         }
-        .comments-screen.active {
-            opacity: 1;
-            pointer-events: auto;
+        .comments-panel.open {
+            transform: translateX(0);
         }
-        .comments-screen-header {
+        .comments-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid #30363d;
+            font-weight: 600;
+            color: #f0f6fc;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            background: #161b22;
-            border-bottom: 1px solid #30363d;
+            justify-content: space-between;
             flex-shrink: 0;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            gap: 8px;
         }
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #c9d1d9;
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-        .back-btn:hover {
-            background: #30363d;
-            border-color: #58a6ff;
-            color: #58a6ff;
-        }
-        .comments-screen-title {
+        .comments-header .title {
             flex: 1;
-            color: #f0f6fc;
-            font-size: 1rem;
-            font-weight: 600;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .comments-screen-title .sub {
+        .comments-close {
+            background: none;
+            border: none;
             color: #8b949e;
-            font-size: 0.85rem;
-            font-weight: 400;
-            margin-left: 8px;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 0 6px;
+            border-radius: 4px;
+            line-height: 1;
         }
-        .comments-screen-list {
+        .comments-close:hover {
+            color: #fff;
+            background: #21262d;
+        }
+        .comments-list {
             flex: 1;
             overflow-y: auto;
-            overflow-x: hidden;
-            padding: 16px 20px;
+            padding: 12px 16px;
+            min-height: 100px;
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
         }
-        .comments-screen-list::-webkit-scrollbar { width: 8px; }
-        .comments-screen-list::-webkit-scrollbar-track { background: #0d1117; }
-        .comments-screen-list::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        .comments-list::-webkit-scrollbar { width: 8px; }
+        .comments-list::-webkit-scrollbar-track { background: #0d1117; }
+        .comments-list::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
 
-        .comments-screen-form {
-            border-top: 1px solid #30363d;
-            padding: 12px 20px;
-            background: #161b22;
-            flex-shrink: 0;
-        }
         .comment {
             display: flex;
             gap: 10px;
@@ -566,22 +536,17 @@
             border-bottom: 1px solid #21262d;
             position: relative;
         }
-        .comment:last-child {
-            border-bottom: none;
-        }
+        .comment:last-child { border-bottom: none; }
         .comment-avatar {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: 2px solid #30363d;
             object-fit: cover;
             flex-shrink: 0;
             cursor: pointer;
         }
-        .comment-body {
-            flex: 1;
-            min-width: 0;
-        }
+        .comment-body { flex: 1; min-width: 0; }
         .comment-head {
             display: flex;
             align-items: center;
@@ -592,20 +557,15 @@
         .comment-name {
             font-weight: 600;
             color: #f0f6fc;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             cursor: pointer;
         }
-        .comment-name:hover {
-            color: #58a6ff;
-        }
-        .comment-date {
-            font-size: 0.72rem;
-            color: #8b949e;
-        }
+        .comment-name:hover { color: #58a6ff; }
+        .comment-date { font-size: 0.72rem; color: #8b949e; }
         .comment-text {
             color: #c9d1d9;
-            font-size: 0.92rem;
-            line-height: 1.45;
+            font-size: 0.9rem;
+            line-height: 1.4;
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
@@ -613,11 +573,10 @@
             background: none;
             border: none;
             color: #8b949e;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            transition: background 0.2s ease, color 0.2s ease;
             flex-shrink: 0;
             align-self: flex-start;
         }
@@ -627,7 +586,7 @@
         }
         .comment-menu {
             position: absolute;
-            top: 36px;
+            top: 32px;
             right: 0;
             background: #21262d;
             border: 1px solid #30363d;
@@ -649,32 +608,28 @@
             cursor: pointer;
             transition: background 0.2s ease;
         }
-        .comment-menu button:hover {
-            background: #30363d;
-        }
-        .comment-menu button.danger {
-            color: #f85149;
-        }
-        .comment-menu button.danger:hover {
-            background: rgba(248, 81, 73, 0.1);
-        }
-        .comment-menu button.admin-action {
-            color: #58a6ff;
-        }
-        .comment-menu button.admin-action:hover {
-            background: rgba(88, 166, 255, 0.1);
-        }
+        .comment-menu button:hover { background: #30363d; }
+        .comment-menu button.danger { color: #f85149; }
+        .comment-menu button.danger:hover { background: rgba(248, 81, 73, 0.1); }
+        .comment-menu button.admin-action { color: #58a6ff; }
+        .comment-menu button.admin-action:hover { background: rgba(88, 166, 255, 0.1); }
+
         .comments-empty {
             text-align: center;
             color: #8b949e;
             font-size: 0.9rem;
-            padding: 60px 20px;
+            padding: 40px 20px;
+        }
+        .comments-form {
+            border-top: 1px solid #30363d;
+            padding: 12px 16px;
+            flex-shrink: 0;
         }
         .comments-textarea {
             width: 100%;
             box-sizing: border-box;
-            padding: 10px 14px;
-            font-size: 0.92rem;
+            padding: 8px 12px;
+            font-size: 0.9rem;
             background: #0d1117;
             border: 1px solid #30363d;
             border-radius: 8px;
@@ -682,13 +637,11 @@
             outline: none;
             font-family: inherit;
             resize: none;
-            min-height: 50px;
+            min-height: 55px;
             max-height: 120px;
             transition: border-color 0.2s ease;
         }
-        .comments-textarea:focus {
-            border-color: #58a6ff;
-        }
+        .comments-textarea:focus { border-color: #58a6ff; }
         .comments-form-footer {
             display: flex;
             justify-content: space-between;
@@ -696,13 +649,10 @@
             margin-top: 8px;
             gap: 8px;
         }
-        .comments-counter {
-            font-size: 0.75rem;
-            color: #8b949e;
-        }
+        .comments-counter { font-size: 0.75rem; color: #8b949e; }
         .comments-submit {
-            padding: 9px 20px;
-            font-size: 0.88rem;
+            padding: 8px 16px;
+            font-size: 0.85rem;
             font-weight: 600;
             color: #fff;
             background: #238636;
@@ -711,18 +661,13 @@
             cursor: pointer;
             transition: background 0.2s ease;
         }
-        .comments-submit:hover {
-            background: #2ea043;
-        }
-        .comments-submit:disabled {
-            opacity: 0.5;
-            cursor: default;
-        }
+        .comments-submit:hover { background: #2ea043; }
+        .comments-submit:disabled { opacity: 0.5; cursor: default; }
         .comments-login-hint {
             text-align: center;
             color: #8b949e;
-            font-size: 0.88rem;
-            padding: 14px;
+            font-size: 0.85rem;
+            padding: 12px;
         }
         .comments-login-hint button {
             background: none;
@@ -730,13 +675,13 @@
             color: #58a6ff;
             cursor: pointer;
             text-decoration: underline;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
         }
         .comments-banned-hint {
             text-align: center;
             color: #f85149;
-            font-size: 0.88rem;
-            padding: 14px;
+            font-size: 0.85rem;
+            padding: 12px;
             background: rgba(248, 81, 73, 0.1);
             border-radius: 8px;
         }
@@ -762,20 +707,13 @@
             align-items: center;
             justify-content: center;
         }
-        .scroll-top.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .scroll-top:hover {
-            background: #58a6ff;
-            transform: translateY(-3px);
-        }
+        .scroll-top.visible { opacity: 1; pointer-events: auto; }
+        .scroll-top:hover { background: #58a6ff; transform: translateY(-3px); }
+
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(10, 12, 16, 0.85);
             display: flex;
             align-items: center;
@@ -787,10 +725,7 @@
             overflow-y: auto;
             padding: 20px 0;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal {
             background: #161b22;
             border: 1px solid #30363d;
@@ -802,9 +737,7 @@
             position: relative;
             margin: auto;
         }
-        .modal.wide {
-            max-width: 900px;
-        }
+        .modal.wide { max-width: 900px; }
         .modal h2 {
             margin: 0 0 20px 0;
             color: #f0f6fc;
@@ -824,9 +757,7 @@
             background: none;
             border: none;
         }
-        .modal-close:hover {
-            color: #fff;
-        }
+        .modal-close:hover { color: #fff; }
         .modal-avatar-block {
             display: flex;
             flex-direction: column;
@@ -867,9 +798,7 @@
             font-family: inherit;
             transition: border-color 0.2s ease;
         }
-        .modal-input:focus, .modal-textarea:focus {
-            border-color: #58a6ff;
-        }
+        .modal-input:focus, .modal-textarea:focus { border-color: #58a6ff; }
         .modal-textarea {
             resize: vertical;
             min-height: 80px;
@@ -894,13 +823,8 @@
             cursor: pointer;
             transition: background 0.2s ease;
         }
-        .modal-save-btn:hover {
-            background: #2ea043;
-        }
-        .modal-save-btn:disabled {
-            opacity: 0.6;
-            cursor: default;
-        }
+        .modal-save-btn:hover { background: #2ea043; }
+        .modal-save-btn:disabled { opacity: 0.6; cursor: default; }
         .modal-skip-btn {
             width: 100%;
             margin-top: 8px;
@@ -912,9 +836,7 @@
             cursor: pointer;
             text-decoration: underline;
         }
-        .modal-skip-btn:hover {
-            color: #c9d1d9;
-        }
+        .modal-skip-btn:hover { color: #c9d1d9; }
         .myblock-header {
             display: flex;
             align-items: center;
@@ -976,10 +898,7 @@
             cursor: pointer;
             transition: transform 0.2s ease, border-color 0.2s ease;
         }
-        .myblock-item:hover {
-            transform: translateY(-3px);
-            border-color: #58a6ff;
-        }
+        .myblock-item:hover { transform: translateY(-3px); border-color: #58a6ff; }
         .myblock-item img {
             width: 100%;
             height: 120px;
@@ -1018,6 +937,34 @@
             color: #58a6ff;
         }
 
+        /* === МОБИЛЬНАЯ ВЕРСИЯ: комментарии на весь экран === */
+        @media (max-width: 900px) {
+            .lightbox {
+                flex-direction: column;
+            }
+            .lightbox-left {
+                padding: 10px;
+                justify-content: flex-start;
+                overflow-y: auto;
+            }
+            .lightbox-img {
+                max-height: 50vh;
+            }
+            .comments-panel {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                max-width: 100%;
+                height: 100%;
+                border-left: none;
+                transform: translateY(100%);
+                z-index: 10001;
+            }
+            .comments-panel.open {
+                transform: translateY(0);
+            }
+        }
         @media (max-width: 600px) {
             body { padding: 12px; }
             .top-bar { gap: 8px; padding: 8px 0; justify-content: space-between; }
@@ -1030,10 +977,6 @@
             .scroll-top { width: 44px; height: 44px; font-size: 20px; bottom: 20px; right: 16px; }
             .myblock-header { flex-wrap: wrap; }
             .myblock-edit-btn { margin-left: 0; width: 100%; }
-            .lightbox-img { max-height: 45vh; }
-            .comments-screen-header { padding: 10px 12px; }
-            .comments-screen-list { padding: 12px; }
-            .comments-screen-form { padding: 10px 12px; }
         }
     </style>
 </head>
@@ -1073,54 +1016,48 @@
     <div class="gallery-grid" id="galleryGrid"></div>
     <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">↑</button>
 
-    <!-- Лайтбокс -->
-    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+    <!-- Лайтбокс: слева картинка, справа боковая панель комментариев -->
+    <div class="lightbox" id="lightbox">
         <span class="close-btn" onclick="closeLightbox(event)">&times;</span>
-        <div class="lightbox-content">
-            <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
+        <div class="lightbox-left" onclick="closeLightbox(event)">
+            <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр" onclick="event.stopPropagation()">
             <div class="lightbox-caption" id="lightboxCaption"></div>
-            <div class="lightbox-actions">
+            <div class="lightbox-actions" onclick="event.stopPropagation()">
                 <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
                 <span class="counter" id="likeCount">0</span>
                 <span class="counter" id="viewCount">👁 0</span>
-                <button class="action-btn" id="commentsBtn" onclick="openCommentsScreen(event)">💬 Комментарии</button>
+                <button class="action-btn" id="commentsBtn" onclick="toggleCommentsPanel(event)">💬 Комментарии</button>
                 <button class="action-btn" id="shareBtn" onclick="shareImage(event)">🔗 Поделиться</button>
                 <button class="action-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">⬇ Скачать</button>
             </div>
         </div>
-    </div>
 
-    <!-- Экран комментариев (полноэкранный) -->
-    <div class="comments-screen" id="commentsScreen">
-        <div class="comments-screen-header">
-            <button class="back-btn" onclick="closeCommentsScreen()">← Назад</button>
-            <div class="comments-screen-title">
-                💬 Комментарии <span class="sub" id="commentsScreenSubtitle"></span>
+        <!-- Боковая панель комментариев (на ПК — справа, на моб — на весь экран) -->
+        <div class="comments-panel" id="commentsPanel" onclick="event.stopPropagation()">
+            <div class="comments-header">
+                <div class="title">💬 Комментарии <span id="commentsCount" style="color:#8b949e;font-weight:400;font-size:0.85rem;"></span></div>
+                <button class="comments-close" onclick="closeCommentsPanel()" title="Закрыть">×</button>
             </div>
+            <div class="comments-list" id="commentsList">
+                <div class="comments-empty">Загрузка...</div>
+            </div>
+            <div class="comments-form" id="commentsForm"></div>
         </div>
-        <div class="comments-screen-list" id="commentsScreenList">
-            <div class="comments-empty">Загрузка...</div>
-        </div>
-        <div class="comments-screen-form" id="commentsScreenForm"></div>
     </div>
 
     <div class="modal-overlay" id="profileModal">
         <div class="modal" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeProfileModal()">&times;</button>
             <h2 id="profileModalTitle">Заполните профиль</h2>
-
             <div class="modal-avatar-block">
                 <img class="modal-avatar" id="profileAvatar" src="" alt="Аватар">
                 <div class="modal-avatar-hint">Аватар берётся из Google-аккаунта</div>
             </div>
-
             <label class="modal-label">Имя (отображается в комментариях)</label>
             <input type="text" class="modal-input" id="profileNameInput" maxlength="40" placeholder="Ваше имя">
-
             <label class="modal-label">О себе (необязательно)</label>
             <textarea class="modal-textarea" id="profileBioInput" maxlength="200" placeholder="Немного о вас..."></textarea>
             <div class="modal-counter" id="bioCounter">0 / 200</div>
-
             <button class="modal-save-btn" id="profileSaveBtn" onclick="saveProfile()">Сохранить</button>
             <button class="modal-skip-btn" id="profileSkipBtn" onclick="closeProfileModal()">Пропустить</button>
         </div>
@@ -1151,10 +1088,7 @@
 
     <script>
         const CREATOR_UID = "5rT2dxYNsYYhBl6Prok2oCeCflX2";
-
-        const ADMIN_UIDS = [
-            // "UID_ПЕРВОГО_АДМИНА",
-        ];
+        const ADMIN_UIDS = [];
 
         const BAD_WORDS = [
             "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
@@ -1186,7 +1120,6 @@
         window.isBanned = false;
         window.currentArtComments = [];
         window.currentUserRole = "guest";
-        window.currentCommentCount = 0;
 
         const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
@@ -1196,10 +1129,9 @@
         const sortSelect = document.getElementById('sortSelect');
         const tagFilters = document.getElementById('tagFilters');
         const scrollTopBtn = document.getElementById('scrollTopBtn');
-        const commentsScreen = document.getElementById('commentsScreen');
-        const commentsScreenList = document.getElementById('commentsScreenList');
-        const commentsScreenForm = document.getElementById('commentsScreenForm');
-        const commentsScreenSubtitle = document.getElementById('commentsScreenSubtitle');
+        const commentsPanel = document.getElementById('commentsPanel');
+        const commentsList = document.getElementById('commentsList');
+        const commentsForm = document.getElementById('commentsForm');
         const commentsBtn = document.getElementById('commentsBtn');
 
         let currentTag = null;
@@ -1396,6 +1328,9 @@
             document.getElementById('shareBtn').disabled = true;
             document.getElementById('downloadBtn').disabled = true;
 
+            // Закрываем панель комментариев при открытии новой картинки
+            commentsPanel.classList.remove('open');
+
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
             history.replaceState(null, '', '?img=' + encodeURIComponent(art.img));
@@ -1412,38 +1347,38 @@
             btn.textContent = fullTagsDiv.classList.contains('visible') ? 'Скрыть хэштеги' : 'Показать все хэштеги';
         }
 
+        function toggleCommentsPanel(event) {
+            event.stopPropagation();
+            commentsPanel.classList.toggle('open');
+            if (commentsPanel.classList.contains('open')) {
+                // При открытии на мобильном — скролл в начало
+                if (window.innerWidth <= 900) {
+                    commentsList.scrollTop = 0;
+                }
+            }
+        }
+        window.toggleCommentsPanel = toggleCommentsPanel;
+
+        function closeCommentsPanel() {
+            commentsPanel.classList.remove('open');
+        }
+        window.closeCommentsPanel = closeCommentsPanel;
+
         function closeLightbox(event) {
-            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && event.target.tagName !== 'TEXTAREA' && event.target.tagName !== 'INPUT' && !event.target.classList.contains('close-btn')) return;
+            // Не закрываем при клике на картинку/кнопки/панель
+            if (event && event.target) {
+                const tag = event.target.tagName;
+                if (tag === 'IMG' || tag === 'A' || tag === 'BUTTON' || tag === 'TEXTAREA' || tag === 'INPUT') return;
+                if (event.target.closest && event.target.closest('.comments-panel')) return;
+            }
             lightbox.classList.remove('active');
+            commentsPanel.classList.remove('open');
             document.body.style.overflow = '';
             window.currentArtIndex = -1;
             history.replaceState(null, '', window.location.pathname);
             if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
             if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
         }
-
-        function openCommentsScreen(event) {
-            event.stopPropagation();
-            const art = arts[window.currentArtIndex];
-            if (!art) return;
-            lightbox.classList.remove('active');
-            commentsScreen.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            commentsScreenSubtitle.textContent = '— ' + art.title;
-            // Скролл списка в начало
-            commentsScreenList.scrollTop = 0;
-        }
-
-        function closeCommentsScreen() {
-            commentsScreen.classList.remove('active');
-            if (window.currentArtIndex >= 0) {
-                lightbox.classList.add('active');
-            } else {
-                document.body.style.overflow = '';
-            }
-        }
-        window.openCommentsScreen = openCommentsScreen;
-        window.closeCommentsScreen = closeCommentsScreen;
 
         function shareImage(event) {
             event.stopPropagation();
@@ -1479,13 +1414,13 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (commentsScreen.classList.contains('active')) closeCommentsScreen();
+                if (commentsPanel.classList.contains('open')) closeCommentsPanel();
                 else if (lightbox.classList.contains('active')) closeLightbox({ target: document.createElement('div') });
             }
         });
 
         window.addEventListener('scroll', () => {
-            if (lightbox.classList.contains('active') || commentsScreen.classList.contains('active')) return;
+            if (lightbox.classList.contains('active')) return;
             const thirdItem = galleryGrid.children[2];
             if (thirdItem) {
                 const rect = thirdItem.getBoundingClientRect();
@@ -1551,18 +1486,19 @@
 
         // === UI КОММЕНТАРИЕВ ===
         window.renderCommentsList = function(comments) {
-            window.currentCommentCount = comments.length;
+            const countEl = document.getElementById('commentsCount');
+            countEl.textContent = comments.length > 0 ? `(${comments.length})` : '';
             commentsBtn.textContent = '💬 Комментарии' + (comments.length > 0 ? ' (' + comments.length + ')' : '');
 
             if (comments.length === 0) {
-                commentsScreenList.innerHTML = '<div class="comments-empty">Пока нет комментариев. Будьте первым! 💬</div>';
+                commentsList.innerHTML = '<div class="comments-empty">Пока нет комментариев. Будьте первым! 💬</div>';
                 return;
             }
 
             const myUid = window.currentUser?.uid;
             const myRole = getUserRole(myUid);
 
-            commentsScreenList.innerHTML = comments.map(c => {
+            commentsList.innerHTML = comments.map(c => {
                 const isMine = myUid && c.userId === myUid;
                 const isCreatorComment = isCreator(c.userId);
                 const isAdminComment = isAdmin(c.userId) && !isCreatorComment;
@@ -1873,7 +1809,7 @@
         });
 
         window.renderCommentForm = function() {
-            const form = document.getElementById('commentsScreenForm');
+            const form = document.getElementById('commentsForm');
             const user = window.currentUser;
             if (!user) {
                 form.innerHTML = `<div class="comments-login-hint">Войдите через Google, чтобы оставить комментарий.<br><button onclick="signInWithGoogle()">Войти</button></div>`;
@@ -1935,7 +1871,7 @@
         };
 
         window.loadComments = function(artId) {
-            commentsScreenList.innerHTML = '<div class="comments-empty">Загрузка...</div>';
+            commentsList.innerHTML = '<div class="comments-empty">Загрузка...</div>';
             const q = query(collection(db, "comments"), where("artId", "==", artId));
             window.unsubscribeComments = onSnapshot(q, (snapshot) => {
                 const comments = [];
@@ -1945,7 +1881,7 @@
                 window.renderCommentsList(comments);
             }, (error) => {
                 console.error("Ошибка загрузки комментариев:", error);
-                commentsScreenList.innerHTML = '<div class="comments-empty">Не удалось загрузить комментарии.</div>';
+                commentsList.innerHTML = '<div class="comments-empty">Не удалось загрузить комментарии.</div>';
             });
         };
 
