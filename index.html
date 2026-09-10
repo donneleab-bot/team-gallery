@@ -79,6 +79,10 @@
             border-color: #1f6feb;
             color: #fff;
         }
+        .tag-btn.more-btn {
+            border-style: dashed;
+            color: #58a6ff;
+        }
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -300,68 +304,23 @@
 
     <script>
         // ============================================================
-        // 1. МАССИВ С КАРТИНКАМИ (меняйте только здесь)
+        // 1. МАССИВ С КАРТИНКАМИ
         // ============================================================
         const arts = [
-            {
-                img: "asdasdasdq.jpg",
-                title: "Вид хуманизации барка",
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8394",
-                desc: "#баркмейн #барк_мейн #barkmane #bark_mane",
-                sortDate: "2026-09-08 09:52"
-            },
-            {
-                img: "sadasdasdasd.jpg",
-                title: "Вид хуманизации фаера",
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8392",
-                desc: "#фаер #фаер_мейн #фаермейн #fire #fire_mane #firemane #fire_mane_pride #firemanepride",
-                sortDate: "2026-09-08 08:41"
-            },
-            {
-                img: "asdasd.jpg",
-                title: "Вид хуманизации пера",
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8389",
-                desc: "#перо #пёрышко #feather",
-                sortDate: "2026-09-07 23:07"
-            },
-            {
-                img: "sda223.jpg",
-                title: "третье поколение мой прайд, вместе с мини четвёртым",
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8383",
-                desc: "#третьепоколение #третье_поколение #миничетвертоепоколение #мини_четвертое_поколение #третьепоколениемойпрайд #миничетвертоепоколениемойпрайд #thirdgeneration #third_generation #minifourthgeneration #mini_fourth_generation #mypride3rdgen #mypride4thgen #ос #os #оска #персонаж_ос #myprideos #mypride_os #myprideoc #mypride_oc",
-                sortDate: "2026-09-07 20:13"
-            },
-            {
-                img: "asdsa34.jpg",
-                title: "Смерть Праудмейна",
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8380",
-                desc: "#смертьпраудмейна #смерть_праудмейна #праудмейнсмерть #праудмейн_смерть #proudmanedeath #proudmane_death #deathofproudmane #death_of_proudmane #proudmanedie #proudmane_die",
-                sortDate: "2026-09-07 23:07"
-            },
-            {
-                img: "dasdfasd.jpg",
-                title: "Родители шарптанг",
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8269",
-                desc: "#Sharptongue #Остроязыкая #шарптанг",
-                sortDate: "2026-03-30 02:14"
-            },
+            { img: "asdasdasdq.jpg", title: "Вид хуманизации барка", authorName: "Star Harlen", authorUrl: "https://t.me/My_pride_2/8394", desc: "#баркмейн #барк_мейн #barkmane #bark_mane", sortDate: "2026-09-08 09:52" },
+            { img: "sadasdasdasd.jpg", title: "Вид хуманизации фаера", authorName: "Star Harlen", authorUrl: "https://t.me/My_pride_2/8392", desc: "#фаер #фаер_мейн #фаермейн #fire #fire_mane #firemane #fire_mane_pride #firemanepride", sortDate: "2026-09-08 08:41" },
+            { img: "asdasd.jpg", title: "Вид хуманизации пера", authorName: "Star Harlen", authorUrl: "https://t.me/My_pride_2/8389", desc: "#перо #пёрышко #feather", sortDate: "2026-09-07 23:07" },
+            { img: "sda223.jpg", title: "третье поколение мой прайд, вместе с мини четвёртым", authorName: "Star Harlen", authorUrl: "https://t.me/My_pride_2/8383", desc: "#третьепоколение #третье_поколение #миничетвертоепоколение #мини_четвертое_поколение #третьепоколениемойпрайд #миничетвертоепоколениемойпрайд #thirdgeneration #third_generation #minifourthgeneration #mini_fourth_generation #mypride3rdgen #mypride4thgen #ос #os #оска #персонаж_ос #myprideos #mypride_os #myprideoc #mypride_oc", sortDate: "2026-09-07 20:13" },
+            { img: "asdsa34.jpg", title: "Смерть Праудмейна", authorName: "Star Harlen", authorUrl: "https://t.me/My_pride_2/8380", desc: "#смертьпраудмейна #смерть_праудмейна #праудмейнсмерть #праудмейн_смерть #proudmanedeath #proudmane_death #deathofproudmane #death_of_proudmane #proudmanedie #proudmane_die", sortDate: "2026-09-07 23:07" },
+            { img: "dasdfasd.jpg", title: "Родители шарптанг", authorName: "Star Harlen", authorUrl: "https://t.me/My_pride_2/8269", desc: "#Sharptongue #Остроязыкая #шарптанг", sortDate: "2026-03-30 02:14" },
         ];
 
-        // ============================================================
-        // 2. ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ (доступны из Firebase-модуля)
-        // ============================================================
         window.arts = arts;
         window.currentArtIndex = -1;
         window.statsCache = window.statsCache || {};
 
         // ============================================================
-        // 3. ОСНОВНАЯ ЛОГИКА
+        // 2. ПАНЕЛЬ УПРАВЛЕНИЯ И ТЕГИ
         // ============================================================
         const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
@@ -372,8 +331,11 @@
         const tagFilters = document.getElementById('tagFilters');
 
         let currentTag = null;
+        let tagsExpanded = false;
 
-        // Собираем уникальные теги
+        const TAGS_LIMIT = 10; // Сколько показывать до "Ещё"
+
+        // Собираем все уникальные теги с количеством
         function getAllTags() {
             const tagCount = {};
             arts.forEach(art => {
@@ -383,30 +345,52 @@
                     }
                 });
             });
-            return Object.keys(tagCount).sort((a, b) => tagCount[b] - tagCount[a]);
+            // Сортируем: сначала по количеству, потом по алфавиту
+            return Object.keys(tagCount).sort((a, b) => {
+                if (tagCount[b] !== tagCount[a]) return tagCount[b] - tagCount[a];
+                return a.localeCompare(b);
+            });
         }
 
-        const allTags = getAllTags().slice(0, 15);
-        allTags.forEach(tag => {
-            const btn = document.createElement('button');
-            btn.className = 'tag-btn';
-            btn.textContent = tag;
-            btn.onclick = () => filterByTag(tag, btn);
-            tagFilters.appendChild(btn);
-        });
+        // Рисуем кнопки тегов с "Ещё"
+        function renderTags() {
+            tagFilters.innerHTML = '';
+            const allTags = getAllTags();
+            const visible = tagsExpanded ? allTags : allTags.slice(0, TAGS_LIMIT);
+            const hidden = allTags.length - visible.length;
 
-        function filterByTag(tag, btn) {
-            if (currentTag === tag) {
-                currentTag = null;
-                document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
-            } else {
-                currentTag = tag;
-                document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+            visible.forEach(tag => {
+                const btn = document.createElement('button');
+                btn.className = 'tag-btn' + (currentTag === tag ? ' active' : '');
+                btn.textContent = tag;
+                btn.onclick = () => filterByTag(tag);
+                tagFilters.appendChild(btn);
+            });
+
+            if (hidden > 0) {
+                const moreBtn = document.createElement('button');
+                moreBtn.className = 'tag-btn more-btn';
+                moreBtn.textContent = 'Ещё ' + hidden;
+                moreBtn.onclick = () => { tagsExpanded = true; renderTags(); };
+                tagFilters.appendChild(moreBtn);
+            } else if (tagsExpanded && allTags.length > TAGS_LIMIT) {
+                const lessBtn = document.createElement('button');
+                lessBtn.className = 'tag-btn more-btn';
+                lessBtn.textContent = 'Свернуть';
+                lessBtn.onclick = () => { tagsExpanded = false; renderTags(); };
+                tagFilters.appendChild(lessBtn);
             }
+        }
+
+        function filterByTag(tag) {
+            currentTag = (currentTag === tag) ? null : tag;
+            renderTags();
             renderGallery();
         }
 
+        // ============================================================
+        // 3. ФИЛЬТРАЦИЯ И РЕНДЕР
+        // ============================================================
         function getFilteredArts() {
             const query = searchInput.value.toLowerCase().trim();
             let filtered = arts.filter(art => {
@@ -479,16 +463,21 @@
                 }
             }
             if (needRerender) {
-                const currentValue = sortSelect.value;
-                if (currentValue === 'popular' || currentValue === 'viewed') {
-                    renderGallery();
-                }
+                const v = sortSelect.value;
+                if (v === 'popular' || v === 'viewed') renderGallery();
             }
         }
 
+        // ============================================================
+        // 4. ЛАЙТБОКС
+        // ============================================================
         function openLightbox(imageId) {
             const index = arts.findIndex(a => a.img === imageId);
             if (index === -1) return;
+
+            // Отписываемся от предыдущего просмотра (если был)
+            if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
+
             window.currentArtIndex = index;
             const art = arts[index];
             lightboxImg.src = art.img;
@@ -503,6 +492,15 @@
                 <button class="toggle-tags-btn" onclick="toggleTags(this)">Показать все хэштеги</button>
                 <div class="full-tags">${art.desc || ''}</div>
             `;
+
+            // Мгновенно сбрасываем кнопку лайка и счётчики
+            const btn = document.getElementById('likeBtn');
+            btn.disabled = true;
+            btn.classList.remove('liked');
+            btn.textContent = '⏳ Загрузка...';
+            document.getElementById('likeCount').textContent = '…';
+            document.getElementById('viewCount').textContent = '…';
+
             lightbox.classList.add('active');
             history.replaceState(null, '', '?img=' + encodeURIComponent(art.img));
 
@@ -521,9 +519,14 @@
                 lightbox.classList.remove('active');
                 window.currentArtIndex = -1;
                 history.replaceState(null, '', window.location.pathname);
+                // Отписываемся от onSnapshot
+                if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
             }
         }
 
+        // ============================================================
+        // 5. ПОДЕЛИТЬСЯ
+        // ============================================================
         function shareImage(event) {
             event.stopPropagation();
             const art = arts[window.currentArtIndex];
@@ -556,6 +559,9 @@
         document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
         document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
+        // ============================================================
+        // 6. СКАЧИВАНИЕ
+        // ============================================================
         function downloadWithWatermark(event) {
             event.stopPropagation();
             const currentArt = arts[window.currentArtIndex];
@@ -612,6 +618,8 @@
             img.onerror = () => alert('Не удалось загрузить картинку.');
         }
 
+        // Первый рендер
+        renderTags();
         renderGallery();
     </script>
 
@@ -634,33 +642,54 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // === КЭШ IP (получаем один раз при загрузке) ===
+        let cachedIP = null;
         async function getUserIP() {
+            if (cachedIP) return cachedIP;
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
                 const data = await res.json();
-                return data.ip;
-            } catch { return "unknown_ip"; }
-        }
-
-        // === СТАТИСТИКА ДЛЯ ЛАЙТБОКСА ===
-        window.loadStats = async function(imageId) {
-            const imgRef = doc(db, "images", imageId);
-            const imgSnap = await getDoc(imgRef);
-            if (imgSnap.exists()) {
-                document.getElementById('likeCount').textContent = imgSnap.data().likes || 0;
-            } else {
-                document.getElementById('likeCount').textContent = '0';
+                cachedIP = data.ip;
+                return cachedIP;
+            } catch { 
+                cachedIP = "unknown_ip";
+                return cachedIP; 
             }
+        }
+        // Предзагрузка IP в фоне
+        getUserIP();
 
+        // === СТАТИСТИКА ДЛЯ ЛАЙТБОКСА (ускоренная) ===
+        window.loadStats = async function(imageId) {
+            const btn = document.getElementById('likeBtn');
+
+            // Параллельно: лайки, IP, проверка лайка
+            const [imgSnap, userIP] = await Promise.all([
+                getDoc(doc(db, "images", imageId)),
+                getUserIP()
+            ]);
+
+            document.getElementById('likeCount').textContent = imgSnap.exists() ? (imgSnap.data().likes || 0) : 0;
+
+            // Подписка на просмотры (с сохранением отписки)
+            if (window.unsubscribeView) window.unsubscribeView();
             const viewRef = doc(db, "views", imageId);
-            onSnapshot(viewRef, (docSnap) => {
+            window.unsubscribeView = onSnapshot(viewRef, (docSnap) => {
+                // Проверяем, что лайтбокс всё ещё открыт и это та же картинка
+                if (!lightbox.classList.contains('active')) return;
+                const currentArt = arts[window.currentArtIndex];
+                if (!currentArt || currentArt.img !== imageId) return;
                 document.getElementById('viewCount').textContent = '👁 ' + (docSnap.exists() ? (docSnap.data().count || 0) : 0);
             });
 
-            const userIP = await getUserIP();
+            // Проверка лайка
             const likeRef = doc(db, "likes", `${imageId}_${userIP}`);
             const likeSnap = await getDoc(likeRef);
-            const btn = document.getElementById('likeBtn');
+
+            // Проверяем, что это всё ещё та же картинка
+            const currentArt = arts[window.currentArtIndex];
+            if (!currentArt || currentArt.img !== imageId) return;
+
             if (likeSnap.exists()) {
                 btn.disabled = true;
                 btn.classList.add('liked');
@@ -674,11 +703,10 @@
 
         // === СТАТИСТИКА ДЛЯ СОРТИРОВКИ ===
         window.loadStatsForSortReal = async function(imageId) {
-            const imgRef = doc(db, "images", imageId);
-            const imgSnap = await getDoc(imgRef);
-            const viewRef = doc(db, "views", imageId);
-            const viewSnap = await getDoc(viewRef);
-            
+            const [imgSnap, viewSnap] = await Promise.all([
+                getDoc(doc(db, "images", imageId)),
+                getDoc(doc(db, "views", imageId))
+            ]);
             window.statsCache[imageId] = {
                 likes: imgSnap.exists() ? (imgSnap.data().likes || 0) : 0,
                 views: viewSnap.exists() ? (viewSnap.data().count || 0) : 0
@@ -690,25 +718,15 @@
             const userIP = await getUserIP();
             const viewLogRef = doc(db, "view_logs", `${imageId}_${userIP}`);
             const viewRef = doc(db, "views", imageId);
-
             const now = Date.now();
             const oneHour = 60 * 60 * 1000;
 
             try {
                 const logSnap = await getDoc(viewLogRef);
-                if (logSnap.exists()) {
-                    const lastView = logSnap.data().timestamp || 0;
-                    if (now - lastView < oneHour) return;
-                }
+                if (logSnap.exists() && (now - (logSnap.data().timestamp || 0)) < oneHour) return;
 
-                await setDoc(viewLogRef, {
-                    imageId: imageId,
-                    ip: userIP,
-                    timestamp: now
-                });
-
+                await setDoc(viewLogRef, { imageId: imageId, ip: userIP, timestamp: now });
                 await setDoc(viewRef, { count: increment(1) }, { merge: true });
-
             } catch (error) {
                 console.error("Ошибка просмотра:", error);
             }
@@ -721,8 +739,7 @@
             if (!art) return;
 
             const userIP = await getUserIP();
-            const likeId = `${art.img}_${userIP}`;
-            const likeRef = doc(db, "likes", likeId);
+            const likeRef = doc(db, "likes", `${art.img}_${userIP}`);
 
             const snap = await getDoc(likeRef);
             if (snap.exists()) {
@@ -731,8 +748,7 @@
             }
 
             await setDoc(likeRef, { imageId: art.img, ip: userIP, timestamp: new Date() });
-            const imgRef = doc(db, "images", art.img);
-            await setDoc(imgRef, { likes: increment(1) }, { merge: true });
+            await setDoc(doc(db, "images", art.img), { likes: increment(1) }, { merge: true });
 
             const btn = document.getElementById('likeBtn');
             btn.disabled = true;
