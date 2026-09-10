@@ -30,7 +30,6 @@
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }
-
         .home-btn {
             display: inline-flex;
             align-items: center;
@@ -51,7 +50,6 @@
             border-color: #58a6ff;
             color: #58a6ff;
         }
-
         .search-input {
             flex: 1;
             min-width: 200px;
@@ -129,7 +127,7 @@
             background: #161b22;
             border: 1px solid #30363d;
             border-radius: 8px;
-            min-width: 200px;
+            min-width: 220px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             opacity: 0;
             pointer-events: none;
@@ -152,6 +150,9 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .user-menu-header .email {
             font-size: 0.8rem;
@@ -176,6 +177,26 @@
         .user-menu-item:hover {
             background: #21262d;
             color: #58a6ff;
+        }
+
+        /* === ПЛАШКА СОЗДАТЕЛЯ === */
+        .creator-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #f5a524, #d97706);
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .creator-badge.small {
+            font-size: 0.65rem;
+            padding: 1px 6px;
         }
 
         .tag-filters {
@@ -265,13 +286,19 @@
             font-size: 1.1rem;
             color: #f0f6fc;
         }
+        .author-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
         .author-link {
             display: inline-block;
             color: #58a6ff;
             text-decoration: none;
             font-size: 0.95rem;
             font-weight: 500;
-            margin-bottom: 8px;
         }
         .author-link:hover {
             text-decoration: underline;
@@ -428,7 +455,7 @@
             transform: translateY(-3px);
         }
 
-        /* === МОДАЛЬНОЕ ОКНО ПРОФИЛЯ === */
+        /* === МОДАЛЬНЫЕ ОКНА === */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -443,6 +470,8 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
             z-index: 10000;
+            overflow-y: auto;
+            padding: 20px 0;
         }
         .modal-overlay.active {
             opacity: 1;
@@ -457,11 +486,19 @@
             max-width: 420px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.7);
             position: relative;
+            margin: auto;
+        }
+        .modal.wide {
+            max-width: 900px;
         }
         .modal h2 {
             margin: 0 0 20px 0;
             color: #f0f6fc;
             font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .modal-close {
             position: absolute;
@@ -481,6 +518,7 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
+            position: relative;
         }
         .modal-avatar {
             width: 90px;
@@ -488,6 +526,7 @@
             border-radius: 50%;
             border: 3px solid #30363d;
             object-fit: cover;
+            display: block;
         }
         .modal-avatar-hint {
             font-size: 0.8rem;
@@ -564,6 +603,110 @@
             color: #c9d1d9;
         }
 
+        /* === СТИЛИ "МОЙ БЛОК" === */
+        .myblock-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 20px;
+        }
+        .myblock-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid #30363d;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .myblock-info h3 {
+            margin: 0 0 4px 0;
+            color: #f0f6fc;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .myblock-info .email {
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-bottom: 6px;
+        }
+        .myblock-info .bio {
+            font-size: 0.9rem;
+            color: #c9d1d9;
+            line-height: 1.4;
+        }
+        .myblock-posts-title {
+            color: #f0f6fc;
+            font-size: 1.05rem;
+            margin: 0 0 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .myblock-posts-count {
+            color: #8b949e;
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+        .myblock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+        .myblock-item {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .myblock-item:hover {
+            transform: translateY(-3px);
+            border-color: #58a6ff;
+        }
+        .myblock-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+        .myblock-item-title {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            color: #c9d1d9;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .myblock-empty {
+            color: #8b949e;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 30px 0;
+        }
+        .myblock-edit-btn {
+            margin-left: auto;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #c9d1d9;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .myblock-edit-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+
         @media (max-width: 600px) {
             body { padding: 12px; }
             .top-bar { gap: 8px; padding: 8px 0; justify-content: space-between; }
@@ -574,6 +717,8 @@
             .login-btn { padding: 8px 12px; font-size: 0.8rem; }
             .user-avatar { width: 36px; height: 36px; }
             .scroll-top { width: 44px; height: 44px; font-size: 20px; bottom: 20px; right: 16px; }
+            .myblock-header { flex-wrap: wrap; }
+            .myblock-edit-btn { margin-left: 0; width: 100%; }
         }
     </style>
 </head>
@@ -601,7 +746,8 @@
                         <div class="name" id="userName">—</div>
                         <div class="email" id="userEmail">—</div>
                     </div>
-                    <button class="user-menu-item" onclick="openProfile()">👤 Мой профиль</button>
+                    <button class="user-menu-item" onclick="openMyBlock()">📁 Мой блок</button>
+                    <button class="user-menu-item" onclick="openProfile()">✏️ Редактировать профиль</button>
                     <button class="user-menu-item" onclick="signOutUser()">🚪 Выйти</button>
                 </div>
             </div>
@@ -625,7 +771,7 @@
         </div>
     </div>
 
-    <!-- Модальное окно профиля -->
+    <!-- Модальное окно редактирования профиля -->
     <div class="modal-overlay" id="profileModal">
         <div class="modal" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeProfileModal()">&times;</button>
@@ -648,6 +794,29 @@
         </div>
     </div>
 
+    <!-- Модальное окно "Мой блок" -->
+    <div class="modal-overlay" id="myBlockModal">
+        <div class="modal wide" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeMyBlock()">&times;</button>
+            <div class="myblock-header">
+                <img class="myblock-avatar" id="myBlockAvatar" src="" alt="Аватар">
+                <div class="myblock-info" style="flex:1;">
+                    <h3>
+                        <span id="myBlockName">—</span>
+                        <span class="creator-badge" id="myBlockBadge" style="display:none;">👑 Создатель</span>
+                    </h3>
+                    <div class="email" id="myBlockEmail">—</div>
+                    <div class="bio" id="myBlockBio"></div>
+                </div>
+                <button class="myblock-edit-btn" onclick="closeMyBlock(); openProfile();">✏️ Редактировать</button>
+            </div>
+            <h4 class="myblock-posts-title">
+                📁 Мои посты <span class="myblock-posts-count" id="myBlockCount"></span>
+            </h4>
+            <div class="myblock-grid" id="myBlockGrid"></div>
+        </div>
+    </div>
+
     <script>
         // ============================================================
         // 1. МАССИВ С КАРТИНКАМИ
@@ -661,10 +830,15 @@
             { img: "dasdfasd.jpg", title: "Родители шарптанг", authorName: "Star Harlen", authorUrl: "https://t.me/My_pride_2/8269", desc: "#Sharptongue #Остроязыкая #шарптанг", sortDate: "2026-03-30 02:14" },
         ];
 
+        // === НАСТРОЙКИ РОЛЕЙ ===
+        // Email создателя — с этой почтой пользователь получает плашку "Создатель"
+        const CREATOR_EMAIL = "donneleab@gmail.com";
+
         window.arts = arts;
         window.currentArtIndex = -1;
         window.statsCache = window.statsCache || {};
         window.currentUser = null;
+        window.currentUserProfile = null;
 
         // ============================================================
         // 2. ПАНЕЛЬ УПРАВЛЕНИЯ И ТЕГИ
@@ -681,6 +855,19 @@
         let currentTag = null;
         let tagsExpanded = false;
         const TAGS_LIMIT = 10;
+
+        // Проверка, является ли пользователь создателем
+        function isCreator(email) {
+            return email && email.toLowerCase() === CREATOR_EMAIL.toLowerCase();
+        }
+
+        // Возвращает HTML-плашку для имени
+        function creatorBadgeHTML(email, small = false) {
+            if (isCreator(email)) {
+                return `<span class="creator-badge${small ? ' small' : ''}">👑 Создатель</span>`;
+            }
+            return '';
+        }
 
         function getAllTags() {
             const tagCount = {};
@@ -764,13 +951,18 @@
             item.className = 'gallery-item';
             const tagsArray = (art.desc || '').split(' ');
             const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
+            // У автора артов может быть своя почта, но пока считаем, что все арты — от создателя
+            const badge = `<span class="creator-badge small">👑 Создатель</span>`;
             item.innerHTML = `
                 <div class="img-container" onclick="openLightbox('${art.img}')">
                     <img src="${art.img}" alt="${art.title}" loading="lazy">
                 </div>
                 <div class="item-info">
                     <h3>${art.title}</h3>
-                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <div class="author-line">
+                        <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                        ${badge}
+                    </div>
                     <p>${shortTags}</p>
                 </div>
             `;
@@ -833,7 +1025,10 @@
 
             lightboxCaption.innerHTML = `
                 <h3>${art.title}</h3>
-                <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+                <div class="author-line" style="justify-content:center;">
+                    <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+                    <span class="creator-badge">👑 Создатель</span>
+                </div>
                 <p>${shortTags}</p>
                 <button class="toggle-tags-btn" onclick="toggleTags(this)">Показать все хэштеги</button>
                 <div class="full-tags">${art.desc || ''}</div>
@@ -982,7 +1177,7 @@
     </script>
 
     <!-- ============================================================
-         FIREBASE SDK + AUTH + PROFILE
+         FIREBASE SDK + AUTH + PROFILE + MY BLOCK
          ============================================================ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
@@ -1062,20 +1257,22 @@
                 getDoc(doc(db, "users", user.uid)).then(snap => {
                     if (snap.exists()) {
                         const data = snap.data();
-                        userName.textContent = data.displayName || user.displayName || 'Пользователь';
+                        window.currentUserProfile = data;
+                        userName.innerHTML = (data.displayName || user.displayName || 'Пользователь') + ' ' + creatorBadgeHTML(user.email, true);
                     } else {
-                        // Первый вход — показываем форму заполнения
-                        userName.textContent = user.displayName || 'Пользователь';
+                        window.currentUserProfile = null;
+                        userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + creatorBadgeHTML(user.email, true);
                         setTimeout(() => openProfileModal(true), 500);
                     }
                 });
             } else {
                 loginBtn.style.display = 'inline-flex';
                 userInfo.style.display = 'none';
+                window.currentUserProfile = null;
             }
         });
 
-        // === ПРОФИЛЬ ===
+        // === РЕДАКТИРОВАНИЕ ПРОФИЛЯ ===
         window.openProfileModal = function(isFirstTime) {
             const user = window.currentUser;
             if (!user) return;
@@ -1084,7 +1281,7 @@
             const title = document.getElementById('profileModalTitle');
             const skipBtn = document.getElementById('profileSkipBtn');
 
-            title.textContent = isFirstTime ? 'Заполните профиль' : 'Мой профиль';
+            title.textContent = isFirstTime ? 'Заполните профиль' : 'Редактировать профиль';
             skipBtn.style.display = isFirstTime ? 'block' : 'none';
 
             document.getElementById('profileAvatar').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
@@ -1092,7 +1289,6 @@
             document.getElementById('profileBioInput').value = '';
             document.getElementById('bioCounter').textContent = '0 / 200';
 
-            // Загружаем профиль из базы, если он есть
             getDoc(doc(db, "users", user.uid)).then(snap => {
                 if (snap.exists()) {
                     const data = snap.data();
@@ -1134,8 +1330,9 @@
                     updatedAt: new Date()
                 }, { merge: true });
 
-                // Обновляем имя в меню
-                document.getElementById('userName').textContent = name;
+                window.currentUserProfile = { displayName: name, bio: bio, email: user.email, photoURL: user.photoURL };
+
+                document.getElementById('userName').innerHTML = name + ' ' + creatorBadgeHTML(user.email, true);
 
                 btn.textContent = '✅ Сохранено!';
                 setTimeout(() => {
@@ -1152,14 +1349,72 @@
             }
         };
 
-        // Счётчик символов био
         document.getElementById('profileBioInput').addEventListener('input', (e) => {
             document.getElementById('bioCounter').textContent = e.target.value.length + ' / 200';
         });
 
-        // Закрытие модалки при клике на фон
         document.getElementById('profileModal').addEventListener('click', (e) => {
             if (e.target.id === 'profileModal') closeProfileModal();
+        });
+
+        // === МОЙ БЛОК ===
+        window.openMyBlock = function() {
+            const user = window.currentUser;
+            if (!user) return;
+
+            document.getElementById('userMenu').classList.remove('open');
+
+            const avatar = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+            document.getElementById('myBlockAvatar').src = avatar;
+            document.getElementById('myBlockEmail').textContent = user.email || '';
+
+            // Плашка создателя
+            const badge = document.getElementById('myBlockBadge');
+            if (isCreator(user.email)) badge.style.display = 'inline-flex';
+            else badge.style.display = 'none';
+
+            // Имя и био из Firestore
+            getDoc(doc(db, "users", user.uid)).then(snap => {
+                let displayName = user.displayName || 'Пользователь';
+                let bio = '';
+                if (snap.exists()) {
+                    const data = snap.data();
+                    displayName = data.displayName || displayName;
+                    bio = data.bio || '';
+                }
+                document.getElementById('myBlockName').textContent = displayName;
+                document.getElementById('myBlockBio').textContent = bio || 'Без описания';
+            });
+
+            // Список постов этого пользователя
+            // ВАЖНО: пока все арты в массиве arts от "Star Harlen",
+            // поэтому показываем все. Позже, когда подключим Firestore,
+            // здесь будет фильтр по authorId.
+            const myArts = arts; // Позже: arts.filter(a => a.authorId === user.uid)
+            const grid = document.getElementById('myBlockGrid');
+            const countEl = document.getElementById('myBlockCount');
+            countEl.textContent = '(' + myArts.length + ')';
+
+            if (myArts.length === 0) {
+                grid.innerHTML = '<div class="myblock-empty">У вас пока нет постов.</div>';
+            } else {
+                grid.innerHTML = myArts.map(art => `
+                    <div class="myblock-item" onclick="closeMyBlock(); openLightbox('${art.img}')">
+                        <img src="${art.img}" alt="${art.title}" loading="lazy">
+                        <div class="myblock-item-title" title="${art.title}">${art.title}</div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('myBlockModal').classList.add('active');
+        };
+
+        window.closeMyBlock = function() {
+            document.getElementById('myBlockModal').classList.remove('active');
+        };
+
+        document.getElementById('myBlockModal').addEventListener('click', (e) => {
+            if (e.target.id === 'myBlockModal') closeMyBlock();
         });
 
         // === FIREBASE-ЛОГИКА (лайки, просмотры) ===
