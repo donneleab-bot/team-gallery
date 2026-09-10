@@ -12,15 +12,21 @@
             color: #c9d1d9;
             padding: 20px;
         }
-        .search-container {
+
+        /* === ПАНЕЛЬ УПРАВЛЕНИЯ: ПОИСК + СОРТИРОВКА === */
+        .controls {
             max-width: 1200px;
-            margin: 0 auto 25px auto;
+            margin: 0 auto 15px auto;
             display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
         }
         .search-input {
-            width: 100%;
-            max-width: 500px;
+            flex: 1;
+            min-width: 200px;
+            max-width: 400px;
             padding: 12px 20px;
             font-size: 1rem;
             background-color: #161b22;
@@ -34,6 +40,51 @@
             border-color: #58a6ff;
             box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
         }
+        .sort-select {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #f0f6fc;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+        .sort-select:hover, .sort-select:focus {
+            border-color: #58a6ff;
+        }
+
+        /* === ФИЛЬТРЫ ПО ТЕГАМ === */
+        .tag-filters {
+            max-width: 1200px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .tag-btn {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 20px;
+            color: #8b949e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tag-btn:hover {
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+        .tag-btn.active {
+            background: #1f6feb;
+            border-color: #1f6feb;
+            color: #fff;
+        }
+
+        /* === ГАЛЕРЕЯ === */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -48,7 +99,14 @@
             overflow: hidden;
             border: 1px solid #30363d;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease;
+            opacity: 0;
+            transform: translateY(10px);
+            will-change: transform, opacity;
+        }
+        .gallery-item.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         .gallery-item.hidden {
             display: none;
@@ -99,6 +157,8 @@
             color: #8b949e;
             line-height: 1.4;
         }
+
+        /* === ЛАЙТБОКС === */
         .lightbox {
             position: fixed;
             top: 0;
@@ -217,9 +277,20 @@
 </head>
 <body>
 
-    <div class="search-container">
-        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или дате...">
+    <!-- Панель управления: поиск + сортировка -->
+    <div class="controls">
+        <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или тегам...">
+        <select id="sortSelect" class="sort-select">
+            <option value="new">Сначала новые</option>
+            <option value="old">Сначала старые</option>
+            <option value="popular">Популярные (лайки)</option>
+            <option value="viewed">Просматриваемые</option>
+            <option value="alpha">По алфавиту</option>
+        </select>
     </div>
+
+    <!-- Фильтры по тегам -->
+    <div class="tag-filters" id="tagFilters"></div>
 
     <div class="gallery-grid" id="galleryGrid"></div>
 
@@ -232,6 +303,7 @@
             <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
             <span class="counter" id="likeCount">0</span>
             <span class="counter" id="viewCount">👁 0</span>
+            <button class="action-btn" id="shareBtn" onclick="shareImage(event)">🔗 Поделиться</button>
             <button class="action-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">⬇ Скачать</button>
         </div>
     </div>
@@ -293,49 +365,142 @@
         const lightboxImg = document.getElementById('lightboxImg');
         const lightboxCaption = document.getElementById('lightboxCaption');
         const searchInput = document.getElementById('searchInput');
-        const likeBtn = document.getElementById('likeBtn');
-        const likeCountEl = document.getElementById('likeCount');
-        const viewCountEl = document.getElementById('viewCount');
+        const sortSelect = document.getElementById('sortSelect');
+        const tagFilters = document.getElementById('tagFilters');
 
         let currentArtIndex = -1;
+        let currentTag = null;
 
-        const sortedArts = [...arts].sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
+        // Кэш для сортировки по лайкам/просмотрам (чтобы не дёргать базу каждый раз)
+        const statsCache = {};
 
-        sortedArts.forEach((art, index) => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            
-            const tagsArray = art.desc.split(' ');
-            const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
-            
-            item.innerHTML = `
-                <div class="img-container" onclick="openLightbox(${index})">
-                    <img src="${art.img}" alt="${art.title}">
-                </div>
-                <div class="item-info">
-                    <h3>${art.title}</h3>
-                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                    <p>${shortTags}</p>
-                </div>
-            `;
-            galleryGrid.appendChild(item);
-        });
-
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const items = galleryGrid.getElementsByClassName('gallery-item');
-            sortedArts.forEach((art, index) => {
-                const match = art.title.toLowerCase().includes(query) || 
-                              art.authorName.toLowerCase().includes(query) || 
-                              art.desc.toLowerCase().includes(query);
-                if (match) items[index].classList.remove('hidden');
-                else items[index].classList.add('hidden');
+        // Собираем все уникальные теги
+        function getAllTags() {
+            const tagCount = {};
+            arts.forEach(art => {
+                art.desc.split(' ').forEach(tag => {
+                    if (tag.startsWith('#')) {
+                        tagCount[tag] = (tagCount[tag] || 0) + 1;
+                    }
+                });
             });
+            // Сортируем по популярности
+            return Object.keys(tagCount).sort((a, b) => tagCount[b] - tagCount[a]);
+        }
+
+        // Рендер кнопок тегов (только топ-15)
+        const allTags = getAllTags().slice(0, 15);
+        allTags.forEach(tag => {
+            const btn = document.createElement('button');
+            btn.className = 'tag-btn';
+            btn.textContent = tag;
+            btn.onclick = () => filterByTag(tag, btn);
+            tagFilters.appendChild(btn);
         });
 
-        function openLightbox(index) {
+        // Фильтр по тегу
+        function filterByTag(tag, btn) {
+            if (currentTag === tag) {
+                // Снять фильтр
+                currentTag = null;
+                document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+            } else {
+                currentTag = tag;
+                document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+            renderGallery();
+        }
+
+        // Получить отфильтрованный и отсортированный список
+        function getFilteredArts() {
+            const query = searchInput.value.toLowerCase().trim();
+            let filtered = arts.filter(art => {
+                const matchSearch = !query ||
+                    art.title.toLowerCase().includes(query) ||
+                    art.authorName.toLowerCase().includes(query) ||
+                    art.desc.toLowerCase().includes(query);
+                const matchTag = !currentTag || art.desc.includes(currentTag);
+                return matchSearch && matchTag;
+            });
+
+            // Сортировка
+            const sortBy = sortSelect.value;
+            if (sortBy === 'new') {
+                filtered.sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
+            } else if (sortBy === 'old') {
+                filtered.sort((a, b) => new Date(a.sortDate) - new Date(b.sortDate));
+            } else if (sortBy === 'alpha') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title, 'ru'));
+            } else if (sortBy === 'popular' || sortBy === 'viewed') {
+                // Сортируем по кэшу (если данных нет — считаем 0)
+                filtered.sort((a, b) => {
+                    const statA = statsCache[a.img] || { likes: 0, views: 0 };
+                    const statB = statsCache[b.img] || { likes: 0, views: 0 };
+                    const key = sortBy === 'popular' ? 'likes' : 'views';
+                    return (statB[key] || 0) - (statA[key] || 0);
+                });
+            }
+
+            return filtered;
+        }
+
+        // === РЕНДЕР ГАЛЕРЕИ ===
+        function renderGallery() {
+            galleryGrid.innerHTML = '';
+            const filtered = getFilteredArts();
+
+            filtered.forEach((art, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+
+                const tagsArray = art.desc.split(' ');
+                const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
+
+                item.innerHTML = `
+                    <div class="img-container" onclick="openLightbox('${art.img}')">
+                        <img src="${art.img}" alt="${art.title}" loading="lazy">
+                    </div>
+                    <div class="item-info">
+                        <h3>${art.title}</h3>
+                        <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                        <p>${shortTags}</p>
+                    </div>
+                `;
+                galleryGrid.appendChild(item);
+
+                // Плавное появление с задержкой для каскадного эффекта
+                setTimeout(() => item.classList.add('visible'), index * 50);
+            });
+
+            // Загружаем статистику для сортировки по популярности/просмотрам
+            if (sortSelect.value === 'popular' || sortSelect.value === 'viewed') {
+                filtered.forEach(art => loadStatsForSort(art.img));
+            }
+        }
+
+        // Отдельная функция для загрузки только лайков/просмотров (без UI лайтбокса)
+        async function loadStatsForSort(imageId) {
+            if (statsCache[imageId]) return;
+            // Ждём, пока Firebase загрузится
+            if (typeof getDoc === 'undefined') {
+                setTimeout(() => loadStatsForSort(imageId), 500);
+                return;
+            }
+            // Эта функция будет перезаписана из Firebase-модуля
+            if (typeof window.loadStatsForSortReal === 'function') {
+                await window.loadStatsForSortReal(imageId);
+                // После загрузки — пересортируем
+                renderGallery();
+            }
+        }
+
+        // === ОТКРЫТИЕ ЛАЙТБОКСА ===
+        function openLightbox(imageId) {
+            const index = arts.findIndex(a => a.img === imageId);
+            if (index === -1) return;
             currentArtIndex = index;
-            const art = sortedArts[index];
+            const art = arts[index];
             lightboxImg.src = art.img;
 
             const tagsArray = art.desc.split(' ');
@@ -351,6 +516,9 @@
             `;
             lightbox.classList.add('active');
 
+            // Обновляем URL, чтобы можно было поделиться
+            history.replaceState(null, '', '?img=' + encodeURIComponent(art.img));
+
             if (typeof loadStats === 'function') loadStats(art.img);
             if (typeof incrementView === 'function') incrementView(art.img);
         }
@@ -358,26 +526,57 @@
         function toggleTags(btn) {
             const fullTagsDiv = btn.nextElementSibling;
             fullTagsDiv.classList.toggle('visible');
-            if (fullTagsDiv.classList.contains('visible')) {
-                btn.textContent = 'Скрыть хэштеги';
-            } else {
-                btn.textContent = 'Показать все хэштеги';
-            }
+            btn.textContent = fullTagsDiv.classList.contains('visible') ? 'Скрыть хэштеги' : 'Показать все хэштеги';
         }
 
         function closeLightbox(event) {
             if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON') {
                 lightbox.classList.remove('active');
                 currentArtIndex = -1;
+                history.replaceState(null, '', window.location.pathname);
             }
         }
 
+        // === ПОДЕЛИТЬСЯ ===
+        function shareImage(event) {
+            event.stopPropagation();
+            const art = arts[currentArtIndex];
+            if (!art) return;
+            const url = window.location.origin + window.location.pathname + '?img=' + encodeURIComponent(art.img);
+            if (navigator.share) {
+                navigator.share({ title: art.title, text: art.desc, url: url }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    const btn = document.getElementById('shareBtn');
+                    const original = btn.textContent;
+                    btn.textContent = '✅ Скопировано!';
+                    setTimeout(() => btn.textContent = original, 1500);
+                });
+            }
+        }
+
+        // === ПРОВЕРКА URL ПРИ ЗАГРУЗКЕ (для шаринга) ===
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            const imgParam = params.get('img');
+            if (imgParam) {
+                const art = arts.find(a => a.img === imgParam);
+                if (art) setTimeout(() => openLightbox(imgParam), 300);
+            }
+        });
+
+        // === СОБЫТИЯ ===
+        searchInput.addEventListener('input', renderGallery);
+        sortSelect.addEventListener('change', renderGallery);
+
+        // Запрет правого клика и перетаскивания
         document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
         document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
+        // === СКАЧИВАНИЕ С ВОДЯНЫМ ЗНАКОМ ===
         function downloadWithWatermark(event) {
             event.stopPropagation();
-            const currentArt = sortedArts[currentArtIndex];
+            const currentArt = arts[currentArtIndex];
             if (!currentArt) return;
 
             const img = new Image();
@@ -430,6 +629,9 @@
             };
             img.onerror = () => alert('Не удалось загрузить картинку.');
         }
+
+        // Первый рендер
+        renderGallery();
     </script>
 
     <!-- Firebase SDK -->
@@ -457,7 +659,7 @@
             } catch { return "unknown_ip"; }
         }
 
-        // === ЗАГРУЗКА СТАТИСТИКИ ===
+        // === ЗАГРУЗКА СТАТИСТИКИ ДЛЯ ЛАЙТБОКСА ===
         window.loadStats = async function(imageId) {
             const imgRef = doc(db, "images", imageId);
             const imgSnap = await getDoc(imgRef);
@@ -469,11 +671,7 @@
 
             const viewRef = doc(db, "views", imageId);
             onSnapshot(viewRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    document.getElementById('viewCount').textContent = '👁 ' + (docSnap.data().count || 0);
-                } else {
-                    document.getElementById('viewCount').textContent = '👁 0';
-                }
+                document.getElementById('viewCount').textContent = '👁 ' + (docSnap.exists() ? (docSnap.data().count || 0) : 0);
             });
 
             const userIP = await getUserIP();
@@ -491,6 +689,22 @@
             }
         };
 
+        // === ЗАГРУЗКА СТАТИСТИКИ ДЛЯ СОРТИРОВКИ ===
+        window.loadStatsForSortReal = async function(imageId) {
+            const imgRef = doc(db, "images", imageId);
+            const imgSnap = await getDoc(imgRef);
+            const viewRef = doc(db, "views", imageId);
+            const viewSnap = await getDoc(viewRef);
+            
+            window.statsCache[imageId] = {
+                likes: imgSnap.exists() ? (imgSnap.data().likes || 0) : 0,
+                views: viewSnap.exists() ? (viewSnap.data().count || 0) : 0
+            };
+        };
+
+        // Делаем statsCache глобальным, чтобы основная логика могла его читать
+        window.statsCache = window.statsCache || {};
+
         // === ПРОСМОТР: 1 РАЗ В ЧАС С ОДНОГО IP ===
         window.incrementView = async function(imageId) {
             const userIP = await getUserIP();
@@ -502,12 +716,9 @@
 
             try {
                 const logSnap = await getDoc(viewLogRef);
-
                 if (logSnap.exists()) {
                     const lastView = logSnap.data().timestamp || 0;
-                    if (now - lastView < oneHour) {
-                        return; // Меньше часа — не считаем
-                    }
+                    if (now - lastView < oneHour) return;
                 }
 
                 await setDoc(viewLogRef, {
@@ -516,9 +727,7 @@
                     timestamp: now
                 });
 
-                await setDoc(viewRef, {
-                    count: increment(1)
-                }, { merge: true });
+                await setDoc(viewRef, { count: increment(1) }, { merge: true });
 
             } catch (error) {
                 console.error("Ошибка просмотра:", error);
@@ -528,7 +737,7 @@
         // === ЛАЙК ===
         window.handleLike = async function(event) {
             event.stopPropagation();
-            const art = sortedArts[currentArtIndex];
+            const art = window.arts && window.arts[window.currentArtIndex];
             if (!art) return;
 
             const userIP = await getUserIP();
