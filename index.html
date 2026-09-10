@@ -192,6 +192,24 @@
             font-size: 0.65rem;
             padding: 1px 6px;
         }
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #1f6feb, #0969da);
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .admin-badge.small {
+            font-size: 0.65rem;
+            padding: 1px 6px;
+        }
         .tag-filters {
             max-width: 1600px;
             margin: 0 auto 25px auto;
@@ -556,7 +574,7 @@
             border-radius: 6px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
             z-index: 100;
-            min-width: 180px;
+            min-width: 200px;
             overflow: hidden;
         }
         .comment-menu button {
@@ -579,6 +597,12 @@
         }
         .comment-menu button.danger:hover {
             background: rgba(248, 81, 73, 0.1);
+        }
+        .comment-menu button.admin-action {
+            color: #58a6ff;
+        }
+        .comment-menu button.admin-action:hover {
+            background: rgba(88, 166, 255, 0.1);
         }
         .comments-empty {
             text-align: center;
@@ -1063,6 +1087,7 @@
                     <h3>
                         <span id="myBlockName">—</span>
                         <span class="creator-badge" id="myBlockBadge" style="display:none;">👑 Создатель</span>
+                        <span class="admin-badge" id="myBlockAdminBadge" style="display:none;">🛡 Админ</span>
                     </h3>
                     <div class="email" id="myBlockEmail">—</div>
                     <div class="bio" id="myBlockBio"></div>
@@ -1078,11 +1103,19 @@
 
     <script>
         // ============================================================
-        // ⚠️ ВАЖНО: ЗАМЕНИТЕ "ЗАМЕНИТЕ_НА_ВАШ_UID" НА ВАШ UID ИЗ FIREBASE AUTH
+        // ⚠️ ЗАМЕНИТЕ НА ВАШ НАСТОЯЩИЙ UID
         // ============================================================
-        const CREATOR_UID = "ЗАМЕНИТЕ_НА_ВАШ_UID";
+        const CREATOR_UID = "5rT2dxYNsYYhBl6Prok2oCeCflX2";
 
-        // Простой фильтр нецензурных слов (RU + EN)
+        // ============================================================
+        // 🛡 СПИСОК UID АДМИНОВ (пока вписывайте вручную)
+        // ============================================================
+        const ADMIN_UIDS = [
+            // "UID_ПЕРВОГО_АДМИНА",
+            // "UID_ВТОРОГО_АДМИНА",
+        ];
+
+        // Простой фильтр нецензурных слов
         const BAD_WORDS = [
             "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
             "ебуч","еби","заеб","уеб","наеб","долбоеб","мудак","мудил","гандон","гнида",
@@ -1112,6 +1145,7 @@
         window.currentUserProfile = null;
         window.isBanned = false;
         window.currentArtComments = [];
+        window.currentUserRole = "guest";
 
         const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
@@ -1126,16 +1160,42 @@
         let tagsExpanded = false;
         const TAGS_LIMIT = 10;
 
+        // === ОПРЕДЕЛЕНИЕ РОЛИ ===
         function isCreator(uid) {
             return uid && uid === CREATOR_UID;
         }
         window.isCreator = isCreator;
+
+        function isAdmin(uid) {
+            return uid && ADMIN_UIDS.includes(uid);
+        }
+        window.isAdmin = isAdmin;
+
+        // Роль пользователя: creator | admin | user | guest
+        function getUserRole(uid) {
+            if (!uid) return "guest";
+            if (isCreator(uid)) return "creator";
+            if (isAdmin(uid)) return "admin";
+            return "user";
+        }
+        window.getUserRole = getUserRole;
 
         function creatorBadgeHTML(uid, small = false) {
             if (isCreator(uid)) {
                 return `<span class="creator-badge${small ? ' small' : ''}">👑 Создатель</span>`;
             }
             return '';
+        }
+
+        function adminBadgeHTML(uid, small = false) {
+            if (isAdmin(uid) && !isCreator(uid)) {
+                return `<span class="admin-badge${small ? ' small' : ''}">🛡 Админ</span>`;
+            }
+            return '';
+        }
+
+        function anyBadgeHTML(uid, small = false) {
+            return creatorBadgeHTML(uid, small) + adminBadgeHTML(uid, small);
         }
 
         function getAllTags() {
@@ -1448,11 +1508,28 @@
                 return;
             }
 
+            const myUid = window.currentUser?.uid;
+            const myRole = getUserRole(myUid);
+
             list.innerHTML = comments.map(c => {
-                const isMine = window.currentUser && c.userId === window.currentUser.uid;
-                const isCreatorComment = c.userId === CREATOR_UID;
-                const canManage = isMine || isCreator(window.currentUser?.uid);
-                const badge = isCreatorComment ? `<span class="creator-badge small">👑</span>` : '';
+                const isMine = myUid && c.userId === myUid;
+                const isCreatorComment = isCreator(c.userId);
+                const isAdminComment = isAdmin(c.userId) && !isCreatorComment;
+
+                // Кто может управлять этим комментарием
+                let canManage = false;
+                if (isMine) {
+                    canManage = true; // свои всегда можно
+                } else if (myRole === "creator") {
+                    canManage = true; // создатель может всё, кроме своего (но свой уже isMine)
+                } else if (myRole === "admin") {
+                    // админ НЕ может трогать комментарии создателя и других админов
+                    canManage = !isCreatorComment && !isAdminComment;
+                }
+
+                const badge = isCreatorComment ? `<span class="creator-badge small">👑</span>` : 
+                              (isAdminComment ? `<span class="admin-badge small">🛡</span>` : '');
+
                 const dateStr = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
                 
                 return `
@@ -1487,20 +1564,33 @@
             const btn = commentEl.querySelector('.comment-menu-btn');
             if (!btn) return;
 
-            const isMine = window.currentUser && commentUserId === window.currentUser.uid;
-            const amCreator = isCreator(window.currentUser?.uid);
+            const myUid = window.currentUser?.uid;
+            const myRole = getUserRole(myUid);
+            const isMine = myUid && commentUserId === myUid;
+            const targetIsCreator = isCreator(commentUserId);
+            const targetIsAdmin = isAdmin(commentUserId);
 
             const menu = document.createElement('div');
             menu.className = 'comment-menu';
 
+            // Свои комментарии — можно удалить
             if (isMine) {
                 menu.innerHTML += `<button onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
             }
-            if (amCreator && !isMine) {
+            // Создатель управляет всеми, кроме своих (свои уже выше)
+            else if (myRole === "creator") {
                 menu.innerHTML += `<button class="danger" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
                 menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
                 menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
             }
+            // Админ — только над обычными, не над создателем и не над другими админами
+            else if (myRole === "admin" && !targetIsCreator && !targetIsAdmin) {
+                menu.innerHTML += `<button class="admin-action" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
+                menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
+                menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
+            }
+
+            if (menu.innerHTML === '') return; // нечего показывать
 
             btn.parentElement.style.position = 'relative';
             btn.parentElement.appendChild(menu);
@@ -1606,6 +1696,7 @@
             const userEmail = document.getElementById('userEmail');
 
             if (user) {
+                window.currentUserRole = getUserRole(user.uid);
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
                 userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
@@ -1615,17 +1706,14 @@
                     const profile = await ensureUserDocument(user);
                     window.currentUserProfile = profile;
                     const displayName = profile.displayName || user.displayName || 'Пользователь';
-                    userName.innerHTML = displayName + ' ' + creatorBadgeHTML(user.uid, true);
+                    userName.innerHTML = displayName + ' ' + anyBadgeHTML(user.uid, true);
 
-                    if (!profile.bio && !profile.registeredAt) {
-                        // уже создан
-                    }
                     if (!profile.displayName || profile.displayName === 'Пользователь') {
                         setTimeout(() => openProfileModal(true), 500);
                     }
                 } catch (e) {
                     console.error("Ошибка загрузки профиля:", e);
-                    userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + creatorBadgeHTML(user.uid, true);
+                    userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + anyBadgeHTML(user.uid, true);
                 }
 
                 const ban = await checkBan(user.uid);
@@ -1637,6 +1725,7 @@
                 if (typeof renderCommentForm === 'function') renderCommentForm();
                 if (typeof renderGallery === 'function') renderGallery();
             } else {
+                window.currentUserRole = "guest";
                 loginBtn.style.display = 'inline-flex';
                 userInfo.style.display = 'none';
                 window.currentUserProfile = null;
@@ -1701,7 +1790,7 @@
                 }, { merge: true });
 
                 window.currentUserProfile = { ...(window.currentUserProfile || {}), displayName: name, bio: bio };
-                document.getElementById('userName').innerHTML = name + ' ' + creatorBadgeHTML(user.uid, true);
+                document.getElementById('userName').innerHTML = name + ' ' + anyBadgeHTML(user.uid, true);
 
                 btn.textContent = '✅ Сохранено!';
                 setTimeout(() => {
@@ -1736,8 +1825,10 @@
             document.getElementById('myBlockEmail').textContent = user.email || '';
 
             const badge = document.getElementById('myBlockBadge');
-            if (isCreator(user.uid)) badge.style.display = 'inline-flex';
-            else badge.style.display = 'none';
+            const adminBadge = document.getElementById('myBlockAdminBadge');
+            if (isCreator(user.uid)) { badge.style.display = 'inline-flex'; adminBadge.style.display = 'none'; }
+            else if (isAdmin(user.uid)) { badge.style.display = 'none'; adminBadge.style.display = 'inline-flex'; }
+            else { badge.style.display = 'none'; adminBadge.style.display = 'none'; }
 
             getDoc(doc(db, "users", user.uid)).then(snap => {
                 let displayName = user.displayName || 'Пользователь';
@@ -1856,7 +1947,6 @@
             }
         };
 
-        // === ЗАГРУЗКА КОММЕНТАРИЕВ (без orderBy, чтобы не требовать индекс) ===
         window.loadComments = function(artId) {
             const list = document.getElementById('commentsList');
             list.innerHTML = '<div class="comments-empty">Загрузка...</div>';
@@ -1871,7 +1961,6 @@
                 snapshot.forEach(docSnap => {
                     comments.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                // Сортировка на клиенте: сначала новые
                 comments.sort((a, b) => {
                     const ta = a.createdAt?.seconds || 0;
                     const tb = b.createdAt?.seconds || 0;
@@ -1896,12 +1985,17 @@
         };
 
         window.banUser = async function(userId, alsoDelete, commentId) {
-            if (!isCreator(window.currentUser?.uid)) {
-                alert("Только создатель может блокировать.");
+            const myRole = getUserRole(window.currentUser?.uid);
+            if (myRole !== "creator" && myRole !== "admin") {
+                alert("Недостаточно прав.");
                 return;
             }
             if (userId === CREATOR_UID) {
                 alert("Нельзя заблокировать создателя.");
+                return;
+            }
+            if (isAdmin(userId) && myRole === "admin") {
+                alert("Админ не может заблокировать другого админа.");
                 return;
             }
             const reason = prompt("Причина блокировки (необязательно):", "");
