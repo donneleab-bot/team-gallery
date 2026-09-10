@@ -152,7 +152,6 @@
             cursor: pointer;
             user-select: none;
         }
-        /* Панель с лайками, просмотрами и скачиванием */
         .lightbox-actions {
             margin-top: 18px;
             display: flex;
@@ -192,7 +191,6 @@
             font-size: 0.95rem;
             color: #8b949e;
         }
-        /* Кнопка показа хэштегов */
         .toggle-tags-btn {
             background: none;
             border: none;
@@ -230,7 +228,6 @@
         <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
         <div class="lightbox-caption" id="lightboxCaption"></div>
         
-        <!-- Панель действий: лайк, просмотры, скачать -->
         <div class="lightbox-actions">
             <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
             <span class="counter" id="likeCount">0</span>
@@ -304,12 +301,10 @@
 
         const sortedArts = [...arts].sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
 
-        // Рендер карточек
         sortedArts.forEach((art, index) => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
             
-            // Обрезаем хэштеги для карточки (первые 3)
             const tagsArray = art.desc.split(' ');
             const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
             
@@ -343,7 +338,6 @@
             const art = sortedArts[index];
             lightboxImg.src = art.img;
 
-            // Формируем хэштеги с кнопкой "показать все"
             const tagsArray = art.desc.split(' ');
             const shortTags = tagsArray.slice(0, 5).join(' ');
             const fullTags = art.desc;
@@ -357,9 +351,8 @@
             `;
             lightbox.classList.add('active');
 
-            // Загружаем лайки и просмотры
-            loadStats(art.img);
-            incrementView(art.img);
+            if (typeof loadStats === 'function') loadStats(art.img);
+            if (typeof incrementView === 'function') incrementView(art.img);
         }
 
         function toggleTags(btn) {
@@ -379,11 +372,9 @@
             }
         }
 
-        // === ЗАПРЕТ ПРАВОГО КЛИКА И ПЕРЕТАСКИВАНИЯ ===
         document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
         document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-        // === СКАЧИВАНИЕ ===
         function downloadWithWatermark(event) {
             event.stopPropagation();
             const currentArt = sortedArts[currentArtIndex];
@@ -441,7 +432,7 @@
         }
     </script>
 
-    <!-- Firebase SDK (добавьте свой конфиг) -->
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
@@ -466,9 +457,8 @@
             } catch { return "unknown_ip"; }
         }
 
-        // Глобальная функция для загрузки статистики
+        // === ЗАГРУЗКА СТАТИСТИКИ ===
         window.loadStats = async function(imageId) {
-            // Лайки
             const imgRef = doc(db, "images", imageId);
             const imgSnap = await getDoc(imgRef);
             if (imgSnap.exists()) {
@@ -477,7 +467,6 @@
                 document.getElementById('likeCount').textContent = '0';
             }
 
-            // Просмотры
             const viewRef = doc(db, "views", imageId);
             onSnapshot(viewRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -487,7 +476,6 @@
                 }
             });
 
-            // Проверка лайка по IP
             const userIP = await getUserIP();
             const likeRef = doc(db, "likes", `${imageId}_${userIP}`);
             const likeSnap = await getDoc(likeRef);
@@ -503,6 +491,41 @@
             }
         };
 
+        // === ПРОСМОТР: 1 РАЗ В ЧАС С ОДНОГО IP ===
+        window.incrementView = async function(imageId) {
+            const userIP = await getUserIP();
+            const viewLogRef = doc(db, "view_logs", `${imageId}_${userIP}`);
+            const viewRef = doc(db, "views", imageId);
+
+            const now = Date.now();
+            const oneHour = 60 * 60 * 1000;
+
+            try {
+                const logSnap = await getDoc(viewLogRef);
+
+                if (logSnap.exists()) {
+                    const lastView = logSnap.data().timestamp || 0;
+                    if (now - lastView < oneHour) {
+                        return; // Меньше часа — не считаем
+                    }
+                }
+
+                await setDoc(viewLogRef, {
+                    imageId: imageId,
+                    ip: userIP,
+                    timestamp: now
+                });
+
+                await setDoc(viewRef, {
+                    count: increment(1)
+                }, { merge: true });
+
+            } catch (error) {
+                console.error("Ошибка просмотра:", error);
+            }
+        };
+
+        // === ЛАЙК ===
         window.handleLike = async function(event) {
             event.stopPropagation();
             const art = sortedArts[currentArtIndex];
@@ -527,11 +550,6 @@
             btn.classList.add('liked');
             btn.textContent = '❤️ Лайкнуто';
             window.loadStats(art.img);
-        };
-
-        window.incrementView = async function(imageId) {
-            const viewRef = doc(db, "views", imageId);
-            await setDoc(viewRef, { count: increment(1) }, { merge: true });
         };
     </script>
 </body>
