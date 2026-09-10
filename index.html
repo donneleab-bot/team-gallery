@@ -13,13 +13,24 @@
             padding: 20px;
         }
 
-        /* === КНОПКА "НА ГЛАВНЫЙ САЙТ" СВЕРХУ === */
-        .top-nav {
+        /* === ВЕРХНЯЯ ПАНЕЛЬ (кнопка + поиск + сортировка) === */
+        .top-bar {
             max-width: 1600px;
-            margin: 0 auto 20px auto;
+            margin: 0 auto 15px auto;
             display: flex;
-            justify-content: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            background: rgba(13, 17, 23, 0.95);
+            padding: 10px 0;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
+
         .home-btn {
             display: inline-flex;
             align-items: center;
@@ -33,6 +44,7 @@
             border-radius: 8px;
             text-decoration: none;
             transition: background 0.2s ease, border-color 0.2s ease;
+            white-space: nowrap;
         }
         .home-btn:hover {
             background: #30363d;
@@ -40,15 +52,6 @@
             color: #58a6ff;
         }
 
-        .controls {
-            max-width: 1600px;
-            margin: 0 auto 15px auto;
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-        }
         .search-input {
             flex: 1;
             min-width: 200px;
@@ -76,6 +79,7 @@
             outline: none;
             cursor: pointer;
             transition: border-color 0.3s ease;
+            white-space: nowrap;
         }
         .sort-select:hover, .sort-select:focus {
             border-color: #58a6ff;
@@ -319,7 +323,7 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease, transform 0.2s ease, background 0.2s ease;
-            z-index: 1000;
+            z-index: 500;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -333,32 +337,54 @@
             transform: translateY(-3px);
         }
 
-        /* На мобильных кнопка чуть меньше */
+        /* === МОБИЛЬНАЯ ВЕРСИЯ === */
         @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+            .top-bar {
+                gap: 8px;
+                padding: 8px 0;
+                justify-content: space-between;
+            }
+            .home-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                flex-shrink: 0;
+                order: 1;
+            }
+            .sort-select {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+                flex: 1;
+                min-width: 0;
+                order: 2;
+            }
+            .search-input {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+                min-width: 100%;
+                max-width: 100%;
+                order: 3;
+                flex-basis: 100%;
+            }
             .scroll-top {
                 width: 44px;
                 height: 44px;
                 font-size: 20px;
                 bottom: 20px;
-                right: 20px;
-            }
-            .home-btn {
-                padding: 8px 14px;
-                font-size: 0.85rem;
+                right: 16px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Кнопка "На главный сайт" -->
-    <div class="top-nav">
+    <!-- Верхняя панель: кнопка "На главный сайт" + поиск + сортировка -->
+    <div class="top-bar">
         <a href="https://sites.google.com/view/mypridefan" class="home-btn">
             ← На главный сайт
         </a>
-    </div>
-
-    <div class="controls">
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или тегам...">
         <select id="sortSelect" class="sort-select">
             <option value="new">Сначала новые</option>
@@ -500,40 +526,46 @@
             return filtered;
         }
 
+        // Отрисовка одной карточки
+        function buildCard(art, index) {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            const tagsArray = (art.desc || '').split(' ');
+            const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
+            item.innerHTML = `
+                <div class="img-container" onclick="openLightbox('${art.img}')">
+                    <img src="${art.img}" alt="${art.title}" loading="lazy">
+                </div>
+                <div class="item-info">
+                    <h3>${art.title}</h3>
+                    <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                    <p>${shortTags}</p>
+                </div>
+            `;
+            galleryGrid.appendChild(item);
+            setTimeout(() => item.classList.add('visible'), index * 50);
+        }
+
         function renderGallery() {
             galleryGrid.innerHTML = '';
             const filtered = getFilteredArts();
-
-            filtered.forEach((art, index) => {
-                const item = document.createElement('div');
-                item.className = 'gallery-item';
-                const tagsArray = (art.desc || '').split(' ');
-                const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
-
-                item.innerHTML = `
-                    <div class="img-container" onclick="openLightbox('${art.img}')">
-                        <img src="${art.img}" alt="${art.title}" loading="lazy">
-                    </div>
-                    <div class="item-info">
-                        <h3>${art.title}</h3>
-                        <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
-                        <p>${shortTags}</p>
-                    </div>
-                `;
-                galleryGrid.appendChild(item);
-                setTimeout(() => item.classList.add('visible'), index * 50);
-            });
+            filtered.forEach((art, index) => buildCard(art, index));
 
             if (sortSelect.value === 'popular' || sortSelect.value === 'viewed') {
                 loadAllStatsThenSort(filtered);
             }
         }
 
+        // Флаг, чтобы не запускать сортировку дважды
+        let statsLoadingInProgress = false;
+
         async function loadAllStatsThenSort(list) {
+            if (statsLoadingInProgress) return;
             if (typeof window.loadStatsForSortReal !== 'function') {
                 setTimeout(() => loadAllStatsThenSort(list), 300);
                 return;
             }
+            statsLoadingInProgress = true;
             let needRerender = false;
             for (const art of list) {
                 if (!window.statsCache[art.img]) {
@@ -541,9 +573,15 @@
                     needRerender = true;
                 }
             }
+            statsLoadingInProgress = false;
             if (needRerender) {
                 const v = sortSelect.value;
-                if (v === 'popular' || v === 'viewed') renderGallery();
+                if (v === 'popular' || v === 'viewed') {
+                    // Перерисовываем без повторного вызова загрузки
+                    const filtered = getFilteredArts();
+                    galleryGrid.innerHTML = '';
+                    filtered.forEach((art, index) => buildCard(art, index));
+                }
             }
         }
 
@@ -577,6 +615,10 @@
             btn.textContent = '⏳ Загрузка...';
             document.getElementById('likeCount').textContent = '…';
             document.getElementById('viewCount').textContent = '…';
+
+            // Блокируем скачивание и поделиться до загрузки
+            document.getElementById('shareBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
 
             lightbox.classList.add('active');
             history.replaceState(null, '', '?img=' + encodeURIComponent(art.img));
@@ -635,10 +677,20 @@
         document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
         document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-        // === КНОПКА "НАВЕРХ" ===
+        // === КНОПКА "НАВЕРХ" (появляется, когда 3-й пост ушёл за верх) ===
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 400) scrollTopBtn.classList.add('visible');
-            else scrollTopBtn.classList.remove('visible');
+            const thirdItem = galleryGrid.children[2];
+            if (thirdItem) {
+                const rect = thirdItem.getBoundingClientRect();
+                if (rect.bottom < 100) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
+            } else {
+                if (window.scrollY > 400) scrollTopBtn.classList.add('visible');
+                else scrollTopBtn.classList.remove('visible');
+            }
         });
 
         function scrollToTop() {
@@ -776,6 +828,10 @@
                 btn.classList.remove('liked');
                 btn.textContent = '❤️ Лайк';
             }
+
+            // Разблокируем скачивание и поделиться — данные загрузились
+            document.getElementById('shareBtn').disabled = false;
+            document.getElementById('downloadBtn').disabled = false;
         };
 
         window.loadStatsForSortReal = async function(imageId) {
