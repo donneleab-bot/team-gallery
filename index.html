@@ -940,7 +940,6 @@
             color: #58a6ff;
         }
 
-        /* Мобильная версия */
         @media (max-width: 900px) {
             .lightbox-content {
                 flex-direction: column;
@@ -1084,7 +1083,6 @@
         const CREATOR_UID = "ЗАМЕНИТЕ_НА_ВАШ_UID";
 
         // Простой фильтр нецензурных слов (RU + EN)
-        // Список неполный, это "отпугиватель"
         const BAD_WORDS = [
             "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
             "ебуч","еби","заеб","уеб","наеб","долбоеб","мудак","мудил","гандон","гнида",
@@ -1439,7 +1437,7 @@
             img.onerror = () => alert('Не удалось загрузить картинку.');
         }
 
-        // === UI КОММЕНТАРИЕВ (без Firebase) ===
+        // === UI КОММЕНТАРИЕВ ===
         window.renderCommentsList = function(comments) {
             const list = document.getElementById('commentsList');
             const countEl = document.getElementById('commentsCount');
@@ -1482,7 +1480,6 @@
 
         window.toggleCommentMenu = function(event, commentId, commentUserId) {
             event.stopPropagation();
-            // Убираем все открытые меню
             document.querySelectorAll('.comment-menu').forEach(m => m.remove());
             
             const commentEl = document.querySelector(`[data-comment-id="${commentId}"]`);
@@ -1509,7 +1506,6 @@
             btn.parentElement.appendChild(menu);
         };
 
-        // Закрытие меню при клике вне
         document.addEventListener('click', () => {
             document.querySelectorAll('.comment-menu').forEach(m => m.remove());
         });
@@ -1517,7 +1513,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, increment, onSnapshot, collection, query, where, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, increment, onSnapshot, collection, query, where, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -1533,17 +1529,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-
-        // Делаем функции доступными глобально для onclick
-        window.db = db;
-        window.deleteDocFn = deleteDoc;
-        window.docFn = doc;
-        window.addDocFn = addDoc;
-        window.collectionFn = collection;
-        window.queryFn = query;
-        window.whereFn = where;
-        window.orderByFn = orderBy;
-        window.serverTimestampFn = serverTimestamp;
 
         window.signInWithGoogle = async function() {
             try {
@@ -1583,7 +1568,6 @@
             }
         });
 
-        // === ЗАПИСЬ В users ПРИ ВХОДЕ ===
         async function ensureUserDocument(user) {
             const userRef = doc(db, "users", user.uid);
             const snap = await getDoc(userRef);
@@ -1602,14 +1586,12 @@
             return (await getDoc(userRef)).data();
         }
 
-        // === ПРОВЕРКА БАНА ===
         async function checkBan(userId) {
             try {
                 const banRef = doc(db, "bans", userId);
                 const banSnap = await getDoc(banRef);
                 if (!banSnap.exists()) return null;
                 const data = banSnap.data();
-                // Если есть until и он в прошлом — считаем, что бан снят
                 if (data.until && data.until.seconds * 1000 < Date.now()) return null;
                 return data;
             } catch { return null; }
@@ -1635,9 +1617,8 @@
                     const displayName = profile.displayName || user.displayName || 'Пользователь';
                     userName.innerHTML = displayName + ' ' + creatorBadgeHTML(user.uid, true);
 
-                    // Если профиль только что создан (нет bio) и это первый раз — предложим заполнить
                     if (!profile.bio && !profile.registeredAt) {
-                        // уже создан, ничего не делаем
+                        // уже создан
                     }
                     if (!profile.displayName || profile.displayName === 'Пользователь') {
                         setTimeout(() => openProfileModal(true), 500);
@@ -1647,16 +1628,13 @@
                     userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + creatorBadgeHTML(user.uid, true);
                 }
 
-                // Проверка бана
                 const ban = await checkBan(user.uid);
                 window.isBanned = !!ban;
                 if (ban) {
                     window.banReason = ban.reason || 'Нарушение правил';
                 }
 
-                // Обновляем форму комментариев, если открыт лайтбокс
                 if (typeof renderCommentForm === 'function') renderCommentForm();
-
                 if (typeof renderGallery === 'function') renderGallery();
             } else {
                 loginBtn.style.display = 'inline-flex';
@@ -1668,7 +1646,6 @@
             }
         });
 
-        // === ПРОФИЛЬ ===
         window.openProfileModal = function(isFirstTime) {
             const user = window.currentUser;
             if (!user) return;
@@ -1748,7 +1725,6 @@
             if (e.target.id === 'profileModal') closeProfileModal();
         });
 
-        // === МОЙ БЛОК ===
         window.openMyBlock = function() {
             const user = window.currentUser;
             if (!user) return;
@@ -1802,7 +1778,6 @@
             if (e.target.id === 'myBlockModal') closeMyBlock();
         });
 
-        // === ФОРМА КОММЕНТАРИЕВ ===
         window.renderCommentForm = function() {
             const form = document.getElementById('commentsForm');
             const user = window.currentUser;
@@ -1881,21 +1856,26 @@
             }
         };
 
-        // === ЗАГРУЗКА КОММЕНТАРИЕВ ===
+        // === ЗАГРУЗКА КОММЕНТАРИЕВ (без orderBy, чтобы не требовать индекс) ===
         window.loadComments = function(artId) {
             const list = document.getElementById('commentsList');
             list.innerHTML = '<div class="comments-empty">Загрузка...</div>';
 
             const q = query(
                 collection(db, "comments"),
-                where("artId", "==", artId),
-                orderBy("createdAt", "desc")
+                where("artId", "==", artId)
             );
 
             window.unsubscribeComments = onSnapshot(q, (snapshot) => {
                 const comments = [];
                 snapshot.forEach(docSnap => {
                     comments.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                // Сортировка на клиенте: сначала новые
+                comments.sort((a, b) => {
+                    const ta = a.createdAt?.seconds || 0;
+                    const tb = b.createdAt?.seconds || 0;
+                    return tb - ta;
                 });
                 window.currentArtComments = comments;
                 window.renderCommentsList(comments);
@@ -1905,7 +1885,6 @@
             });
         };
 
-        // === УДАЛЕНИЕ КОММЕНТАРИЯ ===
         window.deleteComment = async function(commentId) {
             if (!confirm("Удалить этот комментарий?")) return;
             try {
@@ -1916,7 +1895,6 @@
             }
         };
 
-        // === БАН ПОЛЬЗОВАТЕЛЯ ===
         window.banUser = async function(userId, alsoDelete, commentId) {
             if (!isCreator(window.currentUser?.uid)) {
                 alert("Только создатель может блокировать.");
@@ -1927,7 +1905,7 @@
                 return;
             }
             const reason = prompt("Причина блокировки (необязательно):", "");
-            if (reason === null) return; // отмена
+            if (reason === null) return;
 
             try {
                 await setDoc(doc(db, "bans", userId), {
@@ -1948,17 +1926,14 @@
             }
         };
 
-        // === ИНФО ОБ АВТОРЕ ===
         window.showAuthorInfo = function(userId, userName) {
             if (userId === window.currentUser?.uid) {
                 openMyBlock();
                 return;
             }
-            // TODO: открыть профиль автора (пока просто алерт)
             alert("Профиль: " + userName);
         };
 
-        // === FIREBASE-ЛОГИКА (лайки, просмотры) ===
         let cachedIP = null;
         async function getUserIP() {
             if (cachedIP) return cachedIP;
