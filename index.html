@@ -12,8 +12,36 @@
             color: #c9d1d9;
             padding: 20px;
         }
+
+        /* === КНОПКА "НА ГЛАВНЫЙ САЙТ" СВЕРХУ === */
+        .top-nav {
+            max-width: 1600px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: flex-start;
+        }
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #c9d1d9;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .home-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+
         .controls {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto 15px auto;
             display: flex;
             gap: 12px;
@@ -24,7 +52,7 @@
         .search-input {
             flex: 1;
             min-width: 200px;
-            max-width: 400px;
+            max-width: 500px;
             padding: 12px 20px;
             font-size: 1rem;
             background-color: #161b22;
@@ -52,8 +80,9 @@
         .sort-select:hover, .sort-select:focus {
             border-color: #58a6ff;
         }
+
         .tag-filters {
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto 25px auto;
             display: flex;
             flex-wrap: wrap;
@@ -83,11 +112,12 @@
             border-style: dashed;
             color: #58a6ff;
         }
+
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
-            max-width: 1200px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         .gallery-item {
@@ -155,6 +185,8 @@
             color: #8b949e;
             line-height: 1.4;
         }
+
+        /* === ЛАЙТБОКС === */
         .lightbox {
             position: fixed;
             top: 0;
@@ -269,9 +301,62 @@
         .full-tags.visible {
             display: block;
         }
+
+        /* === КНОПКА "НАВЕРХ" === */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1f6feb;
+            color: #fff;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(31, 111, 235, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.2s ease, background 0.2s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scroll-top.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .scroll-top:hover {
+            background: #58a6ff;
+            transform: translateY(-3px);
+        }
+
+        /* На мобильных кнопка чуть меньше */
+        @media (max-width: 600px) {
+            .scroll-top {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .home-btn {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Кнопка "На главный сайт" -->
+    <div class="top-nav">
+        <a href="https://sites.google.com/view/mypridefan" class="home-btn">
+            ← На главный сайт
+        </a>
+    </div>
 
     <div class="controls">
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или тегам...">
@@ -287,6 +372,9 @@
     <div class="tag-filters" id="tagFilters"></div>
 
     <div class="gallery-grid" id="galleryGrid"></div>
+
+    <!-- Кнопка "Наверх" -->
+    <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">↑</button>
 
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
         <span class="close-btn">&times;</span>
@@ -329,30 +417,25 @@
         const searchInput = document.getElementById('searchInput');
         const sortSelect = document.getElementById('sortSelect');
         const tagFilters = document.getElementById('tagFilters');
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
 
         let currentTag = null;
         let tagsExpanded = false;
+        const TAGS_LIMIT = 10;
 
-        const TAGS_LIMIT = 10; // Сколько показывать до "Ещё"
-
-        // Собираем все уникальные теги с количеством
         function getAllTags() {
             const tagCount = {};
             arts.forEach(art => {
                 (art.desc || '').split(' ').forEach(tag => {
-                    if (tag.startsWith('#')) {
-                        tagCount[tag] = (tagCount[tag] || 0) + 1;
-                    }
+                    if (tag.startsWith('#')) tagCount[tag] = (tagCount[tag] || 0) + 1;
                 });
             });
-            // Сортируем: сначала по количеству, потом по алфавиту
             return Object.keys(tagCount).sort((a, b) => {
                 if (tagCount[b] !== tagCount[a]) return tagCount[b] - tagCount[a];
                 return a.localeCompare(b);
             });
         }
 
-        // Рисуем кнопки тегов с "Ещё"
         function renderTags() {
             tagFilters.innerHTML = '';
             const allTags = getAllTags();
@@ -403,13 +486,10 @@
             });
 
             const sortBy = sortSelect.value;
-            if (sortBy === 'new') {
-                filtered.sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
-            } else if (sortBy === 'old') {
-                filtered.sort((a, b) => new Date(a.sortDate) - new Date(b.sortDate));
-            } else if (sortBy === 'alpha') {
-                filtered.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'ru'));
-            } else if (sortBy === 'popular' || sortBy === 'viewed') {
+            if (sortBy === 'new') filtered.sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
+            else if (sortBy === 'old') filtered.sort((a, b) => new Date(a.sortDate) - new Date(b.sortDate));
+            else if (sortBy === 'alpha') filtered.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'ru'));
+            else if (sortBy === 'popular' || sortBy === 'viewed') {
                 const key = sortBy === 'popular' ? 'likes' : 'views';
                 filtered.sort((a, b) => {
                     const statA = window.statsCache[a.img] || { likes: 0, views: 0 };
@@ -427,7 +507,6 @@
             filtered.forEach((art, index) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
-
                 const tagsArray = (art.desc || '').split(' ');
                 const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
 
@@ -475,7 +554,6 @@
             const index = arts.findIndex(a => a.img === imageId);
             if (index === -1) return;
 
-            // Отписываемся от предыдущего просмотра (если был)
             if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
 
             window.currentArtIndex = index;
@@ -493,7 +571,6 @@
                 <div class="full-tags">${art.desc || ''}</div>
             `;
 
-            // Мгновенно сбрасываем кнопку лайка и счётчики
             const btn = document.getElementById('likeBtn');
             btn.disabled = true;
             btn.classList.remove('liked');
@@ -519,7 +596,6 @@
                 lightbox.classList.remove('active');
                 window.currentArtIndex = -1;
                 history.replaceState(null, '', window.location.pathname);
-                // Отписываемся от onSnapshot
                 if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
             }
         }
@@ -558,6 +634,16 @@
 
         document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
         document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
+
+        // === КНОПКА "НАВЕРХ" ===
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) scrollTopBtn.classList.add('visible');
+            else scrollTopBtn.classList.remove('visible');
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         // ============================================================
         // 6. СКАЧИВАНИЕ
@@ -618,7 +704,6 @@
             img.onerror = () => alert('Не удалось загрузить картинку.');
         }
 
-        // Первый рендер
         renderTags();
         renderGallery();
     </script>
@@ -642,7 +727,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // === КЭШ IP (получаем один раз при загрузке) ===
         let cachedIP = null;
         async function getUserIP() {
             if (cachedIP) return cachedIP;
@@ -656,14 +740,11 @@
                 return cachedIP; 
             }
         }
-        // Предзагрузка IP в фоне
         getUserIP();
 
-        // === СТАТИСТИКА ДЛЯ ЛАЙТБОКСА (ускоренная) ===
         window.loadStats = async function(imageId) {
             const btn = document.getElementById('likeBtn');
 
-            // Параллельно: лайки, IP, проверка лайка
             const [imgSnap, userIP] = await Promise.all([
                 getDoc(doc(db, "images", imageId)),
                 getUserIP()
@@ -671,22 +752,18 @@
 
             document.getElementById('likeCount').textContent = imgSnap.exists() ? (imgSnap.data().likes || 0) : 0;
 
-            // Подписка на просмотры (с сохранением отписки)
             if (window.unsubscribeView) window.unsubscribeView();
             const viewRef = doc(db, "views", imageId);
             window.unsubscribeView = onSnapshot(viewRef, (docSnap) => {
-                // Проверяем, что лайтбокс всё ещё открыт и это та же картинка
                 if (!lightbox.classList.contains('active')) return;
                 const currentArt = arts[window.currentArtIndex];
                 if (!currentArt || currentArt.img !== imageId) return;
                 document.getElementById('viewCount').textContent = '👁 ' + (docSnap.exists() ? (docSnap.data().count || 0) : 0);
             });
 
-            // Проверка лайка
             const likeRef = doc(db, "likes", `${imageId}_${userIP}`);
             const likeSnap = await getDoc(likeRef);
 
-            // Проверяем, что это всё ещё та же картинка
             const currentArt = arts[window.currentArtIndex];
             if (!currentArt || currentArt.img !== imageId) return;
 
@@ -701,7 +778,6 @@
             }
         };
 
-        // === СТАТИСТИКА ДЛЯ СОРТИРОВКИ ===
         window.loadStatsForSortReal = async function(imageId) {
             const [imgSnap, viewSnap] = await Promise.all([
                 getDoc(doc(db, "images", imageId)),
@@ -713,7 +789,6 @@
             };
         };
 
-        // === ПРОСМОТР: 1 РАЗ В ЧАС С ОДНОГО IP ===
         window.incrementView = async function(imageId) {
             const userIP = await getUserIP();
             const viewLogRef = doc(db, "view_logs", `${imageId}_${userIP}`);
@@ -732,7 +807,6 @@
             }
         };
 
-        // === ЛАЙК ===
         window.handleLike = async function(event) {
             event.stopPropagation();
             const art = window.arts && window.arts[window.currentArtIndex];
