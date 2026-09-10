@@ -301,6 +301,8 @@
             color: #8b949e;
             line-height: 1.4;
         }
+
+        /* === ЛАЙТБОКС С КОММЕНТАРИЯМИ === */
         .lightbox {
             position: fixed;
             top: 0;
@@ -316,21 +318,38 @@
             pointer-events: none;
             transition: opacity 0.3s ease;
             z-index: 9999;
+            overflow-y: auto;
+            padding: 20px 0;
         }
         .lightbox.active {
             opacity: 1;
             pointer-events: auto;
         }
+        .lightbox-content {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            width: 95%;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .lightbox-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 0;
+        }
         .lightbox-img {
-            max-width: 90%;
-            max-height: 75vh;
+            max-width: 100%;
+            max-height: 70vh;
             border-radius: 8px;
             box-shadow: 0 0 32px rgba(0,0,0,0.5);
         }
         .lightbox-caption {
             margin-top: 15px;
             text-align: center;
-            max-width: 80%;
+            max-width: 100%;
         }
         .lightbox-caption h3 {
             margin: 0 0 4px 0;
@@ -353,6 +372,7 @@
             font-size: 35px;
             cursor: pointer;
             user-select: none;
+            z-index: 10;
         }
         .lightbox-actions {
             margin-top: 18px;
@@ -415,6 +435,233 @@
         .full-tags.visible {
             display: block;
         }
+
+        /* === ПАНЕЛЬ КОММЕНТАРИЕВ === */
+        .comments-panel {
+            width: 380px;
+            max-height: 80vh;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .comments-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid #30363d;
+            font-weight: 600;
+            color: #f0f6fc;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .comments-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px;
+            min-height: 100px;
+        }
+        .comments-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .comments-list::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        .comments-list::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        .comment {
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #21262d;
+            position: relative;
+        }
+        .comment:last-child {
+            border-bottom: none;
+        }
+        .comment-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid #30363d;
+            object-fit: cover;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .comment-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .comment-head {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 2px;
+        }
+        .comment-name {
+            font-weight: 600;
+            color: #f0f6fc;
+            font-size: 0.88rem;
+            cursor: pointer;
+        }
+        .comment-name:hover {
+            color: #58a6ff;
+        }
+        .comment-date {
+            font-size: 0.72rem;
+            color: #8b949e;
+        }
+        .comment-text {
+            color: #c9d1d9;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .comment-banned {
+            font-size: 0.78rem;
+            color: #f85149;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        .comment-menu-btn {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s ease, color 0.2s ease;
+            flex-shrink: 0;
+            align-self: flex-start;
+        }
+        .comment-menu-btn:hover {
+            background: #21262d;
+            color: #f0f6fc;
+        }
+        .comment-menu {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 100;
+            min-width: 180px;
+            overflow: hidden;
+        }
+        .comment-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            color: #c9d1d9;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .comment-menu button:hover {
+            background: #30363d;
+        }
+        .comment-menu button.danger {
+            color: #f85149;
+        }
+        .comment-menu button.danger:hover {
+            background: rgba(248, 81, 73, 0.1);
+        }
+        .comments-empty {
+            text-align: center;
+            color: #8b949e;
+            font-size: 0.9rem;
+            padding: 30px 0;
+        }
+        .comments-form {
+            border-top: 1px solid #30363d;
+            padding: 12px 16px;
+            flex-shrink: 0;
+        }
+        .comments-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #f0f6fc;
+            outline: none;
+            font-family: inherit;
+            resize: none;
+            min-height: 60px;
+            max-height: 120px;
+            transition: border-color 0.2s ease;
+        }
+        .comments-textarea:focus {
+            border-color: #58a6ff;
+        }
+        .comments-form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            gap: 8px;
+        }
+        .comments-counter {
+            font-size: 0.75rem;
+            color: #8b949e;
+        }
+        .comments-submit {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+            background: #238636;
+            border: 1px solid #2ea043;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .comments-submit:hover {
+            background: #2ea043;
+        }
+        .comments-submit:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+        .comments-login-hint {
+            text-align: center;
+            color: #8b949e;
+            font-size: 0.85rem;
+            padding: 12px;
+        }
+        .comments-login-hint button {
+            background: none;
+            border: none;
+            color: #58a6ff;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.85rem;
+        }
+        .comments-banned-hint {
+            text-align: center;
+            color: #f85149;
+            font-size: 0.85rem;
+            padding: 12px;
+            background: rgba(248, 81, 73, 0.1);
+            border-radius: 8px;
+        }
+
         .scroll-top {
             position: fixed;
             bottom: 30px;
@@ -692,6 +939,22 @@
             border-color: #58a6ff;
             color: #58a6ff;
         }
+
+        /* Мобильная версия */
+        @media (max-width: 900px) {
+            .lightbox-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            .comments-panel {
+                width: 95%;
+                max-height: 400px;
+            }
+            .lightbox-img {
+                max-height: 50vh;
+            }
+        }
         @media (max-width: 600px) {
             body { padding: 12px; }
             .top-bar { gap: 8px; padding: 8px 0; justify-content: space-between; }
@@ -745,14 +1008,28 @@
 
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
         <span class="close-btn">&times;</span>
-        <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
-        <div class="lightbox-caption" id="lightboxCaption"></div>
-        <div class="lightbox-actions">
-            <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
-            <span class="counter" id="likeCount">0</span>
-            <span class="counter" id="viewCount">👁 0</span>
-            <button class="action-btn" id="shareBtn" onclick="shareImage(event)">🔗 Поделиться</button>
-            <button class="action-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">⬇ Скачать</button>
+        <div class="lightbox-content">
+            <div class="lightbox-left">
+                <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
+                <div class="lightbox-caption" id="lightboxCaption"></div>
+                <div class="lightbox-actions">
+                    <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
+                    <span class="counter" id="likeCount">0</span>
+                    <span class="counter" id="viewCount">👁 0</span>
+                    <button class="action-btn" id="shareBtn" onclick="shareImage(event)">🔗 Поделиться</button>
+                    <button class="action-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">⬇ Скачать</button>
+                </div>
+            </div>
+
+            <div class="comments-panel" onclick="event.stopPropagation()">
+                <div class="comments-header">
+                    💬 Комментарии <span id="commentsCount" style="color:#8b949e;font-weight:400;font-size:0.85rem;"></span>
+                </div>
+                <div class="comments-list" id="commentsList">
+                    <div class="comments-empty">Загрузка...</div>
+                </div>
+                <div class="comments-form" id="commentsForm"></div>
+            </div>
         </div>
     </div>
 
@@ -803,15 +1080,24 @@
     <script>
         // ============================================================
         // ⚠️ ВАЖНО: ЗАМЕНИТЕ "ЗАМЕНИТЕ_НА_ВАШ_UID" НА ВАШ UID ИЗ FIREBASE AUTH
-        // Как получить: Firebase Console → Authentication → Users → UID
-        // Или: откройте консоль сайта (F12), введите currentUser?.uid
         // ============================================================
         const CREATOR_UID = "ЗАМЕНИТЕ_НА_ВАШ_UID";
 
-        // ============================================================
-        // 1. МАССИВ С КАРТИНКАМИ
-        // authorId — UID автора (из Firebase Auth)
-        // ============================================================
+        // Простой фильтр нецензурных слов (RU + EN)
+        // Список неполный, это "отпугиватель"
+        const BAD_WORDS = [
+            "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
+            "ебуч","еби","заеб","уеб","наеб","долбоеб","мудак","мудил","гандон","гнида",
+            "шлюх","шлюш","мраз","тварь","сука","суки","сучк","ублюд","пидор","пидар",
+            "гей","педик","нацист","наци","fuck","shit","bitch","cunt","dick","pussy",
+            "asshole","bastard","slut","whore","nigger","nigga","faggot","rape"
+        ];
+
+        function hasBadWords(text) {
+            const lower = text.toLowerCase();
+            return BAD_WORDS.some(word => lower.includes(word));
+        }
+
         const arts = [
             { img: "asdasdasdq.jpg", title: "Вид хуманизации барка", authorName: "Star Harlen", authorId: CREATOR_UID, authorUrl: "https://t.me/My_pride_2/8394", desc: "#баркмейн #барк_мейн #barkmane #bark_mane", sortDate: "2026-09-08 09:52" },
             { img: "sadasdasdasd.jpg", title: "Вид хуманизации фаера", authorName: "Star Harlen", authorId: CREATOR_UID, authorUrl: "https://t.me/My_pride_2/8392", desc: "#фаер #фаер_мейн #фаермейн #fire #fire_mane #firemane #fire_mane_pride #firemanepride", sortDate: "2026-09-08 08:41" },
@@ -826,6 +1112,8 @@
         window.statsCache = window.statsCache || {};
         window.currentUser = null;
         window.currentUserProfile = null;
+        window.isBanned = false;
+        window.currentArtComments = [];
 
         const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
@@ -840,12 +1128,11 @@
         let tagsExpanded = false;
         const TAGS_LIMIT = 10;
 
-        // Проверка, является ли пользователь создателем (по UID)
         function isCreator(uid) {
             return uid && uid === CREATOR_UID;
         }
+        window.isCreator = isCreator;
 
-        // Возвращает HTML-плашку для имени (по UID автора)
         function creatorBadgeHTML(uid, small = false) {
             if (isCreator(uid)) {
                 return `<span class="creator-badge${small ? ' small' : ''}">👑 Создатель</span>`;
@@ -959,6 +1246,7 @@
                 loadAllStatsThenSort(filtered);
             }
         }
+        window.renderGallery = renderGallery;
 
         let statsLoadingInProgress = false;
 
@@ -992,6 +1280,7 @@
             if (index === -1) return;
 
             if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
+            if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
 
             window.currentArtIndex = index;
             const art = arts[index];
@@ -1026,6 +1315,8 @@
 
             if (typeof loadStats === 'function') loadStats(art.img);
             if (typeof incrementView === 'function') incrementView(art.img);
+            if (typeof loadComments === 'function') loadComments(art.img);
+            if (typeof renderCommentForm === 'function') renderCommentForm();
         }
 
         function toggleTags(btn) {
@@ -1035,11 +1326,12 @@
         }
 
         function closeLightbox(event) {
-            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON') {
+            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && event.target.tagName !== 'TEXTAREA' && event.target.tagName !== 'INPUT') {
                 lightbox.classList.remove('active');
                 window.currentArtIndex = -1;
                 history.replaceState(null, '', window.location.pathname);
                 if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
+                if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
             }
         }
 
@@ -1147,13 +1439,85 @@
             img.onerror = () => alert('Не удалось загрузить картинку.');
         }
 
-        renderTags();
-        renderGallery();
+        // === UI КОММЕНТАРИЕВ (без Firebase) ===
+        window.renderCommentsList = function(comments) {
+            const list = document.getElementById('commentsList');
+            const countEl = document.getElementById('commentsCount');
+            countEl.textContent = comments.length > 0 ? `(${comments.length})` : '';
+
+            if (comments.length === 0) {
+                list.innerHTML = '<div class="comments-empty">Пока нет комментариев. Будьте первым! 💬</div>';
+                return;
+            }
+
+            list.innerHTML = comments.map(c => {
+                const isMine = window.currentUser && c.userId === window.currentUser.uid;
+                const isCreatorComment = c.userId === CREATOR_UID;
+                const canManage = isMine || isCreator(window.currentUser?.uid);
+                const badge = isCreatorComment ? `<span class="creator-badge small">👑</span>` : '';
+                const dateStr = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
+                
+                return `
+                    <div class="comment" data-comment-id="${c.id}">
+                        <img class="comment-avatar" src="${c.userAvatar || 'https://www.gravatar.com/avatar/?d=mp'}" alt="" onclick="showAuthorInfo('${c.userId}', '${(c.userName || '').replace(/'/g, "\\'")}')">
+                        <div class="comment-body">
+                            <div class="comment-head">
+                                <span class="comment-name" onclick="showAuthorInfo('${c.userId}', '${(c.userName || '').replace(/'/g, "\\'")}')">${escapeHtml(c.userName || 'Гость')}</span>
+                                ${badge}
+                                <span class="comment-date">${dateStr}</span>
+                            </div>
+                            <div class="comment-text">${escapeHtml(c.text)}</div>
+                        </div>
+                        ${canManage ? `<button class="comment-menu-btn" onclick="toggleCommentMenu(event, '${c.id}', '${c.userId}')">⋮</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+        };
+
+        window.escapeHtml = function(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        };
+
+        window.toggleCommentMenu = function(event, commentId, commentUserId) {
+            event.stopPropagation();
+            // Убираем все открытые меню
+            document.querySelectorAll('.comment-menu').forEach(m => m.remove());
+            
+            const commentEl = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (!commentEl) return;
+            const btn = commentEl.querySelector('.comment-menu-btn');
+            if (!btn) return;
+
+            const isMine = window.currentUser && commentUserId === window.currentUser.uid;
+            const amCreator = isCreator(window.currentUser?.uid);
+
+            const menu = document.createElement('div');
+            menu.className = 'comment-menu';
+
+            if (isMine) {
+                menu.innerHTML += `<button onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
+            }
+            if (amCreator && !isMine) {
+                menu.innerHTML += `<button class="danger" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
+                menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
+                menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
+            }
+
+            btn.parentElement.style.position = 'relative';
+            btn.parentElement.appendChild(menu);
+        };
+
+        // Закрытие меню при клике вне
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.comment-menu').forEach(m => m.remove());
+        });
     </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, increment, onSnapshot, collection, query, where, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -1170,6 +1534,17 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
+        // Делаем функции доступными глобально для onclick
+        window.db = db;
+        window.deleteDocFn = deleteDoc;
+        window.docFn = doc;
+        window.addDocFn = addDoc;
+        window.collectionFn = collection;
+        window.queryFn = query;
+        window.whereFn = where;
+        window.orderByFn = orderBy;
+        window.serverTimestampFn = serverTimestamp;
+
         window.signInWithGoogle = async function() {
             try {
                 await signInWithPopup(auth, provider);
@@ -1178,7 +1553,7 @@
                 if (error.code === 'auth/popup-blocked') {
                     alert("Браузер заблокировал всплывающее окно. Разрешите всплывающие окна для этого сайта.");
                 } else if (error.code === 'auth/unauthorized-domain') {
-                    alert("Домен не авторизован в Firebase. Добавьте donneleab-bot.github.io в Authorized domains.");
+                    alert("Домен не авторизован в Firebase.");
                 } else {
                     alert("Ошибка входа: " + error.message);
                 }
@@ -1208,7 +1583,39 @@
             }
         });
 
-        onAuthStateChanged(auth, (user) => {
+        // === ЗАПИСЬ В users ПРИ ВХОДЕ ===
+        async function ensureUserDocument(user) {
+            const userRef = doc(db, "users", user.uid);
+            const snap = await getDoc(userRef);
+            const baseData = {
+                displayName: user.displayName || 'Пользователь',
+                email: user.email || '',
+                photoURL: user.photoURL || '',
+                lastSeen: new Date()
+            };
+            if (!snap.exists()) {
+                baseData.registeredAt = new Date();
+                await setDoc(userRef, baseData);
+            } else {
+                await setDoc(userRef, baseData, { merge: true });
+            }
+            return (await getDoc(userRef)).data();
+        }
+
+        // === ПРОВЕРКА БАНА ===
+        async function checkBan(userId) {
+            try {
+                const banRef = doc(db, "bans", userId);
+                const banSnap = await getDoc(banRef);
+                if (!banSnap.exists()) return null;
+                const data = banSnap.data();
+                // Если есть until и он в прошлом — считаем, что бан снят
+                if (data.until && data.until.seconds * 1000 < Date.now()) return null;
+                return data;
+            } catch { return null; }
+        }
+
+        onAuthStateChanged(auth, async (user) => {
             window.currentUser = user;
             const loginBtn = document.getElementById('loginBtn');
             const userInfo = document.getElementById('userInfo');
@@ -1222,28 +1629,46 @@
                 userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
                 userEmail.textContent = user.email || '';
 
-                getDoc(doc(db, "users", user.uid)).then(snap => {
-                    if (snap.exists()) {
-                        const data = snap.data();
-                        window.currentUserProfile = data;
-                        userName.innerHTML = (data.displayName || user.displayName || 'Пользователь') + ' ' + creatorBadgeHTML(user.uid, true);
-                    } else {
-                        window.currentUserProfile = null;
-                        userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + creatorBadgeHTML(user.uid, true);
+                try {
+                    const profile = await ensureUserDocument(user);
+                    window.currentUserProfile = profile;
+                    const displayName = profile.displayName || user.displayName || 'Пользователь';
+                    userName.innerHTML = displayName + ' ' + creatorBadgeHTML(user.uid, true);
+
+                    // Если профиль только что создан (нет bio) и это первый раз — предложим заполнить
+                    if (!profile.bio && !profile.registeredAt) {
+                        // уже создан, ничего не делаем
+                    }
+                    if (!profile.displayName || profile.displayName === 'Пользователь') {
                         setTimeout(() => openProfileModal(true), 500);
                     }
-                });
+                } catch (e) {
+                    console.error("Ошибка загрузки профиля:", e);
+                    userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + creatorBadgeHTML(user.uid, true);
+                }
 
-                // Перерисовываем галерею, чтобы обновить состояние (если нужно)
+                // Проверка бана
+                const ban = await checkBan(user.uid);
+                window.isBanned = !!ban;
+                if (ban) {
+                    window.banReason = ban.reason || 'Нарушение правил';
+                }
+
+                // Обновляем форму комментариев, если открыт лайтбокс
+                if (typeof renderCommentForm === 'function') renderCommentForm();
+
                 if (typeof renderGallery === 'function') renderGallery();
             } else {
                 loginBtn.style.display = 'inline-flex';
                 userInfo.style.display = 'none';
                 window.currentUserProfile = null;
+                window.isBanned = false;
                 if (typeof renderGallery === 'function') renderGallery();
+                if (typeof renderCommentForm === 'function') renderCommentForm();
             }
         });
 
+        // === ПРОФИЛЬ ===
         window.openProfileModal = function(isFirstTime) {
             const user = window.currentUser;
             if (!user) return;
@@ -1284,10 +1709,7 @@
             const name = document.getElementById('profileNameInput').value.trim();
             const bio = document.getElementById('profileBioInput').value.trim();
 
-            if (!name) {
-                alert("Введите имя.");
-                return;
-            }
+            if (!name) { alert("Введите имя."); return; }
 
             btn.disabled = true;
             btn.textContent = 'Сохранение...';
@@ -1301,8 +1723,7 @@
                     updatedAt: new Date()
                 }, { merge: true });
 
-                window.currentUserProfile = { displayName: name, bio: bio, email: user.email, photoURL: user.photoURL };
-
+                window.currentUserProfile = { ...(window.currentUserProfile || {}), displayName: name, bio: bio };
                 document.getElementById('userName').innerHTML = name + ' ' + creatorBadgeHTML(user.uid, true);
 
                 btn.textContent = '✅ Сохранено!';
@@ -1311,10 +1732,9 @@
                     btn.disabled = false;
                     btn.textContent = 'Сохранить';
                 }, 800);
-
             } catch (error) {
                 console.error("Ошибка сохранения профиля:", error);
-                alert("Не удалось сохранить. Попробуйте позже.");
+                alert("Не удалось сохранить.");
                 btn.disabled = false;
                 btn.textContent = 'Сохранить';
             }
@@ -1355,7 +1775,6 @@
                 document.getElementById('myBlockBio').textContent = bio || 'Без описания';
             });
 
-            // ФИЛЬТР ПО UID АВТОРА — показываем только посты этого пользователя
             const myArts = arts.filter(a => a.authorId === user.uid);
             const grid = document.getElementById('myBlockGrid');
             const countEl = document.getElementById('myBlockCount');
@@ -1383,7 +1802,163 @@
             if (e.target.id === 'myBlockModal') closeMyBlock();
         });
 
-        // === FIREBASE-ЛОГИКА ===
+        // === ФОРМА КОММЕНТАРИЕВ ===
+        window.renderCommentForm = function() {
+            const form = document.getElementById('commentsForm');
+            const user = window.currentUser;
+
+            if (!user) {
+                form.innerHTML = `<div class="comments-login-hint">Войдите через Google, чтобы оставить комментарий.<br><button onclick="signInWithGoogle()">Войти</button></div>`;
+                return;
+            }
+
+            if (window.isBanned) {
+                form.innerHTML = `<div class="comments-banned-hint">🚫 Вы заблокированы и не можете писать комментарии.<br><small>${escapeHtml(window.banReason || '')}</small></div>`;
+                return;
+            }
+
+            form.innerHTML = `
+                <textarea class="comments-textarea" id="commentInput" maxlength="500" placeholder="Написать комментарий..."></textarea>
+                <div class="comments-form-footer">
+                    <span class="comments-counter" id="commentCounter">0 / 500</span>
+                    <button class="comments-submit" id="commentSubmitBtn" onclick="submitComment()">Отправить</button>
+                </div>
+            `;
+
+            document.getElementById('commentInput').addEventListener('input', (e) => {
+                document.getElementById('commentCounter').textContent = e.target.value.length + ' / 500';
+            });
+        };
+
+        window.submitComment = async function() {
+            const user = window.currentUser;
+            const art = arts[window.currentArtIndex];
+            if (!user || !art) return;
+
+            if (window.isBanned) {
+                alert("Вы заблокированы.");
+                return;
+            }
+
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            if (text.length > 500) {
+                alert("Слишком длинный комментарий.");
+                return;
+            }
+
+            if (hasBadWords(text)) {
+                alert("Комментарий содержит запрещённые слова. Пожалуйста, переформулируйте.");
+                return;
+            }
+
+            const btn = document.getElementById('commentSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Отправка...';
+
+            try {
+                const profile = window.currentUserProfile || {};
+                await addDoc(collection(db, "comments"), {
+                    artId: art.img,
+                    userId: user.uid,
+                    userName: profile.displayName || user.displayName || 'Гость',
+                    userAvatar: user.photoURL || '',
+                    userEmail: user.email || '',
+                    text: text,
+                    createdAt: serverTimestamp()
+                });
+                input.value = '';
+                document.getElementById('commentCounter').textContent = '0 / 500';
+                btn.disabled = false;
+                btn.textContent = 'Отправить';
+            } catch (error) {
+                console.error("Ошибка отправки комментария:", error);
+                alert("Не удалось отправить. Попробуйте позже.");
+                btn.disabled = false;
+                btn.textContent = 'Отправить';
+            }
+        };
+
+        // === ЗАГРУЗКА КОММЕНТАРИЕВ ===
+        window.loadComments = function(artId) {
+            const list = document.getElementById('commentsList');
+            list.innerHTML = '<div class="comments-empty">Загрузка...</div>';
+
+            const q = query(
+                collection(db, "comments"),
+                where("artId", "==", artId),
+                orderBy("createdAt", "desc")
+            );
+
+            window.unsubscribeComments = onSnapshot(q, (snapshot) => {
+                const comments = [];
+                snapshot.forEach(docSnap => {
+                    comments.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                window.currentArtComments = comments;
+                window.renderCommentsList(comments);
+            }, (error) => {
+                console.error("Ошибка загрузки комментариев:", error);
+                list.innerHTML = '<div class="comments-empty">Не удалось загрузить комментарии.</div>';
+            });
+        };
+
+        // === УДАЛЕНИЕ КОММЕНТАРИЯ ===
+        window.deleteComment = async function(commentId) {
+            if (!confirm("Удалить этот комментарий?")) return;
+            try {
+                await deleteDoc(doc(db, "comments", commentId));
+            } catch (error) {
+                console.error("Ошибка удаления:", error);
+                alert("Не удалось удалить комментарий.");
+            }
+        };
+
+        // === БАН ПОЛЬЗОВАТЕЛЯ ===
+        window.banUser = async function(userId, alsoDelete, commentId) {
+            if (!isCreator(window.currentUser?.uid)) {
+                alert("Только создатель может блокировать.");
+                return;
+            }
+            if (userId === CREATOR_UID) {
+                alert("Нельзя заблокировать создателя.");
+                return;
+            }
+            const reason = prompt("Причина блокировки (необязательно):", "");
+            if (reason === null) return; // отмена
+
+            try {
+                await setDoc(doc(db, "bans", userId), {
+                    reason: reason || "Нарушение правил",
+                    bannedBy: window.currentUser.uid,
+                    bannedAt: serverTimestamp(),
+                    until: null
+                });
+
+                if (alsoDelete && commentId) {
+                    await deleteDoc(doc(db, "comments", commentId));
+                }
+
+                alert("Пользователь заблокирован.");
+            } catch (error) {
+                console.error("Ошибка бана:", error);
+                alert("Не удалось заблокировать.");
+            }
+        };
+
+        // === ИНФО ОБ АВТОРЕ ===
+        window.showAuthorInfo = function(userId, userName) {
+            if (userId === window.currentUser?.uid) {
+                openMyBlock();
+                return;
+            }
+            // TODO: открыть профиль автора (пока просто алерт)
+            alert("Профиль: " + userName);
+        };
+
+        // === FIREBASE-ЛОГИКА (лайки, просмотры) ===
         let cachedIP = null;
         async function getUserIP() {
             if (cachedIP) return cachedIP;
@@ -1392,16 +1967,12 @@
                 const data = await res.json();
                 cachedIP = data.ip;
                 return cachedIP;
-            } catch { 
-                cachedIP = "unknown_ip";
-                return cachedIP; 
-            }
+            } catch { cachedIP = "unknown_ip"; return cachedIP; }
         }
         getUserIP();
 
         window.loadStats = async function(imageId) {
             const btn = document.getElementById('likeBtn');
-
             const [imgSnap, userIP] = await Promise.all([
                 getDoc(doc(db, "images", imageId)),
                 getUserIP()
