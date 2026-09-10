@@ -327,7 +327,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(10, 12, 16, 0.95);
+            background-color: rgba(10, 12, 16, 0.98);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -339,7 +339,6 @@
             overflow: hidden;
             padding: 20px;
             box-sizing: border-box;
-            overscroll-behavior: contain;
         }
         .lightbox.active {
             opacity: 1;
@@ -347,33 +346,24 @@
         }
         .lightbox-content {
             display: flex;
-            gap: 20px;
-            max-width: 1400px;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 1000px;
             width: 100%;
             max-height: 100%;
             justify-content: center;
-            align-items: flex-start;
-            overflow: visible;
-        }
-        .lightbox-left {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            min-width: 0;
-            max-height: 100%;
             overflow-y: auto;
             overflow-x: hidden;
-            padding-right: 4px;
-            overscroll-behavior: contain;
+            padding: 4px;
         }
-        .lightbox-left::-webkit-scrollbar { width: 8px; }
-        .lightbox-left::-webkit-scrollbar-track { background: #0d1117; }
-        .lightbox-left::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        .lightbox-content::-webkit-scrollbar { width: 8px; }
+        .lightbox-content::-webkit-scrollbar-track { background: #0d1117; }
+        .lightbox-content::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
 
         .lightbox-img {
             max-width: 100%;
-            max-height: 60vh;
+            max-height: 55vh;
             width: auto;
             height: auto;
             object-fit: contain;
@@ -383,14 +373,13 @@
             flex-shrink: 0;
         }
         .lightbox-caption {
-            margin-top: 15px;
             text-align: center;
             max-width: 100%;
         }
         .lightbox-caption h3 {
             margin: 0 0 4px 0;
             color: #fff;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
         .lightbox-caption a {
             color: #58a6ff;
@@ -402,27 +391,37 @@
         }
         .close-btn {
             position: absolute;
-            top: 20px;
-            right: 25px;
+            top: 15px;
+            right: 20px;
             color: #fff;
-            font-size: 35px;
+            font-size: 30px;
             cursor: pointer;
             user-select: none;
             z-index: 10;
-        }
-        .lightbox-actions {
-            margin-top: 18px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            line-height: 1;
+        }
+        .close-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .lightbox-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
             flex-wrap: wrap;
         }
         .action-btn {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 16px;
+            padding: 10px 18px;
             font-size: 0.95rem;
             font-weight: 600;
             color: #c9d1d9;
@@ -444,6 +443,11 @@
         .action-btn:disabled {
             cursor: default;
             opacity: 0.7;
+        }
+        .action-btn.comments-open {
+            background: #1f6feb;
+            border-color: #1f6feb;
+            color: #fff;
         }
         .counter {
             font-size: 0.95rem;
@@ -472,45 +476,88 @@
             display: block;
         }
 
-        /* === ПАНЕЛЬ КОММЕНТАРИЕВ === */
-        .comments-panel {
-            width: 380px;
-            max-height: 80vh;
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
+        /* === ЭКРАН КОММЕНТАРИЕВ (полноэкранный) === */
+        .comments-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0d1117;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            flex-shrink: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10001;
         }
-        .comments-header {
-            padding: 14px 16px;
-            border-bottom: 1px solid #30363d;
-            font-weight: 600;
-            color: #f0f6fc;
-            font-size: 0.95rem;
+        .comments-screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .comments-screen-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 20px;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
             flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        .comments-list {
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #c9d1d9;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .back-btn:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+        .comments-screen-title {
+            flex: 1;
+            color: #f0f6fc;
+            font-size: 1rem;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .comments-screen-title .sub {
+            color: #8b949e;
+            font-size: 0.85rem;
+            font-weight: 400;
+            margin-left: 8px;
+        }
+        .comments-screen-list {
             flex: 1;
             overflow-y: auto;
-            padding: 12px 16px;
-            min-height: 100px;
+            overflow-x: hidden;
+            padding: 16px 20px;
             overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
-        .comments-list::-webkit-scrollbar {
-            width: 8px;
-        }
-        .comments-list::-webkit-scrollbar-track {
-            background: #0d1117;
-        }
-        .comments-list::-webkit-scrollbar-thumb {
-            background: #30363d;
-            border-radius: 4px;
+        .comments-screen-list::-webkit-scrollbar { width: 8px; }
+        .comments-screen-list::-webkit-scrollbar-track { background: #0d1117; }
+        .comments-screen-list::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+
+        .comments-screen-form {
+            border-top: 1px solid #30363d;
+            padding: 12px 20px;
+            background: #161b22;
+            flex-shrink: 0;
         }
         .comment {
             display: flex;
@@ -523,8 +570,8 @@
             border-bottom: none;
         }
         .comment-avatar {
-            width: 34px;
-            height: 34px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             border: 2px solid #30363d;
             object-fit: cover;
@@ -545,7 +592,7 @@
         .comment-name {
             font-weight: 600;
             color: #f0f6fc;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             cursor: pointer;
         }
         .comment-name:hover {
@@ -557,24 +604,18 @@
         }
         .comment-text {
             color: #c9d1d9;
-            font-size: 0.9rem;
-            line-height: 1.4;
+            font-size: 0.92rem;
+            line-height: 1.45;
             word-wrap: break-word;
             overflow-wrap: break-word;
-        }
-        .comment-banned {
-            font-size: 0.78rem;
-            color: #f85149;
-            margin-top: 4px;
-            font-style: italic;
         }
         .comment-menu-btn {
             background: none;
             border: none;
             color: #8b949e;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
-            padding: 2px 6px;
+            padding: 4px 8px;
             border-radius: 4px;
             transition: background 0.2s ease, color 0.2s ease;
             flex-shrink: 0;
@@ -586,7 +627,7 @@
         }
         .comment-menu {
             position: absolute;
-            top: 30px;
+            top: 36px;
             right: 0;
             background: #21262d;
             border: 1px solid #30363d;
@@ -627,18 +668,13 @@
             text-align: center;
             color: #8b949e;
             font-size: 0.9rem;
-            padding: 30px 0;
-        }
-        .comments-form {
-            border-top: 1px solid #30363d;
-            padding: 12px 16px;
-            flex-shrink: 0;
+            padding: 60px 20px;
         }
         .comments-textarea {
             width: 100%;
             box-sizing: border-box;
-            padding: 8px 12px;
-            font-size: 0.9rem;
+            padding: 10px 14px;
+            font-size: 0.92rem;
             background: #0d1117;
             border: 1px solid #30363d;
             border-radius: 8px;
@@ -646,7 +682,7 @@
             outline: none;
             font-family: inherit;
             resize: none;
-            min-height: 60px;
+            min-height: 50px;
             max-height: 120px;
             transition: border-color 0.2s ease;
         }
@@ -665,8 +701,8 @@
             color: #8b949e;
         }
         .comments-submit {
-            padding: 8px 16px;
-            font-size: 0.85rem;
+            padding: 9px 20px;
+            font-size: 0.88rem;
             font-weight: 600;
             color: #fff;
             background: #238636;
@@ -685,8 +721,8 @@
         .comments-login-hint {
             text-align: center;
             color: #8b949e;
-            font-size: 0.85rem;
-            padding: 12px;
+            font-size: 0.88rem;
+            padding: 14px;
         }
         .comments-login-hint button {
             background: none;
@@ -694,13 +730,13 @@
             color: #58a6ff;
             cursor: pointer;
             text-decoration: underline;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
         }
         .comments-banned-hint {
             text-align: center;
             color: #f85149;
-            font-size: 0.85rem;
-            padding: 12px;
+            font-size: 0.88rem;
+            padding: 14px;
             background: rgba(248, 81, 73, 0.1);
             border-radius: 8px;
         }
@@ -796,7 +832,6 @@
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
-            position: relative;
         }
         .modal-avatar {
             width: 90px;
@@ -983,45 +1018,6 @@
             color: #58a6ff;
         }
 
-        @media (max-width: 900px) {
-            .lightbox {
-                padding: 10px;
-                justify-content: flex-start;
-            }
-            .lightbox-content {
-                flex-direction: column;
-                align-items: center;
-                gap: 12px;
-                width: 100%;
-                max-height: none;
-            }
-            .lightbox-left {
-                width: 100%;
-                max-height: none;
-                overflow: visible;
-            }
-            .lightbox-img {
-                max-height: 55vh;
-                max-width: 100%;
-            }
-            .comments-panel {
-                width: 100%;
-                max-height: 50vh;
-            }
-            .close-btn {
-                top: 10px;
-                right: 15px;
-                font-size: 30px;
-                background: rgba(0,0,0,0.5);
-                border-radius: 50%;
-                width: 38px;
-                height: 38px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                line-height: 1;
-            }
-        }
         @media (max-width: 600px) {
             body { padding: 12px; }
             .top-bar { gap: 8px; padding: 8px 0; justify-content: space-between; }
@@ -1034,6 +1030,10 @@
             .scroll-top { width: 44px; height: 44px; font-size: 20px; bottom: 20px; right: 16px; }
             .myblock-header { flex-wrap: wrap; }
             .myblock-edit-btn { margin-left: 0; width: 100%; }
+            .lightbox-img { max-height: 45vh; }
+            .comments-screen-header { padding: 10px 12px; }
+            .comments-screen-list { padding: 12px; }
+            .comments-screen-form { padding: 10px 12px; }
         }
     </style>
 </head>
@@ -1073,31 +1073,35 @@
     <div class="gallery-grid" id="galleryGrid"></div>
     <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">↑</button>
 
+    <!-- Лайтбокс -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-        <span class="close-btn">&times;</span>
+        <span class="close-btn" onclick="closeLightbox(event)">&times;</span>
         <div class="lightbox-content">
-            <div class="lightbox-left">
-                <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
-                <div class="lightbox-caption" id="lightboxCaption"></div>
-                <div class="lightbox-actions">
-                    <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
-                    <span class="counter" id="likeCount">0</span>
-                    <span class="counter" id="viewCount">👁 0</span>
-                    <button class="action-btn" id="shareBtn" onclick="shareImage(event)">🔗 Поделиться</button>
-                    <button class="action-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">⬇ Скачать</button>
-                </div>
-            </div>
-
-            <div class="comments-panel" onclick="event.stopPropagation()">
-                <div class="comments-header">
-                    💬 Комментарии <span id="commentsCount" style="color:#8b949e;font-weight:400;font-size:0.85rem;"></span>
-                </div>
-                <div class="comments-list" id="commentsList">
-                    <div class="comments-empty">Загрузка...</div>
-                </div>
-                <div class="comments-form" id="commentsForm"></div>
+            <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+            <div class="lightbox-actions">
+                <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
+                <span class="counter" id="likeCount">0</span>
+                <span class="counter" id="viewCount">👁 0</span>
+                <button class="action-btn" id="commentsBtn" onclick="openCommentsScreen(event)">💬 Комментарии</button>
+                <button class="action-btn" id="shareBtn" onclick="shareImage(event)">🔗 Поделиться</button>
+                <button class="action-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">⬇ Скачать</button>
             </div>
         </div>
+    </div>
+
+    <!-- Экран комментариев (полноэкранный) -->
+    <div class="comments-screen" id="commentsScreen">
+        <div class="comments-screen-header">
+            <button class="back-btn" onclick="closeCommentsScreen()">← Назад</button>
+            <div class="comments-screen-title">
+                💬 Комментарии <span class="sub" id="commentsScreenSubtitle"></span>
+            </div>
+        </div>
+        <div class="comments-screen-list" id="commentsScreenList">
+            <div class="comments-empty">Загрузка...</div>
+        </div>
+        <div class="comments-screen-form" id="commentsScreenForm"></div>
     </div>
 
     <div class="modal-overlay" id="profileModal">
@@ -1146,19 +1150,12 @@
     </div>
 
     <script>
-        // ============================================================
-        // ⚠️ ЗАМЕНИТЕ НА ВАШ НАСТОЯЩИЙ UID
-        // ============================================================
         const CREATOR_UID = "5rT2dxYNsYYhBl6Prok2oCeCflX2";
 
-        // ============================================================
-        // 🛡 СПИСОК UID АДМИНОВ
-        // ============================================================
         const ADMIN_UIDS = [
             // "UID_ПЕРВОГО_АДМИНА",
         ];
 
-        // Простой фильтр нецензурных слов
         const BAD_WORDS = [
             "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
             "ебуч","еби","заеб","уеб","наеб","долбоеб","мудак","мудил","гандон","гнида",
@@ -1189,6 +1186,7 @@
         window.isBanned = false;
         window.currentArtComments = [];
         window.currentUserRole = "guest";
+        window.currentCommentCount = 0;
 
         const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
@@ -1198,19 +1196,20 @@
         const sortSelect = document.getElementById('sortSelect');
         const tagFilters = document.getElementById('tagFilters');
         const scrollTopBtn = document.getElementById('scrollTopBtn');
+        const commentsScreen = document.getElementById('commentsScreen');
+        const commentsScreenList = document.getElementById('commentsScreenList');
+        const commentsScreenForm = document.getElementById('commentsScreenForm');
+        const commentsScreenSubtitle = document.getElementById('commentsScreenSubtitle');
+        const commentsBtn = document.getElementById('commentsBtn');
 
         let currentTag = null;
         let tagsExpanded = false;
         const TAGS_LIMIT = 10;
 
-        function isCreator(uid) {
-            return uid && uid === CREATOR_UID;
-        }
+        function isCreator(uid) { return uid && uid === CREATOR_UID; }
         window.isCreator = isCreator;
 
-        function isAdmin(uid) {
-            return uid && ADMIN_UIDS.includes(uid);
-        }
+        function isAdmin(uid) { return uid && ADMIN_UIDS.includes(uid); }
         window.isAdmin = isAdmin;
 
         function getUserRole(uid) {
@@ -1222,19 +1221,13 @@
         window.getUserRole = getUserRole;
 
         function creatorBadgeHTML(uid, small = false) {
-            if (isCreator(uid)) {
-                return `<span class="creator-badge${small ? ' small' : ''}">👑 Создатель</span>`;
-            }
+            if (isCreator(uid)) return `<span class="creator-badge${small ? ' small' : ''}">👑 Создатель</span>`;
             return '';
         }
-
         function adminBadgeHTML(uid, small = false) {
-            if (isAdmin(uid) && !isCreator(uid)) {
-                return `<span class="admin-badge${small ? ' small' : ''}">🛡 Админ</span>`;
-            }
+            if (isAdmin(uid) && !isCreator(uid)) return `<span class="admin-badge${small ? ' small' : ''}">🛡 Админ</span>`;
             return '';
         }
-
         function anyBadgeHTML(uid, small = false) {
             return creatorBadgeHTML(uid, small) + adminBadgeHTML(uid, small);
         }
@@ -1257,7 +1250,6 @@
             const allTags = getAllTags();
             const visible = tagsExpanded ? allTags : allTags.slice(0, TAGS_LIMIT);
             const hidden = allTags.length - visible.length;
-
             visible.forEach(tag => {
                 const btn = document.createElement('button');
                 btn.className = 'tag-btn' + (currentTag === tag ? ' active' : '');
@@ -1265,7 +1257,6 @@
                 btn.onclick = () => filterByTag(tag);
                 tagFilters.appendChild(btn);
             });
-
             if (hidden > 0) {
                 const moreBtn = document.createElement('button');
                 moreBtn.className = 'tag-btn more-btn';
@@ -1297,7 +1288,6 @@
                 const matchTag = !currentTag || (art.desc || '').includes(currentTag);
                 return matchSearch && matchTag;
             });
-
             const sortBy = sortSelect.value;
             if (sortBy === 'new') filtered.sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
             else if (sortBy === 'old') filtered.sort((a, b) => new Date(a.sortDate) - new Date(b.sortDate));
@@ -1340,7 +1330,6 @@
             galleryGrid.innerHTML = '';
             const filtered = getFilteredArts();
             filtered.forEach((art, index) => buildCard(art, index));
-
             if (sortSelect.value === 'popular' || sortSelect.value === 'viewed') {
                 loadAllStatsThenSort(filtered);
             }
@@ -1348,7 +1337,6 @@
         window.renderGallery = renderGallery;
 
         let statsLoadingInProgress = false;
-
         async function loadAllStatsThenSort(list) {
             if (statsLoadingInProgress) return;
             if (typeof window.loadStatsForSortReal !== 'function') {
@@ -1377,7 +1365,6 @@
         function openLightbox(imageId) {
             const index = arts.findIndex(a => a.img === imageId);
             if (index === -1) return;
-
             if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
             if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
 
@@ -1426,15 +1413,37 @@
         }
 
         function closeLightbox(event) {
-            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && event.target.tagName !== 'TEXTAREA' && event.target.tagName !== 'INPUT') {
-                lightbox.classList.remove('active');
+            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON' && event.target.tagName !== 'TEXTAREA' && event.target.tagName !== 'INPUT' && !event.target.classList.contains('close-btn')) return;
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+            window.currentArtIndex = -1;
+            history.replaceState(null, '', window.location.pathname);
+            if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
+            if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
+        }
+
+        function openCommentsScreen(event) {
+            event.stopPropagation();
+            const art = arts[window.currentArtIndex];
+            if (!art) return;
+            lightbox.classList.remove('active');
+            commentsScreen.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            commentsScreenSubtitle.textContent = '— ' + art.title;
+            // Скролл списка в начало
+            commentsScreenList.scrollTop = 0;
+        }
+
+        function closeCommentsScreen() {
+            commentsScreen.classList.remove('active');
+            if (window.currentArtIndex >= 0) {
+                lightbox.classList.add('active');
+            } else {
                 document.body.style.overflow = '';
-                window.currentArtIndex = -1;
-                history.replaceState(null, '', window.location.pathname);
-                if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
-                if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
             }
         }
+        window.openCommentsScreen = openCommentsScreen;
+        window.closeCommentsScreen = closeCommentsScreen;
 
         function shareImage(event) {
             event.stopPropagation();
@@ -1469,13 +1478,14 @@
         document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-                closeLightbox({ target: document.createElement('div') });
+            if (e.key === 'Escape') {
+                if (commentsScreen.classList.contains('active')) closeCommentsScreen();
+                else if (lightbox.classList.contains('active')) closeLightbox({ target: document.createElement('div') });
             }
         });
 
         window.addEventListener('scroll', () => {
-            if (lightbox.classList.contains('active')) return;
+            if (lightbox.classList.contains('active') || commentsScreen.classList.contains('active')) return;
             const thirdItem = galleryGrid.children[2];
             if (thirdItem) {
                 const rect = thirdItem.getBoundingClientRect();
@@ -1487,31 +1497,25 @@
             }
         });
 
-        function scrollToTop() {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
         function downloadWithWatermark(event) {
             event.stopPropagation();
             const currentArt = arts[window.currentArtIndex];
             if (!currentArt) return;
-
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.src = lightboxImg.src;
-
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 canvas.width = img.naturalWidth;
                 canvas.height = img.naturalHeight;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
-
                 const patternText = 'My Pride Fan';
                 const authorText = '© ' + currentArt.authorName;
                 const fontSize = Math.max(18, Math.round(canvas.width * 0.035));
                 ctx.font = `bold ${fontSize}px Arial`;
-
                 const padding = Math.round(canvas.width * 0.02);
                 ctx.textAlign = 'right';
                 ctx.textBaseline = 'bottom';
@@ -1520,7 +1524,6 @@
                 ctx.lineWidth = 3;
                 ctx.strokeText(authorText, canvas.width - padding, canvas.height - padding);
                 ctx.fillText(authorText, canvas.width - padding, canvas.height - padding);
-
                 ctx.save();
                 ctx.globalAlpha = 0.12;
                 ctx.fillStyle = '#000';
@@ -1538,7 +1541,6 @@
                     }
                 }
                 ctx.restore();
-
                 const link = document.createElement('a');
                 link.download = 'art_' + Date.now() + '.png';
                 link.href = canvas.toDataURL('image/png');
@@ -1549,31 +1551,26 @@
 
         // === UI КОММЕНТАРИЕВ ===
         window.renderCommentsList = function(comments) {
-            const list = document.getElementById('commentsList');
-            const countEl = document.getElementById('commentsCount');
-            countEl.textContent = comments.length > 0 ? `(${comments.length})` : '';
+            window.currentCommentCount = comments.length;
+            commentsBtn.textContent = '💬 Комментарии' + (comments.length > 0 ? ' (' + comments.length + ')' : '');
 
             if (comments.length === 0) {
-                list.innerHTML = '<div class="comments-empty">Пока нет комментариев. Будьте первым! 💬</div>';
+                commentsScreenList.innerHTML = '<div class="comments-empty">Пока нет комментариев. Будьте первым! 💬</div>';
                 return;
             }
 
             const myUid = window.currentUser?.uid;
             const myRole = getUserRole(myUid);
 
-            list.innerHTML = comments.map(c => {
+            commentsScreenList.innerHTML = comments.map(c => {
                 const isMine = myUid && c.userId === myUid;
                 const isCreatorComment = isCreator(c.userId);
                 const isAdminComment = isAdmin(c.userId) && !isCreatorComment;
 
                 let canManage = false;
-                if (isMine) {
-                    canManage = true;
-                } else if (myRole === "creator") {
-                    canManage = true;
-                } else if (myRole === "admin") {
-                    canManage = !isCreatorComment && !isAdminComment;
-                }
+                if (isMine) canManage = true;
+                else if (myRole === "creator") canManage = true;
+                else if (myRole === "admin") canManage = !isCreatorComment && !isAdminComment;
 
                 const badge = isCreatorComment ? `<span class="creator-badge small">👑</span>` : 
                               (isAdminComment ? `<span class="admin-badge small">🛡</span>` : '');
@@ -1623,20 +1620,17 @@
 
             if (isMine) {
                 menu.innerHTML += `<button onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-            }
-            else if (myRole === "creator") {
+            } else if (myRole === "creator") {
                 menu.innerHTML += `<button class="danger" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
                 menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
                 menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
-            }
-            else if (myRole === "admin" && !targetIsCreator && !targetIsAdmin) {
+            } else if (myRole === "admin" && !targetIsCreator && !targetIsAdmin) {
                 menu.innerHTML += `<button class="admin-action" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
                 menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
                 menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
             }
 
             if (menu.innerHTML === '') return;
-
             btn.parentElement.style.position = 'relative';
             btn.parentElement.appendChild(menu);
         };
@@ -1666,17 +1660,12 @@
         const provider = new GoogleAuthProvider();
 
         window.signInWithGoogle = async function() {
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
+            try { await signInWithPopup(auth, provider); }
+            catch (error) {
                 console.error("Ошибка входа:", error);
-                if (error.code === 'auth/popup-blocked') {
-                    alert("Браузер заблокировал всплывающее окно. Разрешите всплывающие окна для этого сайта.");
-                } else if (error.code === 'auth/unauthorized-domain') {
-                    alert("Домен не авторизован в Firebase.");
-                } else {
-                    alert("Ошибка входа: " + error.message);
-                }
+                if (error.code === 'auth/popup-blocked') alert("Браузер заблокировал всплывающее окно. Разрешите всплывающие окна для этого сайта.");
+                else if (error.code === 'auth/unauthorized-domain') alert("Домен не авторизован в Firebase.");
+                else alert("Ошибка входа: " + error.message);
             }
         };
 
@@ -1689,17 +1678,13 @@
             document.getElementById('userMenu').classList.toggle('open');
         };
 
-        window.openProfile = function() {
-            openProfileModal(false);
-        };
+        window.openProfile = function() { openProfileModal(false); };
 
         document.addEventListener('click', (e) => {
             const menu = document.getElementById('userMenu');
             const avatar = document.getElementById('userAvatar');
             if (menu && menu.classList.contains('open')) {
-                if (!menu.contains(e.target) && e.target !== avatar) {
-                    menu.classList.remove('open');
-                }
+                if (!menu.contains(e.target) && e.target !== avatar) menu.classList.remove('open');
             }
         });
 
@@ -1746,13 +1731,11 @@
                 userInfo.style.display = 'block';
                 userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
                 userEmail.textContent = user.email || '';
-
                 try {
                     const profile = await ensureUserDocument(user);
                     window.currentUserProfile = profile;
                     const displayName = profile.displayName || user.displayName || 'Пользователь';
                     userName.innerHTML = displayName + ' ' + anyBadgeHTML(user.uid, true);
-
                     if (!profile.displayName || profile.displayName === 'Пользователь') {
                         setTimeout(() => openProfileModal(true), 500);
                     }
@@ -1760,13 +1743,9 @@
                     console.error("Ошибка загрузки профиля:", e);
                     userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + anyBadgeHTML(user.uid, true);
                 }
-
                 const ban = await checkBan(user.uid);
                 window.isBanned = !!ban;
-                if (ban) {
-                    window.banReason = ban.reason || 'Нарушение правил';
-                }
-
+                if (ban) window.banReason = ban.reason || 'Нарушение правил';
                 if (typeof renderCommentForm === 'function') renderCommentForm();
                 if (typeof renderGallery === 'function') renderGallery();
             } else {
@@ -1783,19 +1762,15 @@
         window.openProfileModal = function(isFirstTime) {
             const user = window.currentUser;
             if (!user) return;
-
             const modal = document.getElementById('profileModal');
             const title = document.getElementById('profileModalTitle');
             const skipBtn = document.getElementById('profileSkipBtn');
-
             title.textContent = isFirstTime ? 'Заполните профиль' : 'Редактировать профиль';
             skipBtn.style.display = isFirstTime ? 'block' : 'none';
-
             document.getElementById('profileAvatar').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
             document.getElementById('profileNameInput').value = user.displayName || '';
             document.getElementById('profileBioInput').value = '';
             document.getElementById('bioCounter').textContent = '0 / 200';
-
             getDoc(doc(db, "users", user.uid)).then(snap => {
                 if (snap.exists()) {
                     const data = snap.data();
@@ -1804,7 +1779,6 @@
                     document.getElementById('bioCounter').textContent = (data.bio || '').length + ' / 200';
                 }
             });
-
             modal.classList.add('active');
         };
 
@@ -1815,28 +1789,19 @@
         window.saveProfile = async function() {
             const user = window.currentUser;
             if (!user) return;
-
             const btn = document.getElementById('profileSaveBtn');
             const name = document.getElementById('profileNameInput').value.trim();
             const bio = document.getElementById('profileBioInput').value.trim();
-
             if (!name) { alert("Введите имя."); return; }
-
             btn.disabled = true;
             btn.textContent = 'Сохранение...';
-
             try {
                 await setDoc(doc(db, "users", user.uid), {
-                    displayName: name,
-                    bio: bio,
-                    email: user.email,
-                    photoURL: user.photoURL || '',
-                    updatedAt: new Date()
+                    displayName: name, bio: bio, email: user.email,
+                    photoURL: user.photoURL || '', updatedAt: new Date()
                 }, { merge: true });
-
                 window.currentUserProfile = { ...(window.currentUserProfile || {}), displayName: name, bio: bio };
                 document.getElementById('userName').innerHTML = name + ' ' + anyBadgeHTML(user.uid, true);
-
                 btn.textContent = '✅ Сохранено!';
                 setTimeout(() => {
                     closeProfileModal();
@@ -1862,19 +1827,15 @@
         window.openMyBlock = function() {
             const user = window.currentUser;
             if (!user) return;
-
             document.getElementById('userMenu').classList.remove('open');
-
             const avatar = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
             document.getElementById('myBlockAvatar').src = avatar;
             document.getElementById('myBlockEmail').textContent = user.email || '';
-
             const badge = document.getElementById('myBlockBadge');
             const adminBadge = document.getElementById('myBlockAdminBadge');
             if (isCreator(user.uid)) { badge.style.display = 'inline-flex'; adminBadge.style.display = 'none'; }
             else if (isAdmin(user.uid)) { badge.style.display = 'none'; adminBadge.style.display = 'inline-flex'; }
             else { badge.style.display = 'none'; adminBadge.style.display = 'none'; }
-
             getDoc(doc(db, "users", user.uid)).then(snap => {
                 let displayName = user.displayName || 'Пользователь';
                 let bio = '';
@@ -1886,12 +1847,10 @@
                 document.getElementById('myBlockName').textContent = displayName;
                 document.getElementById('myBlockBio').textContent = bio || 'Без описания';
             });
-
             const myArts = arts.filter(a => a.authorId === user.uid);
             const grid = document.getElementById('myBlockGrid');
             const countEl = document.getElementById('myBlockCount');
             countEl.textContent = '(' + myArts.length + ')';
-
             if (myArts.length === 0) {
                 grid.innerHTML = '<div class="myblock-empty">У вас пока нет постов.</div>';
             } else {
@@ -1902,7 +1861,6 @@
                     </div>
                 `).join('');
             }
-
             document.getElementById('myBlockModal').classList.add('active');
         };
 
@@ -1915,19 +1873,16 @@
         });
 
         window.renderCommentForm = function() {
-            const form = document.getElementById('commentsForm');
+            const form = document.getElementById('commentsScreenForm');
             const user = window.currentUser;
-
             if (!user) {
                 form.innerHTML = `<div class="comments-login-hint">Войдите через Google, чтобы оставить комментарий.<br><button onclick="signInWithGoogle()">Войти</button></div>`;
                 return;
             }
-
             if (window.isBanned) {
                 form.innerHTML = `<div class="comments-banned-hint">🚫 Вы заблокированы и не можете писать комментарии.<br><small>${escapeHtml(window.banReason || '')}</small></div>`;
                 return;
             }
-
             form.innerHTML = `
                 <textarea class="comments-textarea" id="commentInput" maxlength="500" placeholder="Написать комментарий..."></textarea>
                 <div class="comments-form-footer">
@@ -1935,7 +1890,6 @@
                     <button class="comments-submit" id="commentSubmitBtn" onclick="submitComment()">Отправить</button>
                 </div>
             `;
-
             document.getElementById('commentInput').addEventListener('input', (e) => {
                 document.getElementById('commentCounter').textContent = e.target.value.length + ' / 500';
             });
@@ -1945,30 +1899,18 @@
             const user = window.currentUser;
             const art = arts[window.currentArtIndex];
             if (!user || !art) return;
-
-            if (window.isBanned) {
-                alert("Вы заблокированы.");
-                return;
-            }
-
+            if (window.isBanned) { alert("Вы заблокированы."); return; }
             const input = document.getElementById('commentInput');
             const text = input.value.trim();
             if (!text) return;
-
-            if (text.length > 500) {
-                alert("Слишком длинный комментарий.");
-                return;
-            }
-
+            if (text.length > 500) { alert("Слишком длинный комментарий."); return; }
             if (hasBadWords(text)) {
                 alert("Комментарий содержит запрещённые слова. Пожалуйста, переформулируйте.");
                 return;
             }
-
             const btn = document.getElementById('commentSubmitBtn');
             btn.disabled = true;
             btn.textContent = 'Отправка...';
-
             try {
                 const profile = window.currentUserProfile || {};
                 await addDoc(collection(db, "comments"), {
@@ -1993,83 +1935,46 @@
         };
 
         window.loadComments = function(artId) {
-            const list = document.getElementById('commentsList');
-            list.innerHTML = '<div class="comments-empty">Загрузка...</div>';
-
-            const q = query(
-                collection(db, "comments"),
-                where("artId", "==", artId)
-            );
-
+            commentsScreenList.innerHTML = '<div class="comments-empty">Загрузка...</div>';
+            const q = query(collection(db, "comments"), where("artId", "==", artId));
             window.unsubscribeComments = onSnapshot(q, (snapshot) => {
                 const comments = [];
-                snapshot.forEach(docSnap => {
-                    comments.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                comments.sort((a, b) => {
-                    const ta = a.createdAt?.seconds || 0;
-                    const tb = b.createdAt?.seconds || 0;
-                    return tb - ta;
-                });
+                snapshot.forEach(docSnap => comments.push({ id: docSnap.id, ...docSnap.data() }));
+                comments.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
                 window.currentArtComments = comments;
                 window.renderCommentsList(comments);
             }, (error) => {
                 console.error("Ошибка загрузки комментариев:", error);
-                list.innerHTML = '<div class="comments-empty">Не удалось загрузить комментарии.</div>';
+                commentsScreenList.innerHTML = '<div class="comments-empty">Не удалось загрузить комментарии.</div>';
             });
         };
 
         window.deleteComment = async function(commentId) {
             if (!confirm("Удалить этот комментарий?")) return;
-            try {
-                await deleteDoc(doc(db, "comments", commentId));
-            } catch (error) {
-                console.error("Ошибка удаления:", error);
-                alert("Не удалось удалить комментарий.");
-            }
+            try { await deleteDoc(doc(db, "comments", commentId)); }
+            catch (error) { console.error("Ошибка удаления:", error); alert("Не удалось удалить комментарий."); }
         };
 
         window.banUser = async function(userId, alsoDelete, commentId) {
             const myRole = getUserRole(window.currentUser?.uid);
-            if (myRole !== "creator" && myRole !== "admin") {
-                alert("Недостаточно прав.");
-                return;
-            }
-            if (userId === CREATOR_UID) {
-                alert("Нельзя заблокировать создателя.");
-                return;
-            }
-            if (isAdmin(userId) && myRole === "admin") {
-                alert("Админ не может заблокировать другого админа.");
-                return;
-            }
+            if (myRole !== "creator" && myRole !== "admin") { alert("Недостаточно прав."); return; }
+            if (userId === CREATOR_UID) { alert("Нельзя заблокировать создателя."); return; }
+            if (isAdmin(userId) && myRole === "admin") { alert("Админ не может заблокировать другого админа."); return; }
             const reason = prompt("Причина блокировки (необязательно):", "");
             if (reason === null) return;
-
             try {
                 await setDoc(doc(db, "bans", userId), {
                     reason: reason || "Нарушение правил",
                     bannedBy: window.currentUser.uid,
-                    bannedAt: serverTimestamp(),
-                    until: null
+                    bannedAt: serverTimestamp(), until: null
                 });
-
-                if (alsoDelete && commentId) {
-                    await deleteDoc(doc(db, "comments", commentId));
-                }
-
+                if (alsoDelete && commentId) await deleteDoc(doc(db, "comments", commentId));
                 alert("Пользователь заблокирован.");
-            } catch (error) {
-                console.error("Ошибка бана:", error);
-                alert("Не удалось заблокировать.");
-            }
+            } catch (error) { console.error("Ошибка бана:", error); alert("Не удалось заблокировать."); }
         };
 
         window.showAuthorInfo = function(userId, userName) {
-            if (userId === window.currentUser?.uid) {
-                openMyBlock();
-                return;
-            }
+            if (userId === window.currentUser?.uid) { openMyBlock(); return; }
             alert("Профиль: " + userName);
         };
 
@@ -2087,13 +1992,8 @@
 
         window.loadStats = async function(imageId) {
             const btn = document.getElementById('likeBtn');
-            const [imgSnap, userIP] = await Promise.all([
-                getDoc(doc(db, "images", imageId)),
-                getUserIP()
-            ]);
-
+            const [imgSnap, userIP] = await Promise.all([getDoc(doc(db, "images", imageId)), getUserIP()]);
             document.getElementById('likeCount').textContent = imgSnap.exists() ? (imgSnap.data().likes || 0) : 0;
-
             if (window.unsubscribeView) window.unsubscribeView();
             const viewRef = doc(db, "views", imageId);
             window.unsubscribeView = onSnapshot(viewRef, (docSnap) => {
@@ -2102,13 +2002,10 @@
                 if (!currentArt || currentArt.img !== imageId) return;
                 document.getElementById('viewCount').textContent = '👁 ' + (docSnap.exists() ? (docSnap.data().count || 0) : 0);
             });
-
             const likeRef = doc(db, "likes", `${imageId}_${userIP}`);
             const likeSnap = await getDoc(likeRef);
-
             const currentArt = arts[window.currentArtIndex];
             if (!currentArt || currentArt.img !== imageId) return;
-
             if (likeSnap.exists()) {
                 btn.disabled = true;
                 btn.classList.add('liked');
@@ -2118,16 +2015,12 @@
                 btn.classList.remove('liked');
                 btn.textContent = '❤️ Лайк';
             }
-
             document.getElementById('shareBtn').disabled = false;
             document.getElementById('downloadBtn').disabled = false;
         };
 
         window.loadStatsForSortReal = async function(imageId) {
-            const [imgSnap, viewSnap] = await Promise.all([
-                getDoc(doc(db, "images", imageId)),
-                getDoc(doc(db, "views", imageId))
-            ]);
+            const [imgSnap, viewSnap] = await Promise.all([getDoc(doc(db, "images", imageId)), getDoc(doc(db, "views", imageId))]);
             window.statsCache[imageId] = {
                 likes: imgSnap.exists() ? (imgSnap.data().likes || 0) : 0,
                 views: viewSnap.exists() ? (viewSnap.data().count || 0) : 0
@@ -2140,35 +2033,24 @@
             const viewRef = doc(db, "views", imageId);
             const now = Date.now();
             const oneHour = 60 * 60 * 1000;
-
             try {
                 const logSnap = await getDoc(viewLogRef);
                 if (logSnap.exists() && (now - (logSnap.data().timestamp || 0)) < oneHour) return;
-
                 await setDoc(viewLogRef, { imageId: imageId, ip: userIP, timestamp: now });
                 await setDoc(viewRef, { count: increment(1) }, { merge: true });
-            } catch (error) {
-                console.error("Ошибка просмотра:", error);
-            }
+            } catch (error) { console.error("Ошибка просмотра:", error); }
         };
 
         window.handleLike = async function(event) {
             event.stopPropagation();
             const art = window.arts && window.arts[window.currentArtIndex];
             if (!art) return;
-
             const userIP = await getUserIP();
             const likeRef = doc(db, "likes", `${art.img}_${userIP}`);
-
             const snap = await getDoc(likeRef);
-            if (snap.exists()) {
-                alert("Вы уже лайкали эту картинку!");
-                return;
-            }
-
+            if (snap.exists()) { alert("Вы уже лайкали эту картинку!"); return; }
             await setDoc(likeRef, { imageId: art.img, ip: userIP, timestamp: new Date() });
             await setDoc(doc(db, "images", art.img), { likes: increment(1) }, { merge: true });
-
             const btn = document.getElementById('likeBtn');
             btn.disabled = true;
             btn.classList.add('liked');
