@@ -8,7 +8,7 @@
         body {
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #0d1117; 
+            background-color: #0d1117;
             color: #c9d1d9;
             padding: 20px;
         }
@@ -51,7 +51,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        /* Класс для скрытия элементов при поиске */
         .gallery-item.hidden {
             display: none;
         }
@@ -154,19 +153,26 @@
             cursor: pointer;
             user-select: none;
         }
+        /* Кнопка «Скачать» в лайтбоксе */
+        .download-btn {
+            margin-top: 18px;
+            padding: 10px 22px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background: #238636;
+            border: 1px solid #2ea043;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .download-btn:hover {
+            background: #2ea043;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
-
-
-
-
-
-
-
-
-
-
 
     <!-- Поле поиска -->
     <div class="search-container">
@@ -179,73 +185,29 @@
         <span class="close-btn">&times;</span>
         <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
         <div class="lightbox-caption" id="lightboxCaption"></div>
+        <button class="download-btn" id="downloadBtn" onclick="downloadWithWatermark(event)">
+            ⬇ Скачать
+        </button>
     </div>
 
     <script>
         const arts = [
             {
-                img: "Screenshot_9.png", 
-                title: "Прототип родителей Шарптанг", 
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8269", 
-                desc: "3 марта 2026 года, 02:14"
+                img: "30097f4c2cf7998f0e2476511d2f7d07.jpg",
+                title: "фыаыфва",
+                authorName: "фываыфва",
+                authorUrl: "",
+                desc: "ыфваыфваыфва",
+                sortDate: "2021-08-25 03:17"
             },
             {
-                img: "Screenshot_10.png", 
-                title: "Прототип родителей Прауда", 
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8268", 
-                desc: "3 марта 2026 года, 01:17"
+                img: "фывыфвыфв.webp",
+                title: "пвымсчичи",
+                authorName: "выапывy",
+                authorUrl: "",
+                desc: "мичсмичсмичсми",
+                sortDate: "2025-08-25 02:17"
             },
-            {
-                img: "Screenshot_11.png", 
-                title: "Набросок дизайна матери Мунстрайк", 
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8265", 
-                desc: "3 марта 2026 года, 00:25"
-            },
-            {
-                img: "Screenshot_13.png", 
-                title: "давно ничего не было с девочками, да и с остальными дамами тот же касяк.. Что-ж, у мальчиков сразу две тёти, одна бабушка и одна прабабушка", 
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8237", 
-                desc: "#Вотерхантер #Сайленсталк #Лайтхантер, 16 февраля 2026 года, 03:06"
-            },
-           {
-    img: "Screenshot_15.png",
-    title: '"Моя мать рухлядь которая не способна поймать даже муху" сказал бы сын ничто под влиянием Прауда..если бы Ничто не решилась спасти брата.',
-    authorName: "Star Harlen",
-    authorUrl: "https://t.me",
-    desc: "14 февраля 2026 года, 02:17"
-},
-             {
-                img: "Screenshot_16.png", 
-                title: "Если бы...", 
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8111", 
-                desc: "#Если #Спарк #Файер #Ничто #Перо,14 сентября 2025 года, 07:35"
-            },
-             {
-                img: "Screenshot_17.png", 
-                title: "Последний разговор между Флайт и Танглом...Тангл не хотел оставлять Фаера пока тот не найдет свой прайд, чего не скажешь о поступке второго...", 
-                authorName: "Star Harlen",
-                authorUrl: "https://t.me/My_pride_2/8070", 
-                desc: "#Тангл #Флайт #Бид,4 августа 2025 года,  20:31"
-            },
-             {
-                img: "Screenshot_18.png", 
-                title: "—он похож на тебя—у него нет ничего от меня, он просто копия его отца.", 
-                authorName: "Mefoday",
-                authorUrl: "https://t.me/My_pride_2/8089", 
-                desc: "Недавний артец для Леди и ее партнёрши(ее ведь так можно называть?) и мини БаркИ скетч с Дримом в ближайшее время дропну тот аск...#Мать_Баркмейна #Леди,25 августа 2025 года, 02:17"
-            },
-            {
-    img: "Screenshot_15.png",
-    title: '"Моя мать рухлядь которая не способна поймать даже муху" сказал бы сын ничто под влиянием Прауда..если бы Ничто не решилась спасти брата.',
-    authorName: "Star Harlen",
-    authorUrl: "https://t.me",
-    desc: "14 февраля 2026 года, 02:17"
-},
         ];
 
         const galleryGrid = document.getElementById('galleryGrid');
@@ -254,8 +216,11 @@
         const lightboxCaption = document.getElementById('lightboxCaption');
         const searchInput = document.getElementById('searchInput');
 
-        // Генерируем карточки
-        arts.forEach((art, index) => {
+        // АВТОСОРТИРОВКА: от новых к старым.
+        const sortedArts = [...arts].sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
+
+        // Рендер карточек из уже отсортированного массива
+        sortedArts.forEach((art, index) => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
             item.innerHTML = `
@@ -271,12 +236,12 @@
             galleryGrid.appendChild(item);
         });
 
-        // Логика фильтрации при вводе в поиск
+        // Поиск по названию / автору / описанию
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
             const items = galleryGrid.getElementsByClassName('gallery-item');
 
-            arts.forEach((art, index) => {
+            sortedArts.forEach((art, index) => {
                 const matchTitle = art.title.toLowerCase().includes(query);
                 const matchAuthor = art.authorName.toLowerCase().includes(query);
                 const matchDesc = art.desc.toLowerCase().includes(query);
@@ -290,7 +255,7 @@
         });
 
         function openLightbox(index) {
-            const art = arts[index];
+            const art = sortedArts[index];
             lightboxImg.src = art.img;
             lightboxCaption.innerHTML = `
                 <h3>${art.title}</h3>
@@ -301,11 +266,86 @@
         }
 
         function closeLightbox(event) {
-            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A') {
+            if (event.target.tagName !== 'IMG' && event.target.tagName !== 'A' && event.target.tagName !== 'BUTTON') {
                 lightbox.classList.remove('active');
             }
         }
+
+        // === ЗАПРЕТ ПРАВОГО КЛИКА И ПЕРЕТАСКИВАНИЯ ПО КАРТИНКАМ ===
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'IMG') e.preventDefault();
+        });
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'IMG') e.preventDefault();
+        });
+
+// === СКАЧИВАНИЕ КАРТИНКИ С ВОДЯНЫМ ЗНАКОМ ЧЕРЕЗ CANVAS ===
+function downloadWithWatermark(event) {
+    event.stopPropagation();
+
+    // Находим текущий арт (по src картинки в лайтбоксе)
+    const currentArt = sortedArts.find(a => lightboxImg.src.includes(a.img)) || sortedArts[0];
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = lightboxImg.src;
+
+    img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const patternText = 'My Pride Fan';
+        const authorText  = '© ' + currentArt.authorName;
+
+        const fontSize = Math.max(18, Math.round(canvas.width * 0.035));
+        ctx.font = `bold ${fontSize}px Arial`;
+
+        // --- Подпись автора в правом нижнем углу (плотная, белая с чёрной обводкой) ---
+        const padding = Math.round(canvas.width * 0.02);
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.lineWidth = 3;
+        ctx.strokeText(authorText, canvas.width - padding, canvas.height - padding);
+        ctx.fillText(authorText, canvas.width - padding, canvas.height - padding);
+
+        // --- Тонкий паттерн по диагонали (чёрный, заметнее чем раньше) ---
+        ctx.save();
+        ctx.globalAlpha = 0.18;             // ← было 0.10, стало заметнее
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `bold ${fontSize}px Arial`;
+
+        const stepX = canvas.width / 3;
+        const stepY = canvas.height / 3;
+
+        for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
+            for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(-Math.PI / 6);   // -30°
+                ctx.fillText(patternText, 0, 0);
+                ctx.restore();
+            }
+        }
+        ctx.restore();
+
+        const link = document.createElement('a');
+        link.download = 'art_' + Date.now() + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    };
+
+    img.onerror = () => {
+        alert('Не удалось загрузить картинку для скачивания.');
+    };
+}
     </script>
 </body>
 </html>
-
