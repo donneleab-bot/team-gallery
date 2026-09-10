@@ -13,7 +13,7 @@
             padding: 20px;
         }
 
-        /* === ВЕРХНЯЯ ПАНЕЛЬ (кнопка + поиск + сортировка) === */
+        /* === ВЕРХНЯЯ ПАНЕЛЬ === */
         .top-bar {
             max-width: 1600px;
             margin: 0 auto 15px auto;
@@ -83,6 +83,98 @@
         }
         .sort-select:hover, .sort-select:focus {
             border-color: #58a6ff;
+        }
+
+        /* === БЛОК АВТОРИЗАЦИИ === */
+        .auth-block {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+        .login-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            background: #238636;
+            border: 1px solid #2ea043;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            white-space: nowrap;
+        }
+        .login-btn:hover {
+            background: #2ea043;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #30363d;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        .user-avatar:hover {
+            border-color: #58a6ff;
+        }
+        .user-menu {
+            position: absolute;
+            top: 52px;
+            right: 0;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            min-width: 200px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 600;
+            overflow: hidden;
+        }
+        .user-menu.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .user-menu-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #30363d;
+        }
+        .user-menu-header .name {
+            font-weight: 600;
+            color: #f0f6fc;
+            font-size: 0.95rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .user-menu-header .email {
+            font-size: 0.8rem;
+            color: #8b949e;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .user-menu-item {
+            display: block;
+            padding: 10px 16px;
+            color: #c9d1d9;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .user-menu-item:hover {
+            background: #21262d;
+            color: #58a6ff;
         }
 
         .tag-filters {
@@ -190,7 +282,6 @@
             line-height: 1.4;
         }
 
-        /* === ЛАЙТБОКС === */
         .lightbox {
             position: fixed;
             top: 0;
@@ -306,7 +397,6 @@
             display: block;
         }
 
-        /* === КНОПКА "НАВЕРХ" === */
         .scroll-top {
             position: fixed;
             bottom: 30px;
@@ -337,54 +427,23 @@
             transform: translateY(-3px);
         }
 
-        /* === МОБИЛЬНАЯ ВЕРСИЯ === */
         @media (max-width: 600px) {
-            body {
-                padding: 12px;
-            }
-            .top-bar {
-                gap: 8px;
-                padding: 8px 0;
-                justify-content: space-between;
-            }
-            .home-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-                flex-shrink: 0;
-                order: 1;
-            }
-            .sort-select {
-                padding: 8px 10px;
-                font-size: 0.8rem;
-                flex: 1;
-                min-width: 0;
-                order: 2;
-            }
-            .search-input {
-                padding: 10px 14px;
-                font-size: 0.9rem;
-                min-width: 100%;
-                max-width: 100%;
-                order: 3;
-                flex-basis: 100%;
-            }
-            .scroll-top {
-                width: 44px;
-                height: 44px;
-                font-size: 20px;
-                bottom: 20px;
-                right: 16px;
-            }
+            body { padding: 12px; }
+            .top-bar { gap: 8px; padding: 8px 0; justify-content: space-between; }
+            .home-btn { padding: 8px 12px; font-size: 0.8rem; flex-shrink: 0; order: 1; }
+            .sort-select { padding: 8px 10px; font-size: 0.8rem; flex: 1; min-width: 0; order: 2; }
+            .search-input { padding: 10px 14px; font-size: 0.9rem; min-width: 100%; max-width: 100%; order: 4; flex-basis: 100%; }
+            .auth-block { order: 3; }
+            .login-btn { padding: 8px 12px; font-size: 0.8rem; }
+            .user-avatar { width: 36px; height: 36px; }
+            .scroll-top { width: 44px; height: 44px; font-size: 20px; bottom: 20px; right: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Верхняя панель: кнопка "На главный сайт" + поиск + сортировка -->
     <div class="top-bar">
-        <a href="https://sites.google.com/view/mypridefan" class="home-btn">
-            ← На главный сайт
-        </a>
+        <a href="https://sites.google.com/view/mypridefan" class="home-btn">← На главный сайт</a>
         <input type="text" id="searchInput" class="search-input" placeholder="Поиск по названию, автору или тегам...">
         <select id="sortSelect" class="sort-select">
             <option value="new">Сначала новые</option>
@@ -393,20 +452,33 @@
             <option value="viewed">Просматриваемые</option>
             <option value="alpha">По алфавиту</option>
         </select>
+
+        <div class="auth-block" id="authBlock">
+            <button class="login-btn" id="loginBtn" onclick="signInWithGoogle()">
+                🔐 Войти через Google
+            </button>
+            <div id="userInfo" style="display:none;">
+                <img class="user-avatar" id="userAvatar" src="" alt="Аватар" onclick="toggleUserMenu()">
+                <div class="user-menu" id="userMenu">
+                    <div class="user-menu-header">
+                        <div class="name" id="userName">—</div>
+                        <div class="email" id="userEmail">—</div>
+                    </div>
+                    <button class="user-menu-item" onclick="openProfile()">👤 Мой профиль</button>
+                    <button class="user-menu-item" onclick="signOutUser()">🚪 Выйти</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="tag-filters" id="tagFilters"></div>
-
     <div class="gallery-grid" id="galleryGrid"></div>
-
-    <!-- Кнопка "Наверх" -->
     <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">↑</button>
 
     <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
         <span class="close-btn">&times;</span>
         <img class="lightbox-img" id="lightboxImg" src="" alt="Просмотр">
         <div class="lightbox-caption" id="lightboxCaption"></div>
-        
         <div class="lightbox-actions">
             <button class="action-btn" id="likeBtn" onclick="handleLike(event)">❤️ Лайк</button>
             <span class="counter" id="likeCount">0</span>
@@ -432,6 +504,7 @@
         window.arts = arts;
         window.currentArtIndex = -1;
         window.statsCache = window.statsCache || {};
+        window.currentUser = null;
 
         // ============================================================
         // 2. ПАНЕЛЬ УПРАВЛЕНИЯ И ТЕГИ
@@ -526,7 +599,6 @@
             return filtered;
         }
 
-        // Отрисовка одной карточки
         function buildCard(art, index) {
             const item = document.createElement('div');
             item.className = 'gallery-item';
@@ -556,7 +628,6 @@
             }
         }
 
-        // Флаг, чтобы не запускать сортировку дважды
         let statsLoadingInProgress = false;
 
         async function loadAllStatsThenSort(list) {
@@ -577,7 +648,6 @@
             if (needRerender) {
                 const v = sortSelect.value;
                 if (v === 'popular' || v === 'viewed') {
-                    // Перерисовываем без повторного вызова загрузки
                     const filtered = getFilteredArts();
                     galleryGrid.innerHTML = '';
                     filtered.forEach((art, index) => buildCard(art, index));
@@ -615,8 +685,6 @@
             btn.textContent = '⏳ Загрузка...';
             document.getElementById('likeCount').textContent = '…';
             document.getElementById('viewCount').textContent = '…';
-
-            // Блокируем скачивание и поделиться до загрузки
             document.getElementById('shareBtn').disabled = true;
             document.getElementById('downloadBtn').disabled = true;
 
@@ -642,9 +710,6 @@
             }
         }
 
-        // ============================================================
-        // 5. ПОДЕЛИТЬСЯ
-        // ============================================================
         function shareImage(event) {
             event.stopPropagation();
             const art = arts[window.currentArtIndex];
@@ -677,16 +742,12 @@
         document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
         document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
 
-        // === КНОПКА "НАВЕРХ" (появляется, когда 3-й пост ушёл за верх) ===
         window.addEventListener('scroll', () => {
             const thirdItem = galleryGrid.children[2];
             if (thirdItem) {
                 const rect = thirdItem.getBoundingClientRect();
-                if (rect.bottom < 100) {
-                    scrollTopBtn.classList.add('visible');
-                } else {
-                    scrollTopBtn.classList.remove('visible');
-                }
+                if (rect.bottom < 100) scrollTopBtn.classList.add('visible');
+                else scrollTopBtn.classList.remove('visible');
             } else {
                 if (window.scrollY > 400) scrollTopBtn.classList.add('visible');
                 else scrollTopBtn.classList.remove('visible');
@@ -698,7 +759,7 @@
         }
 
         // ============================================================
-        // 6. СКАЧИВАНИЕ
+        // 5. СКАЧИВАНИЕ
         // ============================================================
         function downloadWithWatermark(event) {
             event.stopPropagation();
@@ -761,11 +822,12 @@
     </script>
 
     <!-- ============================================================
-         FIREBASE SDK
+         FIREBASE SDK + AUTH
          ============================================================ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCVpWbOBOJbCYfPLh-s8QZMOeRORkZ-gXg",
@@ -778,7 +840,74 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
+        // === АВТОРИЗАЦИЯ ===
+        window.signInWithGoogle = async function() {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Ошибка входа:", error);
+                if (error.code === 'auth/popup-blocked') {
+                    alert("Браузер заблокировал всплывающее окно. Разрешите всплывающие окна для этого сайта.");
+                } else if (error.code === 'auth/unauthorized-domain') {
+                    alert("Домен не авторизован в Firebase. Добавьте donneleab-bot.github.io в Authorized domains.");
+                } else {
+                    alert("Ошибка входа: " + error.message);
+                }
+            }
+        };
+
+        window.signOutUser = async function() {
+            await signOut(auth);
+            document.getElementById('userMenu').classList.remove('open');
+        };
+
+        window.toggleUserMenu = function() {
+            document.getElementById('userMenu').classList.toggle('open');
+        };
+
+        window.openProfile = function() {
+            if (window.currentUser) {
+                alert("Профиль: " + window.currentUser.displayName + "\nEmail: " + window.currentUser.email);
+                // Здесь потом будет переход на страницу профиля
+            }
+        };
+
+        // Закрытие меню при клике вне
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('userMenu');
+            const avatar = document.getElementById('userAvatar');
+            if (menu && menu.classList.contains('open')) {
+                if (!menu.contains(e.target) && e.target !== avatar) {
+                    menu.classList.remove('open');
+                }
+            }
+        });
+
+        // Отслеживание состояния входа
+        onAuthStateChanged(auth, (user) => {
+            window.currentUser = user;
+            const loginBtn = document.getElementById('loginBtn');
+            const userInfo = document.getElementById('userInfo');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const userEmail = document.getElementById('userEmail');
+
+            if (user) {
+                loginBtn.style.display = 'none';
+                userInfo.style.display = 'block';
+                userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+                userName.textContent = user.displayName || 'Пользователь';
+                userEmail.textContent = user.email || '';
+            } else {
+                loginBtn.style.display = 'inline-flex';
+                userInfo.style.display = 'none';
+            }
+        });
+
+        // === FIREBASE-ЛОГИКА (лайки, просмотры) ===
         let cachedIP = null;
         async function getUserIP() {
             if (cachedIP) return cachedIP;
@@ -829,7 +958,6 @@
                 btn.textContent = '❤️ Лайк';
             }
 
-            // Разблокируем скачивание и поделиться — данные загрузились
             document.getElementById('shareBtn').disabled = false;
             document.getElementById('downloadBtn').disabled = false;
         };
