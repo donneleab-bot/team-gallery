@@ -3384,11 +3384,6 @@
                     window.currentUserProfile = profile;
                     const displayName = profile.displayName || user.displayName || 'Пользователь';
                     userName.innerHTML = displayName + ' ' + anyBadgeHTML(user.uid, true);
-
-                    const isFirstTime = !profile.nameCustomized;
-                    if (isFirstTime) {
-                        setTimeout(() => openProfileModal(true), 500);
-                    }
                 } catch (e) {
                     console.error("Ошибка загрузки профиля:", e);
                     userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + anyBadgeHTML(user.uid, true);
