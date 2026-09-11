@@ -3385,10 +3385,7 @@
                     const displayName = profile.displayName || user.displayName || 'Пользователь';
                     userName.innerHTML = displayName + ' ' + anyBadgeHTML(user.uid, true);
 
-                    const isFirstTime = !profile.nameCustomized &&
-                                        (!profile.displayName ||
-                                         profile.displayName === 'Пользователь' ||
-                                         !profile.bio);
+                    const isFirstTime = !profile.nameCustomized;
                     if (isFirstTime) {
                         setTimeout(() => openProfileModal(true), 500);
                     }
