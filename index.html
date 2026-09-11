@@ -174,6 +174,13 @@
             background: #21262d;
             color: #58a6ff;
         }
+        .user-menu-item.upload-only {
+            color: #3fb950;
+            font-weight: 600;
+        }
+        .user-menu-item.upload-only:hover {
+            background: rgba(63, 185, 80, 0.1);
+        }
         .user-menu-item.admin-only {
             color: #58a6ff;
             font-weight: 600;
@@ -307,14 +314,81 @@
             text-decoration: none;
             font-size: 0.95rem;
             font-weight: 500;
+            cursor: pointer;
         }
         .author-link:hover { text-decoration: underline; }
+        .source-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #58a6ff;
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .source-btn:hover {
+            background: rgba(88, 166, 255, 0.2);
+            border-color: #58a6ff;
+        }
         .item-info p {
             margin: 0;
             font-size: 0.9rem;
             color: #8b949e;
             line-height: 1.4;
         }
+        .item-menu-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 6px;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .gallery-item:hover .item-menu-btn { opacity: 1; }
+        .item-menu-btn:hover {
+            background: #21262d;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+        .item-menu {
+            position: absolute;
+            top: 44px;
+            right: 8px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            z-index: 100;
+            min-width: 200px;
+            overflow: hidden;
+        }
+        .item-menu button {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            color: #c9d1d9;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .item-menu button:hover { background: #30363d; }
+        .item-menu button.danger { color: #f85149; }
+        .item-menu button.danger:hover { background: rgba(248, 81, 73, 0.1); }
 
         .lightbox {
             position: fixed;
@@ -864,6 +938,57 @@
         }
         .myblock-edit-btn:hover { background: #30363d; border-color: #58a6ff; color: #58a6ff; }
 
+        /* === ФОРМА ЗАГРУЗКИ === */
+        .upload-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 2px dashed #30363d;
+            background: #0d1117;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .upload-drop-zone {
+            border: 2px dashed #30363d;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #0d1117;
+            margin-bottom: 8px;
+        }
+        .upload-drop-zone:hover, .upload-drop-zone.dragover {
+            border-color: #58a6ff;
+            background: rgba(88, 166, 255, 0.05);
+        }
+        .upload-drop-zone-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+        .upload-drop-zone-text {
+            color: #8b949e;
+            font-size: 0.9rem;
+        }
+        .upload-hint {
+            font-size: 0.75rem;
+            color: #8b949e;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .upload-progress {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: #0d1117;
+            border-radius: 8px;
+            text-align: center;
+            color: #58a6ff;
+            font-size: 0.9rem;
+        }
+        .upload-progress.visible { display: block; }
+
         /* === ЧУЖОЙ ПРОФИЛЬ === */
         .user-profile-header {
             display: flex;
@@ -1178,6 +1303,7 @@
                         <div class="name" id="userName">—</div>
                         <div class="email" id="userEmail">—</div>
                     </div>
+                    <button class="user-menu-item upload-only" id="uploadBtn" style="display:none;" onclick="openUploadModal()">➕ Загрузить пост</button>
                     <button class="user-menu-item" onclick="openMyBlock()">📁 Мой блок</button>
                     <button class="user-menu-item" onclick="openProfile()">✏️ Редактировать профиль</button>
                     <button class="user-menu-item admin-only" id="adminConsoleBtn" style="display:none;" onclick="openAdminConsole()">🛡 Админ-консоль</button>
@@ -1215,6 +1341,39 @@
                 <div class="comments-empty">Загрузка...</div>
             </div>
             <div class="comments-form" id="commentsForm"></div>
+        </div>
+    </div>
+
+    <!-- === ФОРМА ЗАГРУЗКИ ПОСТА === -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+            <h2>➕ Загрузить пост</h2>
+
+            <div class="upload-drop-zone" id="uploadDropZone">
+                <div class="upload-drop-zone-icon">🖼</div>
+                <div class="upload-drop-zone-text">Нажмите или перетащите картинку</div>
+            </div>
+            <input type="file" id="uploadFileInput" accept="image/*" style="display:none;">
+            <div class="upload-hint">PNG, JPG, GIF, WebP. Автоматически сконвертируется в JPG до 1920px.</div>
+            <img class="upload-preview" id="uploadPreview" style="display:none;">
+
+            <label class="modal-label">Название *</label>
+            <input type="text" class="modal-input" id="uploadTitle" maxlength="80" placeholder="Название работы">
+
+            <label class="modal-label">Автор</label>
+            <input type="text" class="modal-input" id="uploadAuthor" maxlength="40" placeholder="Имя автора">
+
+            <label class="modal-label">Ссылка на источник (Telegram)</label>
+            <input type="text" class="modal-input" id="uploadSource" placeholder="https://t.me/...">
+
+            <label class="modal-label">Описание + теги</label>
+            <textarea class="modal-textarea" id="uploadDesc" maxlength="500" placeholder="#тег1 #тег2 Описание..."></textarea>
+            <div class="modal-counter" id="uploadDescCounter">0 / 500</div>
+
+            <div class="upload-progress" id="uploadProgress">⏳ Загрузка картинки...</div>
+
+            <button class="modal-save-btn" id="uploadSaveBtn" onclick="submitUpload()" disabled>Опубликовать</button>
         </div>
     </div>
 
@@ -1313,6 +1472,7 @@
         const CREATOR_UID = "5rT2dxYNsYYhBl6Prok2oCeCflX2";
         window.adminUids = [];
         window.bannedUids = [];
+        window.allArts = [];
 
         const BAD_WORDS = [
             "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
@@ -1327,16 +1487,6 @@
             return BAD_WORDS.some(word => lower.includes(word));
         }
 
-        const arts = [
-            { img: "asdasdasdq.jpg", title: "Вид хуманизации барка", authorName: "Star Harlen", authorId: CREATOR_UID, authorUrl: "https://t.me/My_pride_2/8394", desc: "#баркмейн #барк_мейн #barkmane #bark_mane", sortDate: "2026-09-08 09:52" },
-            { img: "sadasdasdasd.jpg", title: "Вид хуманизации фаера", authorName: "Star Harlen", authorId: CREATOR_UID, authorUrl: "https://t.me/My_pride_2/8392", desc: "#фаер #фаер_мейн #фаермейн #fire #fire_mane #firemane #fire_mane_pride #firemanepride", sortDate: "2026-09-08 08:41" },
-            { img: "asdasd.jpg", title: "Вид хуманизации пера", authorName: "Star Harlen", authorId: CREATOR_UID, authorUrl: "https://t.me/My_pride_2/8389", desc: "#перо #пёрышко #feather", sortDate: "2026-09-07 23:07" },
-            { img: "sda223.jpg", title: "третье поколение мой прайд, вместе с мини четвёртым", authorName: "Star Harlen", authorId: CREATOR_UID, authorUrl: "https://t.me/My_pride_2/8383", desc: "#третьепоколение #третье_поколение #миничетвертоепоколение #мини_четвертое_поколение #третьепоколениемойпрайд #миничетвертоепоколениемойпрайд #thirdgeneration #third_generation #minifourthgeneration #mini_fourth_generation #mypride3rdgen #mypride4thgen #ос #os #оска #персонаж_ос #myprideos #mypride_os #myprideoc #mypride_oc", sortDate: "2026-09-07 20:13" },
-            { img: "asdsa34.jpg", title: "Смерть Праудмейна", authorName: "Star Harlen", authorId: CREATOR_UID, authorUrl: "https://t.me/My_pride_2/8380", desc: "#смертьпраудмейна #смерть_праудмейна #праудмейнсмерть #праудмейн_смерть #proudmanedeath #proudmane_death #deathofproudmane #death_of_proudmane #proudmanedie #proudmane_die", sortDate: "2026-09-07 23:07" },
-            { img: "dasdfasd.jpg", title: "Родители шарптанг", authorName: "Star Harlen", authorId: CREATOR_UID, authorUrl: "https://t.me/My_pride_2/8269", desc: "#Sharptongue #Остроязыкая #шарптанг", sortDate: "2026-03-30 02:14" },
-        ];
-
-        window.arts = arts;
         window.currentArtIndex = -1;
         window.statsCache = window.statsCache || {};
         window.currentUser = null;
@@ -1395,7 +1545,7 @@
 
         function getAllTags() {
             const tagCount = {};
-            arts.forEach(art => {
+            window.allArts.forEach(art => {
                 (art.desc || '').split(' ').forEach(tag => {
                     if (tag.startsWith('#')) tagCount[tag] = (tagCount[tag] || 0) + 1;
                 });
@@ -1441,8 +1591,7 @@
 
         function getFilteredArts() {
             const query = searchInput.value.toLowerCase().trim();
-            let filtered = arts.filter(art => {
-                // Скрываем посты забаненных
+            let filtered = window.allArts.filter(art => {
                 if (window.bannedUids.includes(art.authorId)) return false;
                 const matchSearch = !query ||
                     (art.title || '').toLowerCase().includes(query) ||
@@ -1452,8 +1601,8 @@
                 return matchSearch && matchTag;
             });
             const sortBy = sortSelect.value;
-            if (sortBy === 'new') filtered.sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
-            else if (sortBy === 'old') filtered.sort((a, b) => new Date(a.sortDate) - new Date(b.sortDate));
+            if (sortBy === 'new') filtered.sort((a, b) => new Date(b.sortDate || 0) - new Date(a.sortDate || 0));
+            else if (sortBy === 'old') filtered.sort((a, b) => new Date(a.sortDate || 0) - new Date(b.sortDate || 0));
             else if (sortBy === 'alpha') filtered.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'ru'));
             else if (sortBy === 'popular' || sortBy === 'viewed') {
                 const key = sortBy === 'popular' ? 'likes' : 'views';
@@ -1472,15 +1621,26 @@
             const tagsArray = (art.desc || '').split(' ');
             const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
             const badge = creatorBadgeHTML(art.authorId, true);
+
+            // Меню удаления (только для админов/создателя)
+            const myRole = getUserRole(window.currentUser?.uid);
+            const canDelete = myRole === "creator" || (myRole === "admin" && !isCreator(art.authorId) && !isAdmin(art.authorId));
+            const menuHTML = canDelete ? `<button class="item-menu-btn" onclick="toggleItemMenu(event, '${art.id}')">⋮</button>` : '';
+
+            // Кнопка Источник
+            const sourceHTML = art.authorUrl ? `<a href="${art.authorUrl}" target="_blank" class="source-btn" onclick="event.stopPropagation()">🔗 Источник</a>` : '';
+
             item.innerHTML = `
-                <div class="img-container" onclick="openLightbox('${art.img}')">
+                ${menuHTML}
+                <div class="img-container" onclick="openLightbox('${art.id}')">
                     <img src="${art.img}" alt="${art.title}" loading="lazy">
                 </div>
                 <div class="item-info">
-                    <h3>${art.title}</h3>
+                    <h3>${escapeHtml(art.title)}</h3>
                     <div class="author-line">
-                        <a href="${art.authorUrl}" target="_blank" class="author-link">Автор: ${art.authorName}</a>
+                        <span class="author-link" onclick="showAuthorInfo('${art.authorId}', '${(art.authorName || '').replace(/'/g, "\\'")}')">Автор: ${escapeHtml(art.authorName)}</span>
                         ${badge}
+                        ${sourceHTML}
                     </div>
                     <p>${shortTags}</p>
                 </div>
@@ -1496,8 +1656,26 @@
             if (sortSelect.value === 'popular' || sortSelect.value === 'viewed') {
                 loadAllStatsThenSort(filtered);
             }
+            renderTags();
         }
         window.renderGallery = renderGallery;
+
+        window.toggleItemMenu = function(event, artId) {
+            event.stopPropagation();
+            document.querySelectorAll('.item-menu').forEach(m => m.remove());
+
+            const item = event.target.closest('.gallery-item');
+            if (!item) return;
+
+            const menu = document.createElement('div');
+            menu.className = 'item-menu';
+            menu.innerHTML = `<button class="danger" onclick="deleteArt('${artId}')">🗑 Удалить пост</button>`;
+            item.appendChild(menu);
+        };
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.item-menu').forEach(m => m.remove());
+        });
 
         let statsLoadingInProgress = false;
         async function loadAllStatsThenSort(list) {
@@ -1525,25 +1703,26 @@
             }
         }
 
-        function openLightbox(imageId) {
-            const index = arts.findIndex(a => a.img === imageId);
-            if (index === -1) return;
+        function openLightbox(artId) {
+            const art = window.allArts.find(a => a.id === artId);
+            if (!art) return;
             if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
             if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
 
-            window.currentArtIndex = index;
-            const art = arts[index];
+            window.currentArtIndex = window.allArts.indexOf(art);
             lightboxImg.src = art.img;
 
             const tagsArray = (art.desc || '').split(' ');
             const shortTags = tagsArray.slice(0, 5).join(' ');
             const badge = creatorBadgeHTML(art.authorId, false);
+            const sourceHTML = art.authorUrl ? `<a href="${art.authorUrl}" target="_blank">🔗 Источник</a>` : '';
 
             lightboxCaption.innerHTML = `
-                <h3>${art.title}</h3>
+                <h3>${escapeHtml(art.title)}</h3>
                 <div class="author-line" style="justify-content:center;">
-                    <a href="${art.authorUrl}" target="_blank">Автор: ${art.authorName}</a>
+                    <span class="author-link" onclick="showAuthorInfo('${art.authorId}', '${(art.authorName || '').replace(/'/g, "\\'")}')">Автор: ${escapeHtml(art.authorName)}</span>
                     ${badge}
+                    ${sourceHTML}
                 </div>
                 <p>${shortTags}</p>
                 <button class="toggle-tags-btn" onclick="toggleTags(this)">Показать все хэштеги</button>
@@ -1570,6 +1749,7 @@
             if (typeof loadComments === 'function') loadComments(art.img);
             if (typeof renderCommentForm === 'function') renderCommentForm();
         }
+        window.openLightbox = openLightbox;
 
         function toggleTags(btn) {
             const fullTagsDiv = btn.nextElementSibling;
@@ -1610,7 +1790,7 @@
 
         function shareImage(event) {
             event.stopPropagation();
-            const art = arts[window.currentArtIndex];
+            const art = window.allArts[window.currentArtIndex];
             if (!art) return;
             const url = window.location.origin + window.location.pathname + '?img=' + encodeURIComponent(art.img);
             if (navigator.share) {
@@ -1629,8 +1809,8 @@
             const params = new URLSearchParams(window.location.search);
             const imgParam = params.get('img');
             if (imgParam) {
-                const art = arts.find(a => a.img === imgParam);
-                if (art) setTimeout(() => openLightbox(imgParam), 300);
+                const art = window.allArts.find(a => a.img === imgParam);
+                if (art) setTimeout(() => openLightbox(art.id), 300);
             }
         });
 
@@ -1642,7 +1822,8 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (document.getElementById('userProfileModal').classList.contains('active')) closeUserProfile();
+                if (document.getElementById('uploadModal').classList.contains('active')) closeUploadModal();
+                else if (document.getElementById('userProfileModal').classList.contains('active')) closeUserProfile();
                 else if (document.getElementById('adminConsoleModal').classList.contains('active')) closeAdminConsole();
                 else if (commentsPanel.classList.contains('open')) closeCommentsPanel();
                 else if (lightbox.classList.contains('active')) closeLightbox({ target: document.createElement('div') });
@@ -1666,7 +1847,7 @@
 
         function downloadWithWatermark(event) {
             event.stopPropagation();
-            const currentArt = arts[window.currentArtIndex];
+            const currentArt = window.allArts[window.currentArtIndex];
             if (!currentArt) return;
             const img = new Image();
             img.crossOrigin = 'anonymous';
@@ -1820,6 +2001,10 @@
             appId: "1:1087688802080:web:2d77a829729f963fcb2145"
         };
 
+        // === НАСТРОЙКИ APPS SCRIPT ===
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFG49oBDMijLRqlHIpGacW6EarIAVYk0I_cP-n8Hjh4xVaHWxyGV65iBAWz8FIDL7fJQ/exec";
+        const APPS_SCRIPT_TOKEN = "MPF-2026-Upload-SecureKey-X9k2";
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -1929,6 +2114,267 @@
         }
         window.loadBannedUids = loadBannedUids;
 
+        // === ЗАГРУЗКА ПОСТОВ ИЗ FIRESTORE ===
+        async function loadArtsFromFirestore() {
+            try {
+                const snap = await getDocs(collection(db, "arts"));
+                const list = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    list.push({
+                        id: d.id,
+                        img: data.img || '',
+                        driveFileId: data.driveFileId || '',
+                        title: data.title || 'Без названия',
+                        authorName: data.authorName || 'Неизвестный',
+                        authorId: data.authorId || '',
+                        authorUrl: data.authorUrl || '',
+                        desc: data.desc || '',
+                        sortDate: data.sortDate || '',
+                        createdAt: data.createdAt || null
+                    });
+                });
+                // Сортировка: сначала новые
+                list.sort((a, b) => {
+                    const ta = a.createdAt?.seconds || (a.sortDate ? new Date(a.sortDate).getTime() / 1000 : 0);
+                    const tb = b.createdAt?.seconds || (b.sortDate ? new Date(b.sortDate).getTime() / 1000 : 0);
+                    return tb - ta;
+                });
+                window.allArts = list;
+                if (typeof renderGallery === 'function') renderGallery();
+            } catch (e) {
+                console.error("Ошибка загрузки постов:", e);
+            }
+        }
+        window.loadArtsFromFirestore = loadArtsFromFirestore;
+
+        // === ФОРМА ЗАГРУЗКИ ===
+        window.openUploadModal = function() {
+            document.getElementById('userMenu').classList.remove('open');
+            const myRole = getUserRole(window.currentUser?.uid);
+            if (myRole !== "creator" && myRole !== "admin") {
+                alert("Недостаточно прав.");
+                return;
+            }
+
+            // Очистка формы
+            document.getElementById('uploadFileInput').value = '';
+            document.getElementById('uploadPreview').style.display = 'none';
+            document.getElementById('uploadPreview').src = '';
+            document.getElementById('uploadTitle').value = '';
+            document.getElementById('uploadAuthor').value = window.currentUserProfile?.displayName || window.currentUser?.displayName || '';
+            document.getElementById('uploadSource').value = '';
+            document.getElementById('uploadDesc').value = '';
+            document.getElementById('uploadDescCounter').textContent = '0 / 500';
+            document.getElementById('uploadSaveBtn').disabled = true;
+            document.getElementById('uploadProgress').classList.remove('visible');
+            document.getElementById('uploadDropZone').style.display = 'block';
+
+            document.getElementById('uploadModal').classList.add('active');
+        };
+
+        window.closeUploadModal = function() {
+            document.getElementById('uploadModal').classList.remove('active');
+        };
+
+        // Drag & drop
+        const dropZone = document.getElementById('uploadDropZone');
+        const fileInput = document.getElementById('uploadFileInput');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
+        fileInput.addEventListener('change', handleFileSelect);
+
+        let uploadBase64 = null;
+
+        async function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert("Файл слишком большой (макс 10 МБ).");
+                return;
+            }
+
+            const progress = document.getElementById('uploadProgress');
+            progress.textContent = '⏳ Конвертация в JPG...';
+            progress.classList.add('visible');
+
+            try {
+                // Конвертация в JPG через Canvas
+                const convertedBase64 = await convertToJpg(file);
+                uploadBase64 = convertedBase64;
+
+                document.getElementById('uploadPreview').src = convertedBase64;
+                document.getElementById('uploadPreview').style.display = 'block';
+                document.getElementById('uploadDropZone').style.display = 'none';
+                document.getElementById('uploadSaveBtn').disabled = false;
+                progress.classList.remove('visible');
+            } catch (e) {
+                console.error(e);
+                alert("Ошибка обработки картинки.");
+                progress.classList.remove('visible');
+            }
+        }
+
+        async function convertToJpg(file) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const reader = new FileReader();
+                reader.onload = () => { img.src = reader.result; };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+
+                img.onload = () => {
+                    let w = img.naturalWidth;
+                    let h = img.naturalHeight;
+
+                    // Сжатие: макс 1920px по длинной стороне
+                    const maxSize = 1920;
+                    if (w > maxSize || h > maxSize) {
+                        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                        else { w = Math.round(w * maxSize / h); h = maxSize; }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+
+                    // Белый фон (JPG не поддерживает прозрачность)
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, w, h);
+                    ctx.drawImage(img, 0, 0, w, h);
+
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
+                };
+                img.onerror = reject;
+            });
+        }
+
+        window.submitUpload = async function() {
+            const user = window.currentUser;
+            if (!user) return;
+            const myRole = getUserRole(user.uid);
+            if (myRole !== "creator" && myRole !== "admin") { alert("Недостаточно прав."); return; }
+
+            if (!uploadBase64) { alert("Выберите картинку."); return; }
+
+            const title = document.getElementById('uploadTitle').value.trim();
+            if (!title) { alert("Введите название."); return; }
+
+            const authorName = document.getElementById('uploadAuthor').value.trim() || 'Неизвестный';
+            const authorUrl = document.getElementById('uploadSource').value.trim();
+            const desc = document.getElementById('uploadDesc').value.trim();
+
+            const btn = document.getElementById('uploadSaveBtn');
+            const progress = document.getElementById('uploadProgress');
+            btn.disabled = true;
+            btn.textContent = 'Загрузка...';
+            progress.textContent = '⏳ Загрузка картинки в Google Drive...';
+            progress.classList.add('visible');
+
+            try {
+                // Отправка в Apps Script
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        token: APPS_SCRIPT_TOKEN,
+                        action: 'upload',
+                        base64: uploadBase64,
+                        filename: 'art_' + Date.now() + '.jpg',
+                        mimeType: 'image/jpeg'
+                    })
+                });
+
+                const result = await res.json();
+                if (!result.ok) throw new Error(result.error || 'Ошибка загрузки');
+
+                progress.textContent = '✅ Сохранение в базу...';
+
+                // Сохранение в Firestore
+                const now = new Date();
+                const sortDate = now.toISOString().slice(0, 16).replace('T', ' ');
+
+                await addDoc(collection(db, "arts"), {
+                    img: result.url,
+                    driveFileId: result.fileId,
+                    title: title,
+                    authorName: authorName,
+                    authorId: user.uid,
+                    authorUrl: authorUrl,
+                    desc: desc,
+                    sortDate: sortDate,
+                    createdAt: serverTimestamp()
+                });
+
+                progress.textContent = '✅ Готово!';
+                setTimeout(async () => {
+                    closeUploadModal();
+                    await loadArtsFromFirestore();
+                    btn.disabled = false;
+                    btn.textContent = 'Опубликовать';
+                    progress.classList.remove('visible');
+                    uploadBase64 = null;
+                }, 800);
+
+            } catch (e) {
+                console.error(e);
+                alert("Ошибка загрузки: " + e.message);
+                btn.disabled = false;
+                btn.textContent = 'Опубликовать';
+                progress.classList.remove('visible');
+            }
+        };
+
+        // === УДАЛЕНИЕ ПОСТА ===
+        window.deleteArt = async function(artId) {
+            const myRole = getUserRole(window.currentUser?.uid);
+            if (myRole !== "creator" && myRole !== "admin") { alert("Недостаточно прав."); return; }
+
+            const art = window.allArts.find(a => a.id === artId);
+            if (!art) return;
+            if (isCreator(art.authorId) && myRole === "admin") { alert("Админ не может удалить пост создателя."); return; }
+            if (!confirm("Удалить этот пост? Картинка также удалится из Google Drive.")) return;
+
+            try {
+                // Удаляем файл из Drive (если есть driveFileId)
+                if (art.driveFileId) {
+                    try {
+                        await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                token: APPS_SCRIPT_TOKEN,
+                                action: 'delete',
+                                fileId: art.driveFileId
+                            })
+                        });
+                    } catch (e) {
+                        console.error("Ошибка удаления из Drive:", e);
+                        // Не блокируем — Drive может быть недоступен, но пост удалим
+                    }
+                }
+
+                // Удаляем документ из Firestore
+                await deleteDoc(doc(db, "arts", artId));
+                await loadArtsFromFirestore();
+            } catch (e) {
+                console.error(e);
+                alert("Ошибка удаления.");
+            }
+        };
+
         // === ОТКРЫТИЕ АДМИН-КОНСОЛИ ===
         window.openAdminConsole = async function() {
             document.getElementById('userMenu').classList.remove('open');
@@ -2012,7 +2458,6 @@
         window.renderAdminList = function() {
             const list = document.getElementById('adminList');
             const q = (document.getElementById('adminSearch').value || '').toLowerCase().trim();
-            const myRole = getUserRole(window.currentUser?.uid);
 
             let users = window.adminUsersCache.slice();
 
@@ -2233,7 +2678,7 @@
             }
             actionsEl.innerHTML = buttonsHTML;
 
-            let userPosts = arts.filter(a => a.authorId === userId);
+            let userPosts = window.allArts.filter(a => a.authorId === userId);
 
             if (isBanned) {
                 document.getElementById('userProfilePostsCount').textContent = '';
@@ -2274,9 +2719,9 @@
                 return;
             }
             grid.innerHTML = posts.map(art => `
-                <div class="myblock-item" onclick="closeUserProfile(); openLightbox('${art.img}')">
+                <div class="myblock-item" onclick="closeUserProfile(); openLightbox('${art.id}')">
                     <img src="${art.img}" alt="${art.title}" loading="lazy">
-                    <div class="myblock-item-title" title="${art.title}">${art.title}</div>
+                    <div class="myblock-item-title" title="${art.title}">${escapeHtml(art.title)}</div>
                 </div>
             `).join('');
         };
@@ -2363,19 +2808,40 @@
             if (!confirm("Точно удалить? Посты и комментарии будут удалены из базы.")) return;
 
             try {
+                // Удаляем комментарии
                 const commentsQ = query(collection(db, "comments"), where("userId", "==", userId));
                 const commentsSnap = await getDocs(commentsQ);
                 await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
 
+                // Удаляем посты (и файлы из Drive)
+                const userArts = window.allArts.filter(a => a.authorId === userId);
+                for (const art of userArts) {
+                    if (art.driveFileId) {
+                        try {
+                            await fetch(APPS_SCRIPT_URL, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({
+                                    token: APPS_SCRIPT_TOKEN,
+                                    action: 'delete',
+                                    fileId: art.driveFileId
+                                })
+                            });
+                        } catch (e) { console.error("Drive delete err:", e); }
+                    }
+                    await deleteDoc(doc(db, "arts", art.id));
+                }
+
+                // Удаляем users/roles/bans
                 await deleteDoc(doc(db, "users", userId));
                 await deleteDoc(doc(db, "roles", userId)).catch(() => {});
                 await deleteDoc(doc(db, "bans", userId)).catch(() => {});
 
                 await loadAdminUids();
                 await loadBannedUids();
+                await loadArtsFromFirestore();
                 alert("Профиль удалён.");
                 closeUserProfile();
-                if (typeof renderGallery === 'function') renderGallery();
             } catch (e) {
                 console.error(e);
                 alert("Ошибка удаления. Проверьте консоль.");
@@ -2392,7 +2858,7 @@
             const userEmail = document.getElementById('userEmail');
 
             if (user) {
-                await Promise.all([loadAdminUids(), loadBannedUids()]);
+                await Promise.all([loadAdminUids(), loadBannedUids(), loadArtsFromFirestore()]);
                 window.currentUserRole = getUserRole(user.uid);
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
@@ -2400,10 +2866,13 @@
                 userEmail.textContent = user.email || '';
 
                 const adminConsoleBtn = document.getElementById('adminConsoleBtn');
+                const uploadBtn = document.getElementById('uploadBtn');
                 if (window.currentUserRole === "creator" || window.currentUserRole === "admin") {
                     adminConsoleBtn.style.display = 'block';
+                    uploadBtn.style.display = 'block';
                 } else {
                     adminConsoleBtn.style.display = 'none';
+                    uploadBtn.style.display = 'none';
                 }
 
                 try {
@@ -2437,7 +2906,10 @@
                 window.currentUserProfile = null;
                 window.isBanned = false;
                 const adminConsoleBtn = document.getElementById('adminConsoleBtn');
+                const uploadBtn = document.getElementById('uploadBtn');
                 if (adminConsoleBtn) adminConsoleBtn.style.display = 'none';
+                if (uploadBtn) uploadBtn.style.display = 'none';
+                await loadArtsFromFirestore();
                 if (typeof renderGallery === 'function') renderGallery();
                 if (typeof renderCommentForm === 'function') renderCommentForm();
             }
@@ -2540,7 +3012,7 @@
                 document.getElementById('myBlockName').textContent = displayName;
                 document.getElementById('myBlockBio').textContent = bio || 'Без описания';
             });
-            const myArts = arts.filter(a => a.authorId === user.uid);
+            const myArts = window.allArts.filter(a => a.authorId === user.uid);
             const grid = document.getElementById('myBlockGrid');
             const countEl = document.getElementById('myBlockCount');
             countEl.textContent = '(' + myArts.length + ')';
@@ -2548,9 +3020,9 @@
                 grid.innerHTML = '<div class="myblock-empty">У вас пока нет постов.</div>';
             } else {
                 grid.innerHTML = myArts.map(art => `
-                    <div class="myblock-item" onclick="closeMyBlock(); openLightbox('${art.img}')">
+                    <div class="myblock-item" onclick="closeMyBlock(); openLightbox('${art.id}')">
                         <img src="${art.img}" alt="${art.title}" loading="lazy">
-                        <div class="myblock-item-title" title="${art.title}">${art.title}</div>
+                        <div class="myblock-item-title" title="${art.title}">${escapeHtml(art.title)}</div>
                     </div>
                 `).join('');
             }
@@ -2590,7 +3062,7 @@
 
         window.submitComment = async function() {
             const user = window.currentUser;
-            const art = arts[window.currentArtIndex];
+            const art = window.allArts[window.currentArtIndex];
             if (!user || !art) return;
             if (window.isBanned) { alert("Вы заблокированы."); return; }
             const input = document.getElementById('commentInput');
@@ -2693,13 +3165,13 @@
             const viewRef = doc(db, "views", imageId);
             window.unsubscribeView = onSnapshot(viewRef, (docSnap) => {
                 if (!lightbox.classList.contains('active')) return;
-                const currentArt = arts[window.currentArtIndex];
+                const currentArt = window.allArts[window.currentArtIndex];
                 if (!currentArt || currentArt.img !== imageId) return;
                 document.getElementById('viewCount').textContent = '👁 ' + (docSnap.exists() ? (docSnap.data().count || 0) : 0);
             });
             const likeRef = doc(db, "likes", `${imageId}_${userIP}`);
             const likeSnap = await getDoc(likeRef);
-            const currentArt = arts[window.currentArtIndex];
+            const currentArt = window.allArts[window.currentArtIndex];
             if (!currentArt || currentArt.img !== imageId) return;
             if (likeSnap.exists()) {
                 btn.disabled = true;
@@ -2738,7 +3210,7 @@
 
         window.handleLike = async function(event) {
             event.stopPropagation();
-            const art = window.arts && window.arts[window.currentArtIndex];
+            const art = window.allArts[window.currentArtIndex];
             if (!art) return;
             const userIP = await getUserIP();
             const likeRef = doc(db, "likes", `${art.img}_${userIP}`);
