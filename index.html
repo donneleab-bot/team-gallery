@@ -3440,7 +3440,6 @@
                 await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
 
                 const userArts = window.allArts.filter(a => a.authorId === userId);
-                                const userArts = window.allArts.filter(a => a.authorId === userId);
 for (const art of userArts) {
     if (art.driveFileId) {
         try {
