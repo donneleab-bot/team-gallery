@@ -1607,8 +1607,8 @@
             else if (sortBy === 'popular' || sortBy === 'viewed') {
                 const key = sortBy === 'popular' ? 'likes' : 'views';
                 filtered.sort((a, b) => {
-                    const statA = window.statsCache[a.img] || { likes: 0, views: 0 };
-                    const statB = window.statsCache[b.img] || { likes: 0, views: 0 };
+                    const statA = window.statsCache[a.id] || { likes: 0, views: 0 };
+                    const statB = window.statsCache[b.id] || { likes: 0, views: 0 };
                     return (statB[key] || 0) - (statA[key] || 0);
                 });
             }
@@ -1622,12 +1622,10 @@
             const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
             const badge = creatorBadgeHTML(art.authorId, true);
 
-            // Меню удаления (только для админов/создателя)
             const myRole = getUserRole(window.currentUser?.uid);
             const canDelete = myRole === "creator" || (myRole === "admin" && !isCreator(art.authorId) && !isAdmin(art.authorId));
             const menuHTML = canDelete ? `<button class="item-menu-btn" onclick="toggleItemMenu(event, '${art.id}')">⋮</button>` : '';
 
-            // Кнопка Источник
             const sourceHTML = art.authorUrl ? `<a href="${art.authorUrl}" target="_blank" class="source-btn" onclick="event.stopPropagation()">🔗 Источник</a>` : '';
 
             item.innerHTML = `
@@ -1687,8 +1685,8 @@
             statsLoadingInProgress = true;
             let needRerender = false;
             for (const art of list) {
-                if (!window.statsCache[art.img]) {
-                    await window.loadStatsForSortReal(art.img);
+                if (!window.statsCache[art.id]) {
+                    await window.loadStatsForSortReal(art.id);
                     needRerender = true;
                 }
             }
@@ -1742,11 +1740,11 @@
 
             lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
-            history.replaceState(null, '', '?img=' + encodeURIComponent(art.img));
+            history.replaceState(null, '', '?img=' + encodeURIComponent(art.id));
 
-            if (typeof loadStats === 'function') loadStats(art.img);
-            if (typeof incrementView === 'function') incrementView(art.img);
-            if (typeof loadComments === 'function') loadComments(art.img);
+            if (typeof loadStats === 'function') loadStats(art.id, art.img);
+            if (typeof incrementView === 'function') incrementView(art.id, art.img);
+            if (typeof loadComments === 'function') loadComments(art.id);
             if (typeof renderCommentForm === 'function') renderCommentForm();
         }
         window.openLightbox = openLightbox;
@@ -1792,7 +1790,7 @@
             event.stopPropagation();
             const art = window.allArts[window.currentArtIndex];
             if (!art) return;
-            const url = window.location.origin + window.location.pathname + '?img=' + encodeURIComponent(art.img);
+            const url = window.location.origin + window.location.pathname + '?img=' + encodeURIComponent(art.id);
             if (navigator.share) {
                 navigator.share({ title: art.title, text: art.desc, url: url }).catch(() => {});
             } else {
@@ -1809,8 +1807,7 @@
             const params = new URLSearchParams(window.location.search);
             const imgParam = params.get('img');
             if (imgParam) {
-                const art = window.allArts.find(a => a.img === imgParam);
-                if (art) setTimeout(() => openLightbox(art.id), 300);
+                setTimeout(() => openLightbox(imgParam), 500);
             }
         });
 
@@ -2001,7 +1998,6 @@
             appId: "1:1087688802080:web:2d77a829729f963fcb2145"
         };
 
-        // === НАСТРОЙКИ APPS SCRIPT ===
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFG49oBDMijLRqlHIpGacW6EarIAVYk0I_cP-n8Hjh4xVaHWxyGV65iBAWz8FIDL7fJQ/exec";
         const APPS_SCRIPT_TOKEN = "MPF-2026-Upload-SecureKey-X9k2";
 
@@ -2114,7 +2110,6 @@
         }
         window.loadBannedUids = loadBannedUids;
 
-        // === ЗАГРУЗКА ПОСТОВ ИЗ FIRESTORE ===
         async function loadArtsFromFirestore() {
             try {
                 const snap = await getDocs(collection(db, "arts"));
@@ -2134,7 +2129,6 @@
                         createdAt: data.createdAt || null
                     });
                 });
-                // Сортировка: сначала новые
                 list.sort((a, b) => {
                     const ta = a.createdAt?.seconds || (a.sortDate ? new Date(a.sortDate).getTime() / 1000 : 0);
                     const tb = b.createdAt?.seconds || (b.sortDate ? new Date(b.sortDate).getTime() / 1000 : 0);
@@ -2157,7 +2151,6 @@
                 return;
             }
 
-            // Очистка формы
             document.getElementById('uploadFileInput').value = '';
             document.getElementById('uploadPreview').style.display = 'none';
             document.getElementById('uploadPreview').src = '';
@@ -2177,7 +2170,6 @@
             document.getElementById('uploadModal').classList.remove('active');
         };
 
-        // Drag & drop
         const dropZone = document.getElementById('uploadDropZone');
         const fileInput = document.getElementById('uploadFileInput');
 
@@ -2210,7 +2202,6 @@
             progress.classList.add('visible');
 
             try {
-                // Конвертация в JPG через Canvas
                 const convertedBase64 = await convertToJpg(file);
                 uploadBase64 = convertedBase64;
 
@@ -2238,7 +2229,6 @@
                     let w = img.naturalWidth;
                     let h = img.naturalHeight;
 
-                    // Сжатие: макс 1920px по длинной стороне
                     const maxSize = 1920;
                     if (w > maxSize || h > maxSize) {
                         if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
@@ -2250,7 +2240,6 @@
                     canvas.height = h;
                     const ctx = canvas.getContext('2d');
 
-                    // Белый фон (JPG не поддерживает прозрачность)
                     ctx.fillStyle = '#FFFFFF';
                     ctx.fillRect(0, 0, w, h);
                     ctx.drawImage(img, 0, 0, w, h);
@@ -2284,7 +2273,6 @@
             progress.classList.add('visible');
 
             try {
-                // Отправка в Apps Script
                 const res = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -2302,7 +2290,6 @@
 
                 progress.textContent = '✅ Сохранение в базу...';
 
-                // Сохранение в Firestore
                 const now = new Date();
                 const sortDate = now.toISOString().slice(0, 16).replace('T', ' ');
 
@@ -2348,7 +2335,6 @@
             if (!confirm("Удалить этот пост? Картинка также удалится из Google Drive.")) return;
 
             try {
-                // Удаляем файл из Drive (если есть driveFileId)
                 if (art.driveFileId) {
                     try {
                         await fetch(APPS_SCRIPT_URL, {
@@ -2360,13 +2346,9 @@
                                 fileId: art.driveFileId
                             })
                         });
-                    } catch (e) {
-                        console.error("Ошибка удаления из Drive:", e);
-                        // Не блокируем — Drive может быть недоступен, но пост удалим
-                    }
+                    } catch (e) { console.error("Ошибка удаления из Drive:", e); }
                 }
 
-                // Удаляем документ из Firestore
                 await deleteDoc(doc(db, "arts", artId));
                 await loadArtsFromFirestore();
             } catch (e) {
@@ -2808,12 +2790,10 @@
             if (!confirm("Точно удалить? Посты и комментарии будут удалены из базы.")) return;
 
             try {
-                // Удаляем комментарии
                 const commentsQ = query(collection(db, "comments"), where("userId", "==", userId));
                 const commentsSnap = await getDocs(commentsQ);
                 await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
 
-                // Удаляем посты (и файлы из Drive)
                 const userArts = window.allArts.filter(a => a.authorId === userId);
                 for (const art of userArts) {
                     if (art.driveFileId) {
@@ -2832,7 +2812,6 @@
                     await deleteDoc(doc(db, "arts", art.id));
                 }
 
-                // Удаляем users/roles/bans
                 await deleteDoc(doc(db, "users", userId));
                 await deleteDoc(doc(db, "roles", userId)).catch(() => {});
                 await deleteDoc(doc(db, "bans", userId)).catch(() => {});
@@ -3079,7 +3058,8 @@
             try {
                 const profile = window.currentUserProfile || {};
                 await addDoc(collection(db, "comments"), {
-                    artId: art.img,
+                    artId: art.id,
+                    artImage: art.img,
                     userId: user.uid,
                     userName: profile.displayName || user.displayName || 'Гость',
                     userAvatar: user.photoURL || '',
@@ -3157,22 +3137,23 @@
         }
         getUserIP();
 
-        window.loadStats = async function(imageId) {
+        // === ЗАГРУЗКА СТАТИСТИКИ (по artId) ===
+        window.loadStats = async function(artId, imageId) {
             const btn = document.getElementById('likeBtn');
-            const [imgSnap, userIP] = await Promise.all([getDoc(doc(db, "images", imageId)), getUserIP()]);
+            const [imgSnap, userIP] = await Promise.all([getDoc(doc(db, "images", artId)), getUserIP()]);
             document.getElementById('likeCount').textContent = imgSnap.exists() ? (imgSnap.data().likes || 0) : 0;
             if (window.unsubscribeView) window.unsubscribeView();
-            const viewRef = doc(db, "views", imageId);
+            const viewRef = doc(db, "views", artId);
             window.unsubscribeView = onSnapshot(viewRef, (docSnap) => {
                 if (!lightbox.classList.contains('active')) return;
                 const currentArt = window.allArts[window.currentArtIndex];
-                if (!currentArt || currentArt.img !== imageId) return;
+                if (!currentArt || currentArt.id !== artId) return;
                 document.getElementById('viewCount').textContent = '👁 ' + (docSnap.exists() ? (docSnap.data().count || 0) : 0);
             });
-            const likeRef = doc(db, "likes", `${imageId}_${userIP}`);
+            const likeRef = doc(db, "likes", `${artId}_${userIP}`);
             const likeSnap = await getDoc(likeRef);
             const currentArt = window.allArts[window.currentArtIndex];
-            if (!currentArt || currentArt.img !== imageId) return;
+            if (!currentArt || currentArt.id !== artId) return;
             if (likeSnap.exists()) {
                 btn.disabled = true;
                 btn.classList.add('liked');
@@ -3186,24 +3167,24 @@
             document.getElementById('downloadBtn').disabled = false;
         };
 
-        window.loadStatsForSortReal = async function(imageId) {
-            const [imgSnap, viewSnap] = await Promise.all([getDoc(doc(db, "images", imageId)), getDoc(doc(db, "views", imageId))]);
-            window.statsCache[imageId] = {
+        window.loadStatsForSortReal = async function(artId) {
+            const [imgSnap, viewSnap] = await Promise.all([getDoc(doc(db, "images", artId)), getDoc(doc(db, "views", artId))]);
+            window.statsCache[artId] = {
                 likes: imgSnap.exists() ? (imgSnap.data().likes || 0) : 0,
                 views: viewSnap.exists() ? (viewSnap.data().count || 0) : 0
             };
         };
 
-        window.incrementView = async function(imageId) {
+        window.incrementView = async function(artId, imageId) {
             const userIP = await getUserIP();
-            const viewLogRef = doc(db, "view_logs", `${imageId}_${userIP}`);
-            const viewRef = doc(db, "views", imageId);
+            const viewLogRef = doc(db, "view_logs", `${artId}_${userIP}`);
+            const viewRef = doc(db, "views", artId);
             const now = Date.now();
             const oneHour = 60 * 60 * 1000;
             try {
                 const logSnap = await getDoc(viewLogRef);
                 if (logSnap.exists() && (now - (logSnap.data().timestamp || 0)) < oneHour) return;
-                await setDoc(viewLogRef, { imageId: imageId, ip: userIP, timestamp: now });
+                await setDoc(viewLogRef, { artId: artId, imageId: imageId, ip: userIP, timestamp: now });
                 await setDoc(viewRef, { count: increment(1) }, { merge: true });
             } catch (error) { console.error("Ошибка просмотра:", error); }
         };
@@ -3213,16 +3194,16 @@
             const art = window.allArts[window.currentArtIndex];
             if (!art) return;
             const userIP = await getUserIP();
-            const likeRef = doc(db, "likes", `${art.img}_${userIP}`);
+            const likeRef = doc(db, "likes", `${art.id}_${userIP}`);
             const snap = await getDoc(likeRef);
             if (snap.exists()) { alert("Вы уже лайкали эту картинку!"); return; }
-            await setDoc(likeRef, { imageId: art.img, ip: userIP, timestamp: new Date() });
-            await setDoc(doc(db, "images", art.img), { likes: increment(1) }, { merge: true });
+            await setDoc(likeRef, { artId: art.id, imageId: art.img, ip: userIP, timestamp: new Date() });
+            await setDoc(doc(db, "images", art.id), { likes: increment(1) }, { merge: true });
             const btn = document.getElementById('likeBtn');
             btn.disabled = true;
             btn.classList.add('liked');
             btn.textContent = '❤️ Лайкнуто';
-            window.loadStats(art.img);
+            window.loadStats(art.id, art.img);
         };
     </script>
 </body>
