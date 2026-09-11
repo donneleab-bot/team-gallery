@@ -123,7 +123,7 @@
             background: #161b22;
             border: 1px solid #30363d;
             border-radius: 8px;
-            min-width: 220px;
+            min-width: 240px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             opacity: 0;
             pointer-events: none;
@@ -173,6 +173,13 @@
         .user-menu-item:hover {
             background: #21262d;
             color: #58a6ff;
+        }
+        .user-menu-item.admin-only {
+            color: #58a6ff;
+            font-weight: 600;
+        }
+        .user-menu-item.admin-only:hover {
+            background: rgba(88, 166, 255, 0.1);
         }
         .creator-badge {
             display: inline-flex;
@@ -260,13 +267,8 @@
             transform: translateY(10px);
             will-change: transform, opacity;
         }
-        .gallery-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .gallery-item.hidden {
-            display: none;
-        }
+        .gallery-item.visible { opacity: 1; transform: translateY(0); }
+        .gallery-item.hidden { display: none; }
         .gallery-item:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
@@ -285,12 +287,8 @@
             object-fit: cover;
             transition: transform 0.5s ease;
         }
-        .gallery-item:hover .img-container img {
-            transform: scale(1.05);
-        }
-        .item-info {
-            padding: 15px;
-        }
+        .gallery-item:hover .img-container img { transform: scale(1.05); }
+        .item-info { padding: 15px; }
         .item-info h3 {
             margin: 0 0 4px 0;
             font-size: 1.1rem;
@@ -310,9 +308,7 @@
             font-size: 0.95rem;
             font-weight: 500;
         }
-        .author-link:hover {
-            text-decoration: underline;
-        }
+        .author-link:hover { text-decoration: underline; }
         .item-info p {
             margin: 0;
             font-size: 0.9rem;
@@ -320,13 +316,10 @@
             line-height: 1.4;
         }
 
-        /* === ЛАЙТБОКС С БОКОВОЙ ПАНЕЛЬЮ КОММЕНТАРИЕВ === */
         .lightbox {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background-color: rgba(10, 12, 16, 0.98);
             display: flex;
             flex-direction: row;
@@ -338,10 +331,7 @@
             z-index: 9999;
             overflow: hidden;
         }
-        .lightbox.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .lightbox.active { opacity: 1; pointer-events: auto; }
         .lightbox-left {
             flex: 1;
             display: flex;
@@ -351,12 +341,7 @@
             padding: 20px;
             min-width: 0;
             overflow-y: auto;
-            overflow-x: hidden;
         }
-        .lightbox-left::-webkit-scrollbar { width: 8px; }
-        .lightbox-left::-webkit-scrollbar-track { background: #0d1117; }
-        .lightbox-left::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
-
         .lightbox-img {
             max-width: 100%;
             max-height: 65vh;
@@ -373,23 +358,12 @@
             text-align: center;
             max-width: 100%;
         }
-        .lightbox-caption h3 {
-            margin: 0 0 4px 0;
-            color: #fff;
-            font-size: 1.3rem;
-        }
-        .lightbox-caption a {
-            color: #58a6ff;
-            text-decoration: none;
-        }
-        .lightbox-caption p {
-            margin: 5px 0 0 0;
-            color: #8b949e;
-        }
+        .lightbox-caption h3 { margin: 0 0 4px 0; color: #fff; font-size: 1.3rem; }
+        .lightbox-caption a { color: #58a6ff; text-decoration: none; }
+        .lightbox-caption p { margin: 5px 0 0 0; color: #8b949e; }
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 20px;
+            top: 15px; right: 20px;
             color: #fff;
             font-size: 30px;
             cursor: pointer;
@@ -404,9 +378,7 @@
             justify-content: center;
             line-height: 1;
         }
-        .close-btn:hover {
-            background: rgba(255,255,255,0.1);
-        }
+        .close-btn:hover { background: rgba(255,255,255,0.1); }
         .lightbox-actions {
             margin-top: 18px;
             display: flex;
@@ -429,23 +401,10 @@
             cursor: pointer;
             transition: background 0.2s ease, border-color 0.2s ease;
         }
-        .action-btn:hover {
-            background: #30363d;
-            border-color: #8b949e;
-        }
-        .action-btn.liked {
-            background: #238636;
-            border-color: #2ea043;
-            color: #fff;
-        }
-        .action-btn:disabled {
-            cursor: default;
-            opacity: 0.7;
-        }
-        .counter {
-            font-size: 0.95rem;
-            color: #8b949e;
-        }
+        .action-btn:hover { background: #30363d; border-color: #8b949e; }
+        .action-btn.liked { background: #238636; border-color: #2ea043; color: #fff; }
+        .action-btn:disabled { cursor: default; opacity: 0.7; }
+        .counter { font-size: 0.95rem; color: #8b949e; }
         .toggle-tags-btn {
             background: none;
             border: none;
@@ -455,9 +414,7 @@
             margin-top: 6px;
             padding: 0;
         }
-        .toggle-tags-btn:hover {
-            text-decoration: underline;
-        }
+        .toggle-tags-btn:hover { text-decoration: underline; }
         .full-tags {
             display: none;
             font-size: 0.85rem;
@@ -465,11 +422,8 @@
             margin-top: 6px;
             line-height: 1.4;
         }
-        .full-tags.visible {
-            display: block;
-        }
+        .full-tags.visible { display: block; }
 
-        /* === ПАНЕЛЬ КОММЕНТАРИЕВ (боковая) === */
         .comments-panel {
             width: 400px;
             max-width: 40vw;
@@ -482,9 +436,7 @@
             transition: transform 0.3s ease;
             overflow: hidden;
         }
-        .comments-panel.open {
-            transform: translateX(0);
-        }
+        .comments-panel.open { transform: translateX(0); }
         .comments-header {
             padding: 14px 16px;
             border-bottom: 1px solid #30363d;
@@ -497,12 +449,7 @@
             flex-shrink: 0;
             gap: 8px;
         }
-        .comments-header .title {
-            flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+        .comments-header .title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .comments-close {
             background: none;
             border: none;
@@ -513,22 +460,14 @@
             border-radius: 4px;
             line-height: 1;
         }
-        .comments-close:hover {
-            color: #fff;
-            background: #21262d;
-        }
+        .comments-close:hover { color: #fff; background: #21262d; }
         .comments-list {
             flex: 1;
             overflow-y: auto;
             padding: 12px 16px;
             min-height: 100px;
             overscroll-behavior: contain;
-            -webkit-overflow-scrolling: touch;
         }
-        .comments-list::-webkit-scrollbar { width: 8px; }
-        .comments-list::-webkit-scrollbar-track { background: #0d1117; }
-        .comments-list::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
-
         .comment {
             display: flex;
             gap: 10px;
@@ -580,10 +519,7 @@
             flex-shrink: 0;
             align-self: flex-start;
         }
-        .comment-menu-btn:hover {
-            background: #21262d;
-            color: #f0f6fc;
-        }
+        .comment-menu-btn:hover { background: #21262d; color: #f0f6fc; }
         .comment-menu {
             position: absolute;
             top: 32px;
@@ -688,10 +624,8 @@
 
         .scroll-top {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
+            bottom: 30px; right: 30px;
+            width: 50px; height: 50px;
             border-radius: 50%;
             background: #1f6feb;
             color: #fff;
@@ -749,8 +683,7 @@
         }
         .modal-close {
             position: absolute;
-            top: 12px;
-            right: 18px;
+            top: 12px; right: 18px;
             color: #8b949e;
             font-size: 28px;
             cursor: pointer;
@@ -765,8 +698,7 @@
             margin-bottom: 20px;
         }
         .modal-avatar {
-            width: 90px;
-            height: 90px;
+            width: 90px; height: 90px;
             border-radius: 50%;
             border: 3px solid #30363d;
             object-fit: cover;
@@ -846,8 +778,7 @@
             margin-bottom: 20px;
         }
         .myblock-avatar {
-            width: 70px;
-            height: 70px;
+            width: 70px; height: 70px;
             border-radius: 50%;
             border: 3px solid #30363d;
             object-fit: cover;
@@ -931,29 +862,160 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .myblock-edit-btn:hover {
-            background: #30363d;
+        .myblock-edit-btn:hover { background: #30363d; border-color: #58a6ff; color: #58a6ff; }
+
+        /* === АДМИН-КОНСОЛЬ === */
+        .admin-console {
+            max-width: 800px;
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .admin-tab {
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            margin-bottom: -1px;
+        }
+        .admin-tab:hover {
+            color: #f0f6fc;
+        }
+        .admin-tab.active {
+            color: #58a6ff;
+            border-bottom-color: #58a6ff;
+        }
+        .admin-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #f0f6fc;
+            outline: none;
+            margin-bottom: 12px;
+        }
+        .admin-search:focus { border-color: #58a6ff; }
+        .admin-list {
+            max-height: 55vh;
+            overflow-y: auto;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            background: #0d1117;
+        }
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-bottom: 1px solid #21262d;
+            position: relative;
+        }
+        .admin-user:last-child { border-bottom: none; }
+        .admin-user-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 2px solid #30363d;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .admin-user-info { flex: 1; min-width: 0; }
+        .admin-user-name {
+            font-weight: 600;
+            color: #f0f6fc;
+            font-size: 0.92rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .admin-user-email {
+            font-size: 0.78rem;
+            color: #8b949e;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .admin-user-status {
+            font-size: 0.75rem;
+            margin-top: 4px;
+        }
+        .admin-user-status.banned { color: #f85149; }
+        .admin-user-status.active { color: #3fb950; }
+        .admin-user-menu-btn {
+            background: none;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            transition: background 0.2s ease;
+        }
+        .admin-user-menu-btn:hover {
+            background: #21262d;
             border-color: #58a6ff;
             color: #58a6ff;
         }
+        .admin-user-menu {
+            position: absolute;
+            top: 56px;
+            right: 12px;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            z-index: 200;
+            min-width: 220px;
+            overflow: hidden;
+        }
+        .admin-user-menu button {
+            display: block;
+            width: 100%;
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            color: #c9d1d9;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .admin-user-menu button:hover { background: #30363d; }
+        .admin-user-menu button.danger { color: #f85149; }
+        .admin-user-menu button.danger:hover { background: rgba(248, 81, 73, 0.1); }
+        .admin-user-menu button.success { color: #3fb950; }
+        .admin-user-menu button.success:hover { background: rgba(63, 185, 80, 0.1); }
+        .admin-empty {
+            text-align: center;
+            color: #8b949e;
+            font-size: 0.9rem;
+            padding: 40px 20px;
+        }
 
-        /* === МОБИЛЬНАЯ ВЕРСИЯ: комментарии на весь экран === */
         @media (max-width: 900px) {
-            .lightbox {
-                flex-direction: column;
-            }
+            .lightbox { flex-direction: column; }
             .lightbox-left {
                 padding: 10px;
                 justify-content: flex-start;
                 overflow-y: auto;
             }
-            .lightbox-img {
-                max-height: 50vh;
-            }
+            .lightbox-img { max-height: 50vh; }
             .comments-panel {
                 position: fixed;
-                top: 0;
-                left: 0;
+                top: 0; left: 0;
                 width: 100%;
                 max-width: 100%;
                 height: 100%;
@@ -961,9 +1023,8 @@
                 transform: translateY(100%);
                 z-index: 10001;
             }
-            .comments-panel.open {
-                transform: translateY(0);
-            }
+            .comments-panel.open { transform: translateY(0); }
+            .admin-list { max-height: 45vh; }
         }
         @media (max-width: 600px) {
             body { padding: 12px; }
@@ -1006,6 +1067,7 @@
                     </div>
                     <button class="user-menu-item" onclick="openMyBlock()">📁 Мой блок</button>
                     <button class="user-menu-item" onclick="openProfile()">✏️ Редактировать профиль</button>
+                    <button class="user-menu-item admin-only" id="adminConsoleBtn" style="display:none;" onclick="openAdminConsole()">🛡 Админ-консоль</button>
                     <button class="user-menu-item" onclick="signOutUser()">🚪 Выйти</button>
                 </div>
             </div>
@@ -1084,9 +1146,30 @@
         </div>
     </div>
 
+    <!-- === АДМИН-КОНСОЛЬ === -->
+    <div class="modal-overlay" id="adminConsoleModal">
+        <div class="modal wide admin-console" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeAdminConsole()">&times;</button>
+            <h2>🛡 Админ-консоль</h2>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="users" onclick="switchAdminTab('users')">👥 Пользователи</button>
+                <button class="admin-tab" data-tab="banned" onclick="switchAdminTab('banned')">🚫 Заблокированные</button>
+                <button class="admin-tab" data-tab="admins" id="adminsTabBtn" style="display:none;" onclick="switchAdminTab('admins')">🛡 Администраторы</button>
+            </div>
+
+            <input type="text" class="admin-search" id="adminSearch" placeholder="Поиск по имени или email..." oninput="renderAdminList()">
+
+            <div class="admin-list" id="adminList">
+                <div class="admin-empty">Загрузка...</div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const CREATOR_UID = "5rT2dxYNsYYhBl6Prok2oCeCflX2";
-        const ADMIN_UIDS = [];
+        // ADMIN_UIDS больше не нужен — список админов загружается из Firestore
+        window.adminUids = [];
 
         const BAD_WORDS = [
             "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
@@ -1118,6 +1201,8 @@
         window.isBanned = false;
         window.currentArtComments = [];
         window.currentUserRole = "guest";
+        window.adminUsersCache = [];
+        window.adminCurrentTab = "users";
 
         const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
@@ -1139,7 +1224,10 @@
         function isCreator(uid) { return uid && uid === CREATOR_UID; }
         window.isCreator = isCreator;
 
-        function isAdmin(uid) { return uid && ADMIN_UIDS.includes(uid); }
+        // Обновлено: проверка по списку из Firestore
+        function isAdmin(uid) {
+            return uid && window.adminUids.includes(uid);
+        }
         window.isAdmin = isAdmin;
 
         function getUserRole(uid) {
@@ -1409,7 +1497,8 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (commentsPanel.classList.contains('open')) closeCommentsPanel();
+                if (document.getElementById('adminConsoleModal').classList.contains('active')) closeAdminConsole();
+                else if (commentsPanel.classList.contains('open')) closeCommentsPanel();
                 else if (lightbox.classList.contains('active')) closeLightbox({ target: document.createElement('div') });
             }
         });
@@ -1573,7 +1662,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, increment, onSnapshot, collection, query, where, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, increment, onSnapshot, collection, query, where, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -1619,13 +1708,11 @@
             }
         });
 
-        // === ОБНОВЛЕНО: имя не перезаписывается при входе ===
         async function ensureUserDocument(user) {
             const userRef = doc(db, "users", user.uid);
             const snap = await getDoc(userRef);
 
             if (!snap.exists()) {
-                // Первый вход — создаём профиль с именем из Google
                 const newData = {
                     displayName: user.displayName || 'Пользователь',
                     email: user.email || '',
@@ -1639,7 +1726,6 @@
                 return newData;
             }
 
-            // Профиль уже есть — НЕ трогаем displayName
             const existing = snap.data();
             const updates = {
                 lastSeen: new Date(),
@@ -1660,6 +1746,285 @@
             } catch { return null; }
         }
 
+        // === ЗАГРУЗКА АДМИНОВ ИЗ FIRESTORE ===
+        async function loadAdminUids() {
+            try {
+                const snap = await getDocs(collection(db, "roles"));
+                const uids = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.role === "admin") uids.push(d.id);
+                });
+                window.adminUids = uids;
+                return uids;
+            } catch (e) {
+                console.error("Ошибка загрузки админов:", e);
+                window.adminUids = [];
+                return [];
+            }
+        }
+        window.loadAdminUids = loadAdminUids;
+
+        // === ОТКРЫТИЕ АДМИН-КОНСОЛИ ===
+        window.openAdminConsole = async function() {
+            document.getElementById('userMenu').classList.remove('open');
+            const myRole = getUserRole(window.currentUser?.uid);
+            if (myRole !== "creator" && myRole !== "admin") {
+                alert("Недостаточно прав.");
+                return;
+            }
+
+            // Показать вкладку админов только для создателя
+            const adminsTabBtn = document.getElementById('adminsTabBtn');
+            adminsTabBtn.style.display = (myRole === "creator") ? "block" : "none";
+
+            document.getElementById('adminSearch').value = '';
+            window.adminCurrentTab = "users";
+            document.querySelectorAll('.admin-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === "users");
+            });
+
+            document.getElementById('adminConsoleModal').classList.add('active');
+            await loadAdminUsers();
+            renderAdminList();
+        };
+
+        window.closeAdminConsole = function() {
+            document.getElementById('adminConsoleModal').classList.remove('active');
+            document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
+        };
+
+        window.switchAdminTab = function(tab) {
+            window.adminCurrentTab = tab;
+            document.querySelectorAll('.admin-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+            document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
+            renderAdminList();
+        };
+
+        // === ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ, БАНОВ, РОЛЕЙ ===
+        async function loadAdminUsers() {
+            const list = document.getElementById('adminList');
+            list.innerHTML = '<div class="admin-empty">Загрузка...</div>';
+            try {
+                const [usersSnap, bansSnap, rolesSnap] = await Promise.all([
+                    getDocs(collection(db, "users")),
+                    getDocs(collection(db, "bans")),
+                    getDocs(collection(db, "roles"))
+                ]);
+
+                const bansMap = {};
+                bansSnap.forEach(d => {
+                    const data = d.data();
+                    if (data.until && data.until.seconds * 1000 < Date.now()) return;
+                    bansMap[d.id] = data;
+                });
+
+                const rolesMap = {};
+                rolesSnap.forEach(d => {
+                    const data = d.data();
+                    if (data.role === "admin") rolesMap[d.id] = data;
+                });
+
+                const users = [];
+                usersSnap.forEach(d => {
+                    const data = d.data();
+                    users.push({
+                        uid: d.id,
+                        displayName: data.displayName || 'Пользователь',
+                        email: data.email || '',
+                        photoURL: data.photoURL || '',
+                        isBanned: !!bansMap[d.id],
+                        banReason: bansMap[d.id]?.reason || '',
+                        isAdmin: !!rolesMap[d.id]
+                    });
+                });
+                window.adminUsersCache = users;
+            } catch (e) {
+                console.error("Ошибка загрузки пользователей:", e);
+                list.innerHTML = '<div class="admin-empty">Не удалось загрузить.</div>';
+            }
+        }
+
+        window.renderAdminList = function() {
+            const list = document.getElementById('adminList');
+            const q = (document.getElementById('adminSearch').value || '').toLowerCase().trim();
+            const myRole = getUserRole(window.currentUser?.uid);
+
+            let users = window.adminUsersCache.slice();
+
+            // Фильтр по вкладке
+            if (window.adminCurrentTab === "banned") {
+                users = users.filter(u => u.isBanned);
+            } else if (window.adminCurrentTab === "admins") {
+                users = users.filter(u => u.isAdmin);
+            }
+
+            // Фильтр по поиску
+            if (q) {
+                users = users.filter(u =>
+                    u.displayName.toLowerCase().includes(q) ||
+                    u.email.toLowerCase().includes(q)
+                );
+            }
+
+            // Убираем создателя из списка (он не в users обычно, но на всякий)
+            users = users.filter(u => u.uid !== CREATOR_UID);
+
+            if (users.length === 0) {
+                list.innerHTML = '<div class="admin-empty">Никого не найдено.</div>';
+                return;
+            }
+
+            list.innerHTML = users.map(u => {
+                const isThisAdmin = u.isAdmin;
+                const isThisBanned = u.isBanned;
+                const isThisCreator = isCreator(u.uid);
+
+                let statusHTML = '';
+                if (isThisBanned) statusHTML = `<div class="admin-user-status banned">🚫 Забанен${u.banReason ? ': ' + escapeHtml(u.banReason) : ''}</div>`;
+
+                return `
+                    <div class="admin-user" data-uid="${u.uid}">
+                        <img class="admin-user-avatar" src="${u.photoURL || 'https://www.gravatar.com/avatar/?d=mp'}" alt="">
+                        <div class="admin-user-info">
+                            <div class="admin-user-name">
+                                ${escapeHtml(u.displayName)}
+                                ${isThisCreator ? '<span class="creator-badge small">👑</span>' : ''}
+                                ${isThisAdmin ? '<span class="admin-badge small">🛡</span>' : ''}
+                            </div>
+                            <div class="admin-user-email">${escapeHtml(u.email)}</div>
+                            ${statusHTML}
+                        </div>
+                        <button class="admin-user-menu-btn" onclick="toggleAdminUserMenu(event, '${u.uid}')">⋮</button>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        window.toggleAdminUserMenu = function(event, userId) {
+            event.stopPropagation();
+            document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
+
+            const el = document.querySelector(`.admin-user[data-uid="${userId}"]`);
+            if (!el) return;
+            const btn = el.querySelector('.admin-user-menu-btn');
+            if (!btn) return;
+
+            const myRole = getUserRole(window.currentUser?.uid);
+            const target = window.adminUsersCache.find(u => u.uid === userId);
+            if (!target) return;
+
+            const isThisAdmin = target.isAdmin;
+            const isThisBanned = target.isBanned;
+            const isThisCreator = isCreator(userId);
+
+            const menu = document.createElement('div');
+            menu.className = 'admin-user-menu';
+
+            // Бан / Разбан
+            if (!isThisCreator) {
+                if (isThisBanned) {
+                    menu.innerHTML += `<button class="success" onclick="adminUnbanUser('${userId}')">✅ Разблокировать</button>`;
+                } else {
+                    menu.innerHTML += `<button class="danger" onclick="adminBanUser('${userId}')">🚫 Заблокировать</button>`;
+                }
+            }
+
+            // Назначить / снять админа — только создатель
+            if (myRole === "creator" && !isThisCreator) {
+                if (isThisAdmin) {
+                    menu.innerHTML += `<button class="danger" onclick="revokeAdmin('${userId}')">🛡 Снять админку</button>`;
+                } else {
+                    menu.innerHTML += `<button class="success" onclick="grantAdmin('${userId}')">🛡 Назначить админом</button>`;
+                }
+            }
+
+            if (menu.innerHTML === '') return;
+            el.style.position = 'relative';
+            el.appendChild(menu);
+        };
+
+        // === ДЕЙСТВИЯ ===
+        window.adminBanUser = async function(userId) {
+            const myRole = getUserRole(window.currentUser?.uid);
+            if (myRole !== "creator" && myRole !== "admin") return;
+            const target = window.adminUsersCache.find(u => u.uid === userId);
+            if (!target) return;
+            if (isCreator(userId)) { alert("Нельзя заблокировать создателя."); return; }
+            if (isAdmin(userId) && myRole === "admin") { alert("Админ не может заблокировать другого админа."); return; }
+
+            const reason = prompt("Причина блокировки (необязательно):", "");
+            if (reason === null) return;
+
+            try {
+                await setDoc(doc(db, "bans", userId), {
+                    reason: reason || "Нарушение правил",
+                    bannedBy: window.currentUser.uid,
+                    bannedAt: serverTimestamp(),
+                    until: null
+                });
+                target.isBanned = true;
+                target.banReason = reason || "Нарушение правил";
+                renderAdminList();
+            } catch (e) { console.error(e); alert("Не удалось заблокировать."); }
+        };
+
+        window.adminUnbanUser = async function(userId) {
+            try {
+                await deleteDoc(doc(db, "bans", userId));
+                const target = window.adminUsersCache.find(u => u.uid === userId);
+                if (target) { target.isBanned = false; target.banReason = ''; }
+                renderAdminList();
+            } catch (e) { console.error(e); alert("Не удалось разблокировать."); }
+        };
+
+        window.grantAdmin = async function(userId) {
+            if (getUserRole(window.currentUser?.uid) !== "creator") {
+                alert("Только создатель может назначать админов.");
+                return;
+            }
+            const target = window.adminUsersCache.find(u => u.uid === userId);
+            if (!target) return;
+
+            try {
+                await setDoc(doc(db, "roles", userId), {
+                    role: "admin",
+                    grantedBy: window.currentUser.uid,
+                    grantedAt: serverTimestamp(),
+                    userName: target.displayName,
+                    userEmail: target.email
+                });
+                await loadAdminUids();
+                target.isAdmin = true;
+                renderAdminList();
+                if (typeof renderGallery === 'function') renderGallery();
+                alert("Назначен админом: " + target.displayName);
+            } catch (e) { console.error(e); alert("Не удалось назначить."); }
+        };
+
+        window.revokeAdmin = async function(userId) {
+            if (getUserRole(window.currentUser?.uid) !== "creator") {
+                alert("Только создатель может снимать админку.");
+                return;
+            }
+            if (!confirm("Снять админку с этого пользователя?")) return;
+            try {
+                await deleteDoc(doc(db, "roles", userId));
+                await loadAdminUids();
+                const target = window.adminUsersCache.find(u => u.uid === userId);
+                if (target) target.isAdmin = false;
+                renderAdminList();
+                if (typeof renderGallery === 'function') renderGallery();
+            } catch (e) { console.error(e); alert("Не удалось снять."); }
+        };
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
+        });
+
+        // === АВТОРИЗАЦИЯ ===
         onAuthStateChanged(auth, async (user) => {
             window.currentUser = user;
             const loginBtn = document.getElementById('loginBtn');
@@ -1669,18 +2034,27 @@
             const userEmail = document.getElementById('userEmail');
 
             if (user) {
+                await loadAdminUids();
                 window.currentUserRole = getUserRole(user.uid);
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
                 userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
                 userEmail.textContent = user.email || '';
+
+                // Показать/скрыть кнопку админ-консоли
+                const adminConsoleBtn = document.getElementById('adminConsoleBtn');
+                if (window.currentUserRole === "creator" || window.currentUserRole === "admin") {
+                    adminConsoleBtn.style.display = 'block';
+                } else {
+                    adminConsoleBtn.style.display = 'none';
+                }
+
                 try {
                     const profile = await ensureUserDocument(user);
                     window.currentUserProfile = profile;
                     const displayName = profile.displayName || user.displayName || 'Пользователь';
                     userName.innerHTML = displayName + ' ' + anyBadgeHTML(user.uid, true);
 
-                    // Окно профиля открываем только при первом входе
                     const isFirstTime = !profile.nameCustomized &&
                                         (!profile.displayName ||
                                          profile.displayName === 'Пользователь' ||
@@ -1698,11 +2072,14 @@
                 if (typeof renderCommentForm === 'function') renderCommentForm();
                 if (typeof renderGallery === 'function') renderGallery();
             } else {
+                window.adminUids = [];
                 window.currentUserRole = "guest";
                 loginBtn.style.display = 'inline-flex';
                 userInfo.style.display = 'none';
                 window.currentUserProfile = null;
                 window.isBanned = false;
+                const adminConsoleBtn = document.getElementById('adminConsoleBtn');
+                if (adminConsoleBtn) adminConsoleBtn.style.display = 'none';
                 if (typeof renderGallery === 'function') renderGallery();
                 if (typeof renderCommentForm === 'function') renderCommentForm();
             }
@@ -1735,7 +2112,6 @@
             document.getElementById('profileModal').classList.remove('active');
         };
 
-        // === ОБНОВЛЕНО: ставим флаг nameCustomized ===
         window.saveProfile = async function() {
             const user = window.currentUser;
             if (!user) return;
