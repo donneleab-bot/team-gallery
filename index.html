@@ -864,6 +864,113 @@
         }
         .myblock-edit-btn:hover { background: #30363d; border-color: #58a6ff; color: #58a6ff; }
 
+        /* === ЧУЖОЙ ПРОФИЛЬ === */
+        .user-profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .user-profile-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid #30363d;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .user-profile-info { flex: 1; min-width: 0; }
+        .user-profile-info h3 {
+            margin: 0 0 4px 0;
+            color: #f0f6fc;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .user-profile-info .bio {
+            font-size: 0.9rem;
+            color: #c9d1d9;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+        .user-profile-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .user-profile-action {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #c9d1d9;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .user-profile-action:hover {
+            background: #30363d;
+            border-color: #58a6ff;
+            color: #58a6ff;
+        }
+        .user-profile-action.danger {
+            color: #f85149;
+            border-color: rgba(248, 81, 73, 0.4);
+        }
+        .user-profile-action.danger:hover {
+            background: rgba(248, 81, 73, 0.1);
+            border-color: #f85149;
+        }
+        .user-profile-action.success {
+            color: #3fb950;
+            border-color: rgba(63, 185, 80, 0.4);
+        }
+        .user-profile-action.success:hover {
+            background: rgba(63, 185, 80, 0.1);
+            border-color: #3fb950;
+        }
+        .user-profile-posts-title {
+            color: #f0f6fc;
+            font-size: 1.05rem;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .user-profile-posts-count {
+            color: #8b949e;
+            font-size: 0.85rem;
+            font-weight: normal;
+        }
+        .user-profile-search {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #f0f6fc;
+            outline: none;
+            margin-bottom: 12px;
+        }
+        .user-profile-search:focus { border-color: #58a6ff; }
+        .user-profile-blocked-hint {
+            text-align: center;
+            padding: 40px 20px;
+            color: #f85149;
+            font-size: 0.95rem;
+        }
+
         /* === АДМИН-КОНСОЛЬ === */
         .admin-console {
             max-width: 1200px;
@@ -1152,6 +1259,36 @@
         </div>
     </div>
 
+    <!-- === ЧУЖОЙ ПРОФИЛЬ === -->
+    <div class="modal-overlay" id="userProfileModal">
+        <div class="modal wide" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeUserProfile()">&times;</button>
+
+            <div id="userProfileContent">
+                <div class="user-profile-header">
+                    <img class="user-profile-avatar" id="userProfileAvatar" src="" alt="">
+                    <div class="user-profile-info">
+                        <h3>
+                            <span id="userProfileName">—</span>
+                            <span class="creator-badge" id="userProfileCreatorBadge" style="display:none;">👑 Создатель</span>
+                            <span class="admin-badge" id="userProfileAdminBadge" style="display:none;">🛡 Админ</span>
+                            <span id="userProfileBannedBadge" style="display:none;color:#f85149;font-size:0.75rem;font-weight:600;">🚫 Заблокирован</span>
+                        </h3>
+                        <div class="bio" id="userProfileBio"></div>
+                        <div class="user-profile-actions" id="userProfileActions"></div>
+                    </div>
+                </div>
+
+                <h4 class="user-profile-posts-title">
+                    📁 Посты автора <span class="user-profile-posts-count" id="userProfilePostsCount"></span>
+                </h4>
+                <input type="text" class="user-profile-search" id="userProfileSearch" placeholder="Поиск по названию или словам..." oninput="renderUserProfilePosts()">
+
+                <div class="myblock-grid" id="userProfilePostsGrid"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- === АДМИН-КОНСОЛЬ === -->
     <div class="modal-overlay" id="adminConsoleModal">
         <div class="modal wide admin-console" onclick="event.stopPropagation()">
@@ -1175,6 +1312,7 @@
     <script>
         const CREATOR_UID = "5rT2dxYNsYYhBl6Prok2oCeCflX2";
         window.adminUids = [];
+        window.bannedUids = [];
 
         const BAD_WORDS = [
             "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
@@ -1208,6 +1346,7 @@
         window.currentUserRole = "guest";
         window.adminUsersCache = [];
         window.adminCurrentTab = "users";
+        window.userProfilePostsCache = [];
 
         const galleryGrid = document.getElementById('galleryGrid');
         const lightbox = document.getElementById('lightbox');
@@ -1303,6 +1442,8 @@
         function getFilteredArts() {
             const query = searchInput.value.toLowerCase().trim();
             let filtered = arts.filter(art => {
+                // Скрываем посты забаненных
+                if (window.bannedUids.includes(art.authorId)) return false;
                 const matchSearch = !query ||
                     (art.title || '').toLowerCase().includes(query) ||
                     (art.authorName || '').toLowerCase().includes(query) ||
@@ -1501,7 +1642,8 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (document.getElementById('adminConsoleModal').classList.contains('active')) closeAdminConsole();
+                if (document.getElementById('userProfileModal').classList.contains('active')) closeUserProfile();
+                else if (document.getElementById('adminConsoleModal').classList.contains('active')) closeAdminConsole();
                 else if (commentsPanel.classList.contains('open')) closeCommentsPanel();
                 else if (lightbox.classList.contains('active')) closeLightbox({ target: document.createElement('div') });
             }
@@ -1768,6 +1910,26 @@
         }
         window.loadAdminUids = loadAdminUids;
 
+        async function loadBannedUids() {
+            try {
+                const snap = await getDocs(collection(db, "bans"));
+                const uids = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.until && data.until.seconds * 1000 < Date.now()) return;
+                    uids.push(d.id);
+                });
+                window.bannedUids = uids;
+                return uids;
+            } catch (e) {
+                console.error("Ошибка загрузки банов:", e);
+                window.bannedUids = [];
+                return [];
+            }
+        }
+        window.loadBannedUids = loadBannedUids;
+
+        // === ОТКРЫТИЕ АДМИН-КОНСОЛИ ===
         window.openAdminConsole = async function() {
             document.getElementById('userMenu').classList.remove('open');
             const myRole = getUserRole(window.currentUser?.uid);
@@ -1961,7 +2123,9 @@
                 });
                 target.isBanned = true;
                 target.banReason = reason || "Нарушение правил";
+                await loadBannedUids();
                 renderAdminList();
+                if (typeof renderGallery === 'function') renderGallery();
             } catch (e) { console.error(e); alert("Не удалось заблокировать."); }
         };
 
@@ -1970,7 +2134,9 @@
                 await deleteDoc(doc(db, "bans", userId));
                 const target = window.adminUsersCache.find(u => u.uid === userId);
                 if (target) { target.isBanned = false; target.banReason = ''; }
+                await loadBannedUids();
                 renderAdminList();
+                if (typeof renderGallery === 'function') renderGallery();
             } catch (e) { console.error(e); alert("Не удалось разблокировать."); }
         };
 
@@ -2018,6 +2184,205 @@
             document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
         });
 
+        // === ЧУЖОЙ ПРОФИЛЬ ===
+        window.openUserProfile = async function(userId) {
+            const modal = document.getElementById('userProfileModal');
+
+            const [userSnap, banSnap] = await Promise.all([
+                getDoc(doc(db, "users", userId)),
+                getDoc(doc(db, "bans", userId))
+            ]);
+
+            if (!userSnap.exists()) {
+                alert("Профиль не найден.");
+                return;
+            }
+
+            const userData = userSnap.data();
+            const isBanned = banSnap.exists() && (!banSnap.data().until || banSnap.data().until.seconds * 1000 > Date.now());
+            const isThisCreator = isCreator(userId);
+            const isThisAdmin = isAdmin(userId);
+
+            document.getElementById('userProfileAvatar').src = userData.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+            document.getElementById('userProfileName').textContent = userData.displayName || 'Пользователь';
+            document.getElementById('userProfileBio').textContent = userData.bio || 'Без описания';
+
+            document.getElementById('userProfileCreatorBadge').style.display = isThisCreator ? 'inline-flex' : 'none';
+            document.getElementById('userProfileAdminBadge').style.display = (isThisAdmin && !isThisCreator) ? 'inline-flex' : 'none';
+            document.getElementById('userProfileBannedBadge').style.display = isBanned ? 'inline' : 'none';
+
+            const actionsEl = document.getElementById('userProfileActions');
+            const myRole = getUserRole(window.currentUser?.uid);
+            const canManage = myRole === "creator" || (myRole === "admin" && !isThisCreator && !isThisAdmin);
+
+            let buttonsHTML = '';
+            if (canManage) {
+                if (isBanned) {
+                    buttonsHTML += `<button class="user-profile-action success" onclick="unbanFromProfile('${userId}')">✅ Разблокировать</button>`;
+                } else {
+                    buttonsHTML += `<button class="user-profile-action danger" onclick="banFromProfile('${userId}')">🚫 Заблокировать</button>`;
+                }
+                if (myRole === "creator") {
+                    if (isThisAdmin) {
+                        buttonsHTML += `<button class="user-profile-action danger" onclick="revokeAdminFromProfile('${userId}')">🛡 Снять админку</button>`;
+                    } else {
+                        buttonsHTML += `<button class="user-profile-action success" onclick="grantAdminFromProfile('${userId}')">🛡 Назначить админом</button>`;
+                    }
+                    buttonsHTML += `<button class="user-profile-action danger" onclick="deleteUserProfile('${userId}')">🗑 Удалить профиль</button>`;
+                }
+            }
+            actionsEl.innerHTML = buttonsHTML;
+
+            let userPosts = arts.filter(a => a.authorId === userId);
+
+            if (isBanned) {
+                document.getElementById('userProfilePostsCount').textContent = '';
+                document.getElementById('userProfileSearch').style.display = 'none';
+                document.getElementById('userProfilePostsGrid').innerHTML =
+                    '<div class="user-profile-blocked-hint">🚫 Пользователь заблокирован. Посты скрыты.</div>';
+            } else {
+                window.userProfilePostsCache = userPosts;
+                document.getElementById('userProfileSearch').style.display = 'block';
+                document.getElementById('userProfileSearch').value = '';
+                document.getElementById('userProfilePostsCount').textContent = '(' + userPosts.length + ')';
+                renderUserProfilePosts();
+            }
+
+            modal.classList.add('active');
+        };
+
+        window.closeUserProfile = function() {
+            document.getElementById('userProfileModal').classList.remove('active');
+        };
+
+        document.getElementById('userProfileModal').addEventListener('click', (e) => {
+            if (e.target.id === 'userProfileModal') closeUserProfile();
+        });
+
+        window.renderUserProfilePosts = function() {
+            const q = (document.getElementById('userProfileSearch').value || '').toLowerCase().trim();
+            let posts = window.userProfilePostsCache || [];
+            if (q) {
+                posts = posts.filter(p =>
+                    (p.title || '').toLowerCase().includes(q) ||
+                    (p.desc || '').toLowerCase().includes(q)
+                );
+            }
+            const grid = document.getElementById('userProfilePostsGrid');
+            if (posts.length === 0) {
+                grid.innerHTML = '<div class="myblock-empty">Постов не найдено.</div>';
+                return;
+            }
+            grid.innerHTML = posts.map(art => `
+                <div class="myblock-item" onclick="closeUserProfile(); openLightbox('${art.img}')">
+                    <img src="${art.img}" alt="${art.title}" loading="lazy">
+                    <div class="myblock-item-title" title="${art.title}">${art.title}</div>
+                </div>
+            `).join('');
+        };
+
+        window.banFromProfile = async function(userId) {
+            const myRole = getUserRole(window.currentUser?.uid);
+            if (myRole !== "creator" && myRole !== "admin") return;
+            if (userId === CREATOR_UID) { alert("Нельзя заблокировать создателя."); return; }
+            if (isAdmin(userId) && myRole === "admin") { alert("Админ не может заблокировать другого админа."); return; }
+
+            const reason = prompt("Причина блокировки (необязательно):", "");
+            if (reason === null) return;
+
+            try {
+                await setDoc(doc(db, "bans", userId), {
+                    reason: reason || "Нарушение правил",
+                    bannedBy: window.currentUser.uid,
+                    bannedAt: serverTimestamp(),
+                    until: null
+                });
+                await loadBannedUids();
+                alert("Пользователь заблокирован.");
+                closeUserProfile();
+                if (typeof renderGallery === 'function') renderGallery();
+            } catch (e) { console.error(e); alert("Не удалось заблокировать."); }
+        };
+
+        window.unbanFromProfile = async function(userId) {
+            try {
+                await deleteDoc(doc(db, "bans", userId));
+                await loadBannedUids();
+                alert("Пользователь разблокирован.");
+                closeUserProfile();
+                if (typeof renderGallery === 'function') renderGallery();
+            } catch (e) { console.error(e); alert("Не удалось разблокировать."); }
+        };
+
+        window.grantAdminFromProfile = async function(userId) {
+            if (getUserRole(window.currentUser?.uid) !== "creator") {
+                alert("Только создатель может назначать админов.");
+                return;
+            }
+            const userSnap = await getDoc(doc(db, "users", userId));
+            if (!userSnap.exists()) return;
+            const u = userSnap.data();
+
+            try {
+                await setDoc(doc(db, "roles", userId), {
+                    role: "admin",
+                    grantedBy: window.currentUser.uid,
+                    grantedAt: serverTimestamp(),
+                    userName: u.displayName,
+                    userEmail: u.email
+                });
+                await loadAdminUids();
+                alert("Назначен админом: " + (u.displayName || userId));
+                closeUserProfile();
+                if (typeof renderGallery === 'function') renderGallery();
+            } catch (e) { console.error(e); alert("Не удалось назначить."); }
+        };
+
+        window.revokeAdminFromProfile = async function(userId) {
+            if (getUserRole(window.currentUser?.uid) !== "creator") {
+                alert("Только создатель может снимать админку.");
+                return;
+            }
+            if (!confirm("Снять админку с этого пользователя?")) return;
+            try {
+                await deleteDoc(doc(db, "roles", userId));
+                await loadAdminUids();
+                alert("Админка снята.");
+                closeUserProfile();
+                if (typeof renderGallery === 'function') renderGallery();
+            } catch (e) { console.error(e); alert("Не удалось снять."); }
+        };
+
+        window.deleteUserProfile = async function(userId) {
+            if (getUserRole(window.currentUser?.uid) !== "creator") {
+                alert("Только создатель может удалять профили.");
+                return;
+            }
+            if (userId === CREATOR_UID) { alert("Нельзя удалить свой профиль."); return; }
+            if (!confirm("⚠️ Удалить профиль и все его данные? Это действие необратимо.")) return;
+            if (!confirm("Точно удалить? Посты и комментарии будут удалены из базы.")) return;
+
+            try {
+                const commentsQ = query(collection(db, "comments"), where("userId", "==", userId));
+                const commentsSnap = await getDocs(commentsQ);
+                await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
+
+                await deleteDoc(doc(db, "users", userId));
+                await deleteDoc(doc(db, "roles", userId)).catch(() => {});
+                await deleteDoc(doc(db, "bans", userId)).catch(() => {});
+
+                await loadAdminUids();
+                await loadBannedUids();
+                alert("Профиль удалён.");
+                closeUserProfile();
+                if (typeof renderGallery === 'function') renderGallery();
+            } catch (e) {
+                console.error(e);
+                alert("Ошибка удаления. Проверьте консоль.");
+            }
+        };
+
+        // === АВТОРИЗАЦИЯ ===
         onAuthStateChanged(auth, async (user) => {
             window.currentUser = user;
             const loginBtn = document.getElementById('loginBtn');
@@ -2027,7 +2392,7 @@
             const userEmail = document.getElementById('userEmail');
 
             if (user) {
-                await loadAdminUids();
+                await Promise.all([loadAdminUids(), loadBannedUids()]);
                 window.currentUserRole = getUserRole(user.uid);
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
@@ -2065,6 +2430,7 @@
                 if (typeof renderGallery === 'function') renderGallery();
             } else {
                 window.adminUids = [];
+                window.bannedUids = [];
                 window.currentUserRole = "guest";
                 loginBtn.style.display = 'inline-flex';
                 userInfo.style.display = 'none';
@@ -2295,14 +2661,16 @@
                     bannedBy: window.currentUser.uid,
                     bannedAt: serverTimestamp(), until: null
                 });
+                await loadBannedUids();
                 if (alsoDelete && commentId) await deleteDoc(doc(db, "comments", commentId));
                 alert("Пользователь заблокирован.");
+                if (typeof renderGallery === 'function') renderGallery();
             } catch (error) { console.error("Ошибка бана:", error); alert("Не удалось заблокировать."); }
         };
 
         window.showAuthorInfo = function(userId, userName) {
             if (userId === window.currentUser?.uid) { openMyBlock(); return; }
-            alert("Профиль: " + userName);
+            openUserProfile(userId);
         };
 
         let cachedIP = null;
