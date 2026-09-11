@@ -671,7 +671,7 @@
             position: relative;
             margin: auto;
         }
-        .modal.wide { max-width: 900px; }
+        .modal.wide { max-width: 1200px; }
         .modal h2 {
             margin: 0 0 20px 0;
             color: #f0f6fc;
@@ -866,7 +866,8 @@
 
         /* === АДМИН-КОНСОЛЬ === */
         .admin-console {
-            max-width: 800px;
+            max-width: 1200px;
+            width: 95%;
         }
         .admin-tabs {
             display: flex;
@@ -908,12 +909,16 @@
         }
         .admin-search:focus { border-color: #58a6ff; }
         .admin-list {
-            max-height: 55vh;
+            max-height: 70vh;
+            min-height: 400px;
             overflow-y: auto;
             border: 1px solid #30363d;
             border-radius: 8px;
             background: #0d1117;
         }
+        .admin-list::-webkit-scrollbar { width: 8px; }
+        .admin-list::-webkit-scrollbar-track { background: #0d1117; }
+        .admin-list::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
         .admin-user {
             display: flex;
             align-items: center;
@@ -1024,7 +1029,8 @@
                 z-index: 10001;
             }
             .comments-panel.open { transform: translateY(0); }
-            .admin-list { max-height: 45vh; }
+            .admin-list { max-height: 60vh; min-height: 300px; }
+            .admin-console { width: 100%; padding: 20px 16px; }
         }
         @media (max-width: 600px) {
             body { padding: 12px; }
@@ -1168,7 +1174,6 @@
 
     <script>
         const CREATOR_UID = "5rT2dxYNsYYhBl6Prok2oCeCflX2";
-        // ADMIN_UIDS больше не нужен — список админов загружается из Firestore
         window.adminUids = [];
 
         const BAD_WORDS = [
@@ -1224,7 +1229,6 @@
         function isCreator(uid) { return uid && uid === CREATOR_UID; }
         window.isCreator = isCreator;
 
-        // Обновлено: проверка по списку из Firestore
         function isAdmin(uid) {
             return uid && window.adminUids.includes(uid);
         }
@@ -1746,7 +1750,6 @@
             } catch { return null; }
         }
 
-        // === ЗАГРУЗКА АДМИНОВ ИЗ FIRESTORE ===
         async function loadAdminUids() {
             try {
                 const snap = await getDocs(collection(db, "roles"));
@@ -1765,7 +1768,6 @@
         }
         window.loadAdminUids = loadAdminUids;
 
-        // === ОТКРЫТИЕ АДМИН-КОНСОЛИ ===
         window.openAdminConsole = async function() {
             document.getElementById('userMenu').classList.remove('open');
             const myRole = getUserRole(window.currentUser?.uid);
@@ -1774,7 +1776,6 @@
                 return;
             }
 
-            // Показать вкладку админов только для создателя
             const adminsTabBtn = document.getElementById('adminsTabBtn');
             adminsTabBtn.style.display = (myRole === "creator") ? "block" : "none";
 
@@ -1803,7 +1804,6 @@
             renderAdminList();
         };
 
-        // === ЗАГРУЗКА ПОЛЬЗОВАТЕЛЕЙ, БАНОВ, РОЛЕЙ ===
         async function loadAdminUsers() {
             const list = document.getElementById('adminList');
             list.innerHTML = '<div class="admin-empty">Загрузка...</div>';
@@ -1854,14 +1854,12 @@
 
             let users = window.adminUsersCache.slice();
 
-            // Фильтр по вкладке
             if (window.adminCurrentTab === "banned") {
                 users = users.filter(u => u.isBanned);
             } else if (window.adminCurrentTab === "admins") {
                 users = users.filter(u => u.isAdmin);
             }
 
-            // Фильтр по поиску
             if (q) {
                 users = users.filter(u =>
                     u.displayName.toLowerCase().includes(q) ||
@@ -1869,7 +1867,6 @@
                 );
             }
 
-            // Убираем создателя из списка (он не в users обычно, но на всякий)
             users = users.filter(u => u.uid !== CREATOR_UID);
 
             if (users.length === 0) {
@@ -1923,7 +1920,6 @@
             const menu = document.createElement('div');
             menu.className = 'admin-user-menu';
 
-            // Бан / Разбан
             if (!isThisCreator) {
                 if (isThisBanned) {
                     menu.innerHTML += `<button class="success" onclick="adminUnbanUser('${userId}')">✅ Разблокировать</button>`;
@@ -1932,7 +1928,6 @@
                 }
             }
 
-            // Назначить / снять админа — только создатель
             if (myRole === "creator" && !isThisCreator) {
                 if (isThisAdmin) {
                     menu.innerHTML += `<button class="danger" onclick="revokeAdmin('${userId}')">🛡 Снять админку</button>`;
@@ -1946,7 +1941,6 @@
             el.appendChild(menu);
         };
 
-        // === ДЕЙСТВИЯ ===
         window.adminBanUser = async function(userId) {
             const myRole = getUserRole(window.currentUser?.uid);
             if (myRole !== "creator" && myRole !== "admin") return;
@@ -2024,7 +2018,6 @@
             document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
         });
 
-        // === АВТОРИЗАЦИЯ ===
         onAuthStateChanged(auth, async (user) => {
             window.currentUser = user;
             const loginBtn = document.getElementById('loginBtn');
@@ -2041,7 +2034,6 @@
                 userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
                 userEmail.textContent = user.email || '';
 
-                // Показать/скрыть кнопку админ-консоли
                 const adminConsoleBtn = document.getElementById('adminConsoleBtn');
                 if (window.currentUserRole === "creator" || window.currentUserRole === "admin") {
                     adminConsoleBtn.style.display = 'block';
