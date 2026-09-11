@@ -2972,9 +2972,10 @@
                             method: 'POST',
                             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                             body: JSON.stringify({
-                                token: APPS_SCRIPT_TOKEN,
-                                action: 'delete',
-                                fileId: art.driveFileId
+                            token: APPS_SCRIPT_TOKEN,
+                            secretKey: APPS_SCRIPT_TOKEN,
+                            action: 'delete',
+                            fileId: art.driveFileId
                             })
                         });
                     } catch (e) { console.error("Ошибка удаления из Drive:", e); }
@@ -3439,22 +3440,24 @@
                 await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
 
                 const userArts = window.allArts.filter(a => a.authorId === userId);
-                for (const art of userArts) {
-                    if (art.driveFileId) {
-                        try {
-                            await fetch(APPS_SCRIPT_URL, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({
-                                    token: APPS_SCRIPT_TOKEN,
-                                    action: 'delete',
-                                    fileId: art.driveFileId
-                                })
-                            });
-                        } catch (e) { console.error("Drive delete err:", e); }
-                    }
-                    await deleteDoc(doc(db, "arts", art.id));
-                }
+                                const userArts = window.allArts.filter(a => a.authorId === userId);
+for (const art of userArts) {
+    if (art.driveFileId) {
+        try {
+            await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    token: APPS_SCRIPT_TOKEN,
+                    secretKey: APPS_SCRIPT_TOKEN,
+                    action: 'delete',
+                    fileId: art.driveFileId
+                })
+            });
+        } catch (e) { console.error("Drive delete err:", e); }
+    }
+    await deleteDoc(doc(db, "arts", art.id));
+}
 
                 await deleteDoc(doc(db, "users", userId));
                 await deleteDoc(doc(db, "roles", userId)).catch(() => {});
