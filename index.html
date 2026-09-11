@@ -1016,7 +1016,6 @@
     <div class="gallery-grid" id="galleryGrid"></div>
     <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()" title="Наверх">↑</button>
 
-    <!-- Лайтбокс: слева картинка, справа боковая панель комментариев -->
     <div class="lightbox" id="lightbox">
         <span class="close-btn" onclick="closeLightbox(event)">&times;</span>
         <div class="lightbox-left" onclick="closeLightbox(event)">
@@ -1032,7 +1031,6 @@
             </div>
         </div>
 
-        <!-- Боковая панель комментариев (на ПК — справа, на моб — на весь экран) -->
         <div class="comments-panel" id="commentsPanel" onclick="event.stopPropagation()">
             <div class="comments-header">
                 <div class="title">💬 Комментарии <span id="commentsCount" style="color:#8b949e;font-weight:400;font-size:0.85rem;"></span></div>
@@ -1328,7 +1326,6 @@
             document.getElementById('shareBtn').disabled = true;
             document.getElementById('downloadBtn').disabled = true;
 
-            // Закрываем панель комментариев при открытии новой картинки
             commentsPanel.classList.remove('open');
 
             lightbox.classList.add('active');
@@ -1351,7 +1348,6 @@
             event.stopPropagation();
             commentsPanel.classList.toggle('open');
             if (commentsPanel.classList.contains('open')) {
-                // При открытии на мобильном — скролл в начало
                 if (window.innerWidth <= 900) {
                     commentsList.scrollTop = 0;
                 }
@@ -1365,7 +1361,6 @@
         window.closeCommentsPanel = closeCommentsPanel;
 
         function closeLightbox(event) {
-            // Не закрываем при клике на картинку/кнопки/панель
             if (event && event.target) {
                 const tag = event.target.tagName;
                 if (tag === 'IMG' || tag === 'A' || tag === 'BUTTON' || tag === 'TEXTAREA' || tag === 'INPUT') return;
@@ -1624,22 +1619,34 @@
             }
         });
 
+        // === ОБНОВЛЕНО: имя не перезаписывается при входе ===
         async function ensureUserDocument(user) {
             const userRef = doc(db, "users", user.uid);
             const snap = await getDoc(userRef);
-            const baseData = {
-                displayName: user.displayName || 'Пользователь',
-                email: user.email || '',
-                photoURL: user.photoURL || '',
-                lastSeen: new Date()
-            };
+
             if (!snap.exists()) {
-                baseData.registeredAt = new Date();
-                await setDoc(userRef, baseData);
-            } else {
-                await setDoc(userRef, baseData, { merge: true });
+                // Первый вход — создаём профиль с именем из Google
+                const newData = {
+                    displayName: user.displayName || 'Пользователь',
+                    email: user.email || '',
+                    photoURL: user.photoURL || '',
+                    bio: '',
+                    registeredAt: new Date(),
+                    lastSeen: new Date(),
+                    nameCustomized: false
+                };
+                await setDoc(userRef, newData);
+                return newData;
             }
-            return (await getDoc(userRef)).data();
+
+            // Профиль уже есть — НЕ трогаем displayName
+            const existing = snap.data();
+            const updates = {
+                lastSeen: new Date(),
+                photoURL: user.photoURL || existing.photoURL || ''
+            };
+            await setDoc(userRef, updates, { merge: true });
+            return { ...existing, ...updates };
         }
 
         async function checkBan(userId) {
@@ -1672,7 +1679,13 @@
                     window.currentUserProfile = profile;
                     const displayName = profile.displayName || user.displayName || 'Пользователь';
                     userName.innerHTML = displayName + ' ' + anyBadgeHTML(user.uid, true);
-                    if (!profile.displayName || profile.displayName === 'Пользователь') {
+
+                    // Окно профиля открываем только при первом входе
+                    const isFirstTime = !profile.nameCustomized &&
+                                        (!profile.displayName ||
+                                         profile.displayName === 'Пользователь' ||
+                                         !profile.bio);
+                    if (isFirstTime) {
                         setTimeout(() => openProfileModal(true), 500);
                     }
                 } catch (e) {
@@ -1722,6 +1735,7 @@
             document.getElementById('profileModal').classList.remove('active');
         };
 
+        // === ОБНОВЛЕНО: ставим флаг nameCustomized ===
         window.saveProfile = async function() {
             const user = window.currentUser;
             if (!user) return;
@@ -1733,10 +1747,19 @@
             btn.textContent = 'Сохранение...';
             try {
                 await setDoc(doc(db, "users", user.uid), {
-                    displayName: name, bio: bio, email: user.email,
-                    photoURL: user.photoURL || '', updatedAt: new Date()
+                    displayName: name,
+                    bio: bio,
+                    email: user.email,
+                    photoURL: user.photoURL || '',
+                    nameCustomized: true,
+                    updatedAt: new Date()
                 }, { merge: true });
-                window.currentUserProfile = { ...(window.currentUserProfile || {}), displayName: name, bio: bio };
+                window.currentUserProfile = {
+                    ...(window.currentUserProfile || {}),
+                    displayName: name,
+                    bio: bio,
+                    nameCustomized: true
+                };
                 document.getElementById('userName').innerHTML = name + ' ' + anyBadgeHTML(user.uid, true);
                 btn.textContent = '✅ Сохранено!';
                 setTimeout(() => {
