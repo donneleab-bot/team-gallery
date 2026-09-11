@@ -879,6 +879,43 @@
             color: #c9d1d9;
             line-height: 1.4;
         }
+                .myblock-tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .myblock-tab {
+            padding: 10px 16px;
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            margin-bottom: -1px;
+        }
+        .myblock-tab:hover {
+            color: #f0f6fc;
+        }
+        .myblock-tab.active {
+            color: #58a6ff;
+            border-bottom-color: #58a6ff;
+        }
+        .myblock-tab-badge {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 7px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            background: #238636;
+            border-radius: 10px;
+            line-height: 1.4;
+        }
         .myblock-posts-title {
             color: #f0f6fc;
             font-size: 1.05rem;
@@ -1591,10 +1628,16 @@
                 </div>
                 <button class="myblock-edit-btn" onclick="closeMyBlock(); openProfile();">✏️ Редактировать</button>
             </div>
-            <h4 class="myblock-posts-title">
+                       <div class="myblock-tabs">
+                <button class="myblock-tab active" data-tab="posts" onclick="switchMyBlockTab('posts')">📁 Мои посты<span class="myblock-tab-badge" id="myPostsCountBadge" style="display:none;">0</span></button>
+                <button class="myblock-tab" data-tab="likes" onclick="switchMyBlockTab('likes')">❤️ Мои лайки<span class="myblock-tab-badge" id="myLikesCountBadge" style="display:none;">0</span></button>
+            </div>
+
+            <h4 class="myblock-posts-title" id="myBlockSectionTitle">
                 📁 Мои посты <span class="myblock-posts-count" id="myBlockCount"></span>
             </h4>
             <div class="myblock-grid" id="myBlockGrid"></div>
+            <div class="myblock-grid" id="myLikesGrid" style="display:none;"></div>
         </div>
     </div>
 
@@ -3526,10 +3569,22 @@
                 document.getElementById('myBlockName').textContent = displayName;
                 document.getElementById('myBlockBio').textContent = bio || 'Без описания';
             });
+                        // Сброс на вкладку «Мои посты» при каждом открытии
+            window.myBlockCurrentTab = 'posts';
+            switchMyBlockTab('posts');
+
+            // Рендер постов
             const myArts = window.allArts.filter(a => a.authorId === user.uid);
             const grid = document.getElementById('myBlockGrid');
             const countEl = document.getElementById('myBlockCount');
             countEl.textContent = '(' + myArts.length + ')';
+
+            const postsBadge = document.getElementById('myPostsCountBadge');
+            if (postsBadge) {
+                postsBadge.textContent = myArts.length;
+                postsBadge.style.display = myArts.length > 0 ? 'inline-block' : 'none';
+            }
+
             if (myArts.length === 0) {
                 grid.innerHTML = '<div class="myblock-empty">У вас пока нет постов.</div>';
             } else {
@@ -3540,12 +3595,38 @@
                     </div>
                 `).join('');
             }
+
+            // Рендер лайков (асинхронно)
+            if (typeof window.renderMyLikes === 'function') window.renderMyLikes();
+
             document.getElementById('myBlockModal').classList.add('active');
         };
 
-        window.closeMyBlock = function() {
+        window.switchMyBlockTab = function(tab) {
+            window.myBlockCurrentTab = tab;
+
+            document.querySelectorAll('.myblock-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+
+            const postsTitle = document.getElementById('myBlockSectionTitle');
+            const grid = document.getElementById('myBlockGrid');
+            const likesGrid = document.getElementById('myLikesGrid');
+
+            if (tab === 'posts') {
+                if (postsTitle) postsTitle.style.display = 'flex';
+                grid.style.display = 'grid';
+                likesGrid.style.display = 'none';
+            } else if (tab === 'likes') {
+                if (postsTitle) postsTitle.style.display = 'none';
+                grid.style.display = 'none';
+                likesGrid.style.display = 'grid';
+            }
+        };
+                window.closeMyBlock = function() {
             document.getElementById('myBlockModal').classList.remove('active');
         };
+
 
         document.getElementById('myBlockModal').addEventListener('click', (e) => {
             if (e.target.id === 'myBlockModal') closeMyBlock();
@@ -3755,7 +3836,13 @@
             const likeRef = doc(db, "likes", `${art.id}_${userIP}`);
             const snap = await getDoc(likeRef);
             if (snap.exists()) { alert("Вы уже лайкали эту картинку!"); return; }
-            await setDoc(likeRef, { artId: art.id, imageId: art.img, ip: userIP, timestamp: new Date() });
+                        await setDoc(likeRef, {
+                artId: art.id,
+                imageId: art.img,
+                ip: userIP,
+                userId: window.currentUser?.uid || null,
+                timestamp: new Date()
+            });
             await setDoc(doc(db, "images", art.id), { likes: increment(1) }, { merge: true });
             const btn = document.getElementById('likeBtn');
             btn.disabled = true;
@@ -3763,6 +3850,50 @@
             btn.textContent = '❤️ Лайкнуто';
             window.loadStats(art.id, art.img);
         };
+                // === МОИ ЛАЙКИ ===
+        window.renderMyLikes = async function() {
+            const user = window.currentUser;
+            if (!user) return;
+
+            const grid = document.getElementById('myLikesGrid');
+            const badge = document.getElementById('myLikesCountBadge');
+            if (!grid) return;
+            grid.innerHTML = '<div class="myblock-empty">Загрузка...</div>';
+
+            try {
+                const q = query(collection(db, "likes"), where("userId", "==", user.uid));
+                const snap = await getDocs(q);
+
+                const likedArtIds = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.artId) likedArtIds.push(data.artId);
+                });
+
+                const likedArts = window.allArts.filter(a => likedArtIds.includes(a.id));
+
+                if (badge) {
+                    badge.textContent = likedArts.length;
+                    badge.style.display = likedArts.length > 0 ? 'inline-block' : 'none';
+                }
+
+                if (likedArts.length === 0) {
+                    grid.innerHTML = '<div class="myblock-empty">Вы пока ничего не лайкали.</div>';
+                    return;
+                }
+
+                grid.innerHTML = likedArts.map(art => `
+                    <div class="myblock-item" onclick="closeMyBlock(); openLightbox('${art.id}')">
+                        <img src="${art.img}" alt="${art.title}" loading="lazy">
+                        <div class="myblock-item-title" title="${art.title}">${escapeHtml(art.title)}</div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error("Ошибка загрузки лайков:", e);
+                grid.innerHTML = '<div class="myblock-empty">Не удалось загрузить лайки.</div>';
+            }
+        };
+
 
         // ============================================
         // === СИСТЕМА ЖАЛОБ НА КОММЕНТАРИИ ===
