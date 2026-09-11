@@ -2110,19 +2110,33 @@
         }
         window.loadBannedUids = loadBannedUids;
 
+        // === ОБНОВЛЕНО: подтягиваем актуальные имена из users ===
         async function loadArtsFromFirestore() {
             try {
-                const snap = await getDocs(collection(db, "arts"));
-                const list = [];
-                snap.forEach(d => {
+                const [artsSnap, usersSnap] = await Promise.all([
+                    getDocs(collection(db, "arts")),
+                    getDocs(collection(db, "users"))
+                ]);
+
+                const userNames = {};
+                usersSnap.forEach(d => {
                     const data = d.data();
+                    userNames[d.id] = data.displayName || 'Пользователь';
+                });
+
+                const list = [];
+                artsSnap.forEach(d => {
+                    const data = d.data();
+                    const authorId = data.authorId || '';
+                    const authorName = userNames[authorId] || data.authorName || 'Неизвестный';
+
                     list.push({
                         id: d.id,
                         img: data.img || '',
                         driveFileId: data.driveFileId || '',
                         title: data.title || 'Без названия',
-                        authorName: data.authorName || 'Неизвестный',
-                        authorId: data.authorId || '',
+                        authorName: authorName,
+                        authorId: authorId,
                         authorUrl: data.authorUrl || '',
                         desc: data.desc || '',
                         sortDate: data.sortDate || '',
@@ -2921,6 +2935,7 @@
             document.getElementById('profileModal').classList.remove('active');
         };
 
+        // === ОБНОВЛЕНО: перезагрузка постов и комментариев после смены имени ===
         window.saveProfile = async function() {
             const user = window.currentUser;
             if (!user) return;
@@ -2946,6 +2961,16 @@
                     nameCustomized: true
                 };
                 document.getElementById('userName').innerHTML = name + ' ' + anyBadgeHTML(user.uid, true);
+
+                // Перезагружаем посты с актуальными именами
+                await loadArtsFromFirestore();
+
+                // Перезагружаем комментарии, если лайтбокс открыт
+                if (lightbox.classList.contains('active')) {
+                    const art = window.allArts[window.currentArtIndex];
+                    if (art && typeof loadComments === 'function') loadComments(art.id);
+                }
+
                 btn.textContent = '✅ Сохранено!';
                 setTimeout(() => {
                     closeProfileModal();
@@ -3079,16 +3104,35 @@
             }
         };
 
+        // === ОБНОВЛЕНО: подтягиваем актуальные имена авторов комментариев ===
         window.loadComments = function(artId) {
             commentsList.innerHTML = '<div class="comments-empty">Загрузка...</div>';
-            const q = query(collection(db, "comments"), where("artId", "==", artId));
-            window.unsubscribeComments = onSnapshot(q, (snapshot) => {
+            Promise.all([
+                getDocs(query(collection(db, "comments"), where("artId", "==", artId))),
+                getDocs(collection(db, "users"))
+            ]).then(([commentsSnap, usersSnap]) => {
+                const userNames = {};
+                const userAvatars = {};
+                usersSnap.forEach(d => {
+                    const data = d.data();
+                    userNames[d.id] = data.displayName || 'Пользователь';
+                    userAvatars[d.id] = data.photoURL || '';
+                });
+
                 const comments = [];
-                snapshot.forEach(docSnap => comments.push({ id: docSnap.id, ...docSnap.data() }));
+                commentsSnap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    comments.push({
+                        id: docSnap.id,
+                        ...data,
+                        userName: userNames[data.userId] || data.userName || 'Гость',
+                        userAvatar: userAvatars[data.userId] || data.userAvatar || ''
+                    });
+                });
                 comments.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
                 window.currentArtComments = comments;
                 window.renderCommentsList(comments);
-            }, (error) => {
+            }).catch(error => {
                 console.error("Ошибка загрузки комментариев:", error);
                 commentsList.innerHTML = '<div class="comments-empty">Не удалось загрузить комментарии.</div>';
             });
@@ -3137,7 +3181,6 @@
         }
         getUserIP();
 
-        // === ЗАГРУЗКА СТАТИСТИКИ (по artId) ===
         window.loadStats = async function(artId, imageId) {
             const btn = document.getElementById('likeBtn');
             const [imgSnap, userIP] = await Promise.all([getDoc(doc(db, "images", artId)), getUserIP()]);
