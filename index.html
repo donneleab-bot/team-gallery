@@ -2182,48 +2182,52 @@
             return div.innerHTML;
         };
 
-        window.toggleCommentMenu = function(event, commentId, commentUserId) {
-            event.stopPropagation();
-            document.querySelectorAll('.comment-menu').forEach(m => m.remove());
+       window.toggleCommentMenu = function(event, commentId, commentUserId) {
+    event.stopPropagation();
+    document.querySelectorAll('.comment-menu').forEach(m => m.remove());
 
-            const commentEl = document.querySelector(`[data-comment-id="${commentId}"]`);
-            if (!commentEl) return;
-            const btn = commentEl.querySelector('.comment-menu-btn');
-            if (!btn) return;
+    const commentEl = document.querySelector(`[data-comment-id="${commentId}"]`);
+    if (!commentEl) return;
+    const btn = commentEl.querySelector('.comment-menu-btn');
+    if (!btn) return;
 
-            const myUid = window.currentUser?.uid;
-            const myRole = getUserRole(myUid);
-            const isMine = myUid && commentUserId === myUid;
-            const targetIsCreator = isCreator(commentUserId);
-            const targetIsAdmin = isAdmin(commentUserId);
-            const iAmBanned = window.isBanned;
+    const myUid = window.currentUser?.uid;
+    const myRole = getUserRole(myUid);
+    const isMine = myUid && commentUserId === myUid;
+    const targetIsCreator = isCreator(commentUserId);
+    const targetIsAdmin = isAdmin(commentUserId);
+    const iAmBanned = window.isBanned;
 
-            const menu = document.createElement('div');
-            menu.className = 'comment-menu';
+    const menu = document.createElement('div');
+    menu.className = 'comment-menu';
 
-            if (isMine) {
-                menu.innerHTML += `<button onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-            } else if (myRole === "creator") {
-                menu.innerHTML += `<button class="danger" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-                menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
-                menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
-            } else if (myRole === "admin" && !targetIsCreator && !targetIsAdmin) {
-                menu.innerHTML += `<button class="admin-action" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-                menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
-                menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
-            }
+    // 1. Свой комментарий — можно удалить
+    if (isMine) {
+        menu.innerHTML += `<button onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
+    }
 
-            // Пункт «Пожаловаться» — всем залогиненным, кроме автора и кроме забаненных.
-            // Если пользователь уже управляет этим комментарием (свой/админ/создатель) — жалоба не нужна.
-            const canReport = myUid && !isMine && !iAmBanned && !canManageComment(myRole, commentUserId);
-            if (canReport) {
-                menu.innerHTML += `<button class="report-action" onclick="openReportModal('${commentId}')">🚨 Пожаловаться</button>`;
-            }
+    // 2. Модерация — создатель и админы (кроме случая «чужой админ vs админ»)
+    const canModerate = !isMine && myUid && (
+        myRole === "creator" ||
+        (myRole === "admin" && !targetIsCreator && !targetIsAdmin)
+    );
+    if (canModerate) {
+        menu.innerHTML += `<button class="danger" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
+        menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
+        menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
+    }
 
-            if (menu.innerHTML === '') return;
-            btn.parentElement.style.position = 'relative';
-            btn.parentElement.appendChild(menu);
-        };
+    // 3. Пожаловаться — всем залогиненным, кроме автора и забаненных
+    // (в том числе и админам/создателю — чтобы могли протестировать систему)
+    const canReport = myUid && !isMine && !iAmBanned;
+    if (canReport) {
+        menu.innerHTML += `<button class="report-action" onclick="openReportModal('${commentId}')">🚨 Пожаловаться</button>`;
+    }
+
+    if (menu.innerHTML === '') return;
+    btn.parentElement.style.position = 'relative';
+    btn.parentElement.appendChild(menu);
+};
 
         function canManageComment(myRole, commentUserId) {
             const targetIsCreator = isCreator(commentUserId);
