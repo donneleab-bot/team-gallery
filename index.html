@@ -623,6 +623,8 @@
         .comment-menu button.danger:hover { background: rgba(248, 81, 73, 0.1); }
         .comment-menu button.admin-action { color: #58a6ff; }
         .comment-menu button.admin-action:hover { background: rgba(88, 166, 255, 0.1); }
+        .comment-menu button.report-action { color: #f85149; }
+        .comment-menu button.report-action:hover { background: rgba(248, 81, 73, 0.1); }
 
         .comments-empty {
             text-align: center;
@@ -1127,6 +1129,17 @@
             color: #58a6ff;
             border-bottom-color: #58a6ff;
         }
+        .admin-tab-badge {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 7px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            background: #f85149;
+            border-radius: 10px;
+            line-height: 1.4;
+        }
         .admin-search {
             width: 100%;
             box-sizing: border-box;
@@ -1240,6 +1253,173 @@
             color: #8b949e;
             font-size: 0.9rem;
             padding: 40px 20px;
+        }
+
+        /* === СИСТЕМА ЖАЛОБ === */
+        .report-card {
+            padding: 14px 16px;
+            border-bottom: 1px solid #21262d;
+            background: #0d1117;
+        }
+        .report-card:last-child { border-bottom: none; }
+        .report-card-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .report-card-avatar {
+            width: 34px; height: 34px;
+            border-radius: 50%;
+            border: 2px solid #30363d;
+            object-fit: cover;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .report-card-info { flex: 1; min-width: 0; }
+        .report-card-name {
+            font-weight: 600;
+            color: #f0f6fc;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            cursor: pointer;
+        }
+        .report-card-name:hover { color: #58a6ff; }
+        .report-card-date { font-size: 0.72rem; color: #8b949e; }
+        .report-card-text {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #c9d1d9;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .report-card-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #fff;
+            background: #f85149;
+            border-radius: 12px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+        .report-card-counter:hover { background: #da3633; }
+        .report-card-counter.expanded { background: #6e7681; }
+        .report-card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .report-action-btn {
+            padding: 7px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #c9d1d9;
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .report-action-btn:hover { background: #30363d; border-color: #58a6ff; color: #58a6ff; }
+        .report-action-btn.danger { color: #f85149; border-color: rgba(248, 81, 73, 0.4); }
+        .report-action-btn.danger:hover { background: rgba(248, 81, 73, 0.1); border-color: #f85149; color: #f85149; }
+        .report-action-btn.ignore { color: #8b949e; }
+        .report-action-btn.ignore:hover { color: #c9d1d9; border-color: #8b949e; }
+        .report-reasons-list {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+        .report-reasons-list.visible { display: block; }
+        .report-reason-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #21262d;
+            font-size: 0.82rem;
+        }
+        .report-reason-item:last-child { border-bottom: none; }
+        .report-reason-avatar {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            border: 1px solid #30363d;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .report-reason-body { flex: 1; min-width: 0; }
+        .report-reason-name { color: #f0f6fc; font-weight: 600; }
+        .report-reason-date { color: #6e7681; font-size: 0.72rem; margin-left: 6px; }
+        .report-reason-text { color: #8b949e; margin-top: 2px; word-wrap: break-word; overflow-wrap: break-word; }
+
+        /* === МОДАЛКА ЖАЛОБЫ === */
+        .report-reason-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.92rem;
+            color: #c9d1d9;
+        }
+        .report-reason-option:hover {
+            border-color: #58a6ff;
+            background: rgba(88, 166, 255, 0.05);
+        }
+        .report-reason-option.selected {
+            border-color: #f85149;
+            background: rgba(248, 81, 73, 0.1);
+            color: #f0f6fc;
+        }
+        .report-reason-option input[type="radio"] {
+            accent-color: #f85149;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .report-comment-preview {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-left: 3px solid #f85149;
+            border-radius: 6px;
+            padding: 10px 12px;
+            color: #c9d1d9;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            max-height: 100px;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+        .report-comment-preview .author {
+            color: #8b949e;
+            font-size: 0.78rem;
+            margin-bottom: 4px;
         }
 
         @media (max-width: 900px) {
@@ -1448,6 +1628,47 @@
         </div>
     </div>
 
+    <!-- === МОДАЛКА ЖАЛОБЫ НА КОММЕНТАРИЙ === -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeReportModal()">&times;</button>
+            <h2>🚨 Пожаловаться на комментарий</h2>
+
+            <div class="report-comment-preview" id="reportCommentPreview"></div>
+
+            <label class="modal-label">Причина жалобы</label>
+
+            <label class="report-reason-option" data-reason="Спам или реклама">
+                <input type="radio" name="reportReason" value="Спам или реклама">
+                <span>📢 Спам или реклама</span>
+            </label>
+            <label class="report-reason-option" data-reason="Оскорбления или травля">
+                <input type="radio" name="reportReason" value="Оскорбления или травля">
+                <span>😡 Оскорбления или травля</span>
+            </label>
+            <label class="report-reason-option" data-reason="Неприемлемый контент">
+                <input type="radio" name="reportReason" value="Неприемлемый контент">
+                <span>🚫 Неприемлемый контент</span>
+            </label>
+            <label class="report-reason-option" data-reason="Флуд или оффтоп">
+                <input type="radio" name="reportReason" value="Флуд или оффтоп">
+                <span>💬 Флуд или оффтоп</span>
+            </label>
+            <label class="report-reason-option" data-reason="Другое">
+                <input type="radio" name="reportReason" value="Другое">
+                <span>✏️ Другое (свой вариант)</span>
+            </label>
+
+            <div id="reportCustomReasonWrap" style="display:none;">
+                <label class="modal-label">Опишите причину (до 200 символов)</label>
+                <textarea class="modal-textarea" id="reportCustomReason" maxlength="200" placeholder="Введите причину..."></textarea>
+                <div class="modal-counter" id="reportCustomCounter">0 / 200</div>
+            </div>
+
+            <button class="modal-save-btn" id="reportSubmitBtn" onclick="submitReport()" disabled style="background:#da3633;border-color:#f85149;">🚨 Отправить жалобу</button>
+        </div>
+    </div>
+
     <!-- === АДМИН-КОНСОЛЬ === -->
     <div class="modal-overlay" id="adminConsoleModal">
         <div class="modal wide admin-console" onclick="event.stopPropagation()">
@@ -1457,6 +1678,7 @@
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="users" onclick="switchAdminTab('users')">👥 Пользователи</button>
                 <button class="admin-tab" data-tab="banned" onclick="switchAdminTab('banned')">🚫 Заблокированные</button>
+                <button class="admin-tab" data-tab="reports" onclick="switchAdminTab('reports')">🚨 Жалобы<span class="admin-tab-badge" id="reportsTabBadge" style="display:none;">0</span></button>
                 <button class="admin-tab" data-tab="admins" id="adminsTabBtn" style="display:none;" onclick="switchAdminTab('admins')">🛡 Администраторы</button>
             </div>
 
@@ -1467,1793 +1689,3 @@
             </div>
         </div>
     </div>
-
-    <script>
-        const CREATOR_UID = "5rT2dxYNsYYhBl6Prok2oCeCflX2";
-        window.adminUids = [];
-        window.bannedUids = [];
-        window.allArts = [];
-
-        const BAD_WORDS = [
-            "хуй","хуя","хую","хуе","пизд","бляд","блять","блят","ебат","ебал","ебан","ебаный",
-            "ебуч","еби","заеб","уеб","наеб","долбоеб","мудак","мудил","гандон","гнида",
-            "шлюх","шлюш","мраз","тварь","сука","суки","сучк","ублюд","пидор","пидар",
-            "гей","педик","нацист","наци","fuck","shit","bitch","cunt","dick","pussy",
-            "asshole","bastard","slut","whore","nigger","nigga","faggot","rape"
-        ];
-
-        function hasBadWords(text) {
-            const lower = text.toLowerCase();
-            return BAD_WORDS.some(word => lower.includes(word));
-        }
-
-        window.currentArtIndex = -1;
-        window.statsCache = window.statsCache || {};
-        window.currentUser = null;
-        window.currentUserProfile = null;
-        window.isBanned = false;
-        window.currentArtComments = [];
-        window.currentUserRole = "guest";
-        window.adminUsersCache = [];
-        window.adminCurrentTab = "users";
-        window.userProfilePostsCache = [];
-
-        const galleryGrid = document.getElementById('galleryGrid');
-        const lightbox = document.getElementById('lightbox');
-        const lightboxImg = document.getElementById('lightboxImg');
-        const lightboxCaption = document.getElementById('lightboxCaption');
-        const searchInput = document.getElementById('searchInput');
-        const sortSelect = document.getElementById('sortSelect');
-        const tagFilters = document.getElementById('tagFilters');
-        const scrollTopBtn = document.getElementById('scrollTopBtn');
-        const commentsPanel = document.getElementById('commentsPanel');
-        const commentsList = document.getElementById('commentsList');
-        const commentsForm = document.getElementById('commentsForm');
-        const commentsBtn = document.getElementById('commentsBtn');
-
-        let currentTag = null;
-        let tagsExpanded = false;
-        const TAGS_LIMIT = 10;
-
-        function isCreator(uid) { return uid && uid === CREATOR_UID; }
-        window.isCreator = isCreator;
-
-        function isAdmin(uid) {
-            return uid && window.adminUids.includes(uid);
-        }
-        window.isAdmin = isAdmin;
-
-        function getUserRole(uid) {
-            if (!uid) return "guest";
-            if (isCreator(uid)) return "creator";
-            if (isAdmin(uid)) return "admin";
-            return "user";
-        }
-        window.getUserRole = getUserRole;
-
-        function creatorBadgeHTML(uid, small = false) {
-            if (isCreator(uid)) return `<span class="creator-badge${small ? ' small' : ''}">👑 Создатель</span>`;
-            return '';
-        }
-        function adminBadgeHTML(uid, small = false) {
-            if (isAdmin(uid) && !isCreator(uid)) return `<span class="admin-badge${small ? ' small' : ''}">🛡 Админ</span>`;
-            return '';
-        }
-        function anyBadgeHTML(uid, small = false) {
-            return creatorBadgeHTML(uid, small) + adminBadgeHTML(uid, small);
-        }
-
-        function getAllTags() {
-            const tagCount = {};
-            window.allArts.forEach(art => {
-                (art.desc || '').split(' ').forEach(tag => {
-                    if (tag.startsWith('#')) tagCount[tag] = (tagCount[tag] || 0) + 1;
-                });
-            });
-            return Object.keys(tagCount).sort((a, b) => {
-                if (tagCount[b] !== tagCount[a]) return tagCount[b] - tagCount[a];
-                return a.localeCompare(b);
-            });
-        }
-
-        function renderTags() {
-            tagFilters.innerHTML = '';
-            const allTags = getAllTags();
-            const visible = tagsExpanded ? allTags : allTags.slice(0, TAGS_LIMIT);
-            const hidden = allTags.length - visible.length;
-            visible.forEach(tag => {
-                const btn = document.createElement('button');
-                btn.className = 'tag-btn' + (currentTag === tag ? ' active' : '');
-                btn.textContent = tag;
-                btn.onclick = () => filterByTag(tag);
-                tagFilters.appendChild(btn);
-            });
-            if (hidden > 0) {
-                const moreBtn = document.createElement('button');
-                moreBtn.className = 'tag-btn more-btn';
-                moreBtn.textContent = 'Ещё ' + hidden;
-                moreBtn.onclick = () => { tagsExpanded = true; renderTags(); };
-                tagFilters.appendChild(moreBtn);
-            } else if (tagsExpanded && allTags.length > TAGS_LIMIT) {
-                const lessBtn = document.createElement('button');
-                lessBtn.className = 'tag-btn more-btn';
-                lessBtn.textContent = 'Свернуть';
-                lessBtn.onclick = () => { tagsExpanded = false; renderTags(); };
-                tagFilters.appendChild(lessBtn);
-            }
-        }
-
-        function filterByTag(tag) {
-            currentTag = (currentTag === tag) ? null : tag;
-            renderTags();
-            renderGallery();
-        }
-
-        function getFilteredArts() {
-            const query = searchInput.value.toLowerCase().trim();
-            let filtered = window.allArts.filter(art => {
-                if (window.bannedUids.includes(art.authorId)) return false;
-                const matchSearch = !query ||
-                    (art.title || '').toLowerCase().includes(query) ||
-                    (art.authorName || '').toLowerCase().includes(query) ||
-                    (art.desc || '').toLowerCase().includes(query);
-                const matchTag = !currentTag || (art.desc || '').includes(currentTag);
-                return matchSearch && matchTag;
-            });
-            const sortBy = sortSelect.value;
-            if (sortBy === 'new') filtered.sort((a, b) => new Date(b.sortDate || 0) - new Date(a.sortDate || 0));
-            else if (sortBy === 'old') filtered.sort((a, b) => new Date(a.sortDate || 0) - new Date(b.sortDate || 0));
-            else if (sortBy === 'alpha') filtered.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'ru'));
-            else if (sortBy === 'popular' || sortBy === 'viewed') {
-                const key = sortBy === 'popular' ? 'likes' : 'views';
-                filtered.sort((a, b) => {
-                    const statA = window.statsCache[a.id] || { likes: 0, views: 0 };
-                    const statB = window.statsCache[b.id] || { likes: 0, views: 0 };
-                    return (statB[key] || 0) - (statA[key] || 0);
-                });
-            }
-            return filtered;
-        }
-
-        function buildCard(art, index) {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            const tagsArray = (art.desc || '').split(' ');
-            const shortTags = tagsArray.slice(0, 3).join(' ') + (tagsArray.length > 3 ? '...' : '');
-            const badge = creatorBadgeHTML(art.authorId, true);
-
-            const myRole = getUserRole(window.currentUser?.uid);
-            const canDelete = myRole === "creator" || (myRole === "admin" && !isCreator(art.authorId) && !isAdmin(art.authorId));
-            const menuHTML = canDelete ? `<button class="item-menu-btn" onclick="toggleItemMenu(event, '${art.id}')">⋮</button>` : '';
-
-            const sourceHTML = art.authorUrl ? `<a href="${art.authorUrl}" target="_blank" class="source-btn" onclick="event.stopPropagation()">🔗 Источник</a>` : '';
-
-            item.innerHTML = `
-                ${menuHTML}
-                <div class="img-container" onclick="openLightbox('${art.id}')">
-                    <img src="${art.img}" alt="${art.title}" loading="lazy">
-                </div>
-                <div class="item-info">
-                    <h3>${escapeHtml(art.title)}</h3>
-                    <div class="author-line">
-                        <span class="author-link" onclick="showAuthorInfo('${art.authorId}', '${(art.authorName || '').replace(/'/g, "\\'")}')">Автор: ${escapeHtml(art.authorName)}</span>
-                        ${badge}
-                        ${sourceHTML}
-                    </div>
-                    <p>${shortTags}</p>
-                </div>
-            `;
-            galleryGrid.appendChild(item);
-            setTimeout(() => item.classList.add('visible'), index * 50);
-        }
-
-        function renderGallery() {
-            galleryGrid.innerHTML = '';
-            const filtered = getFilteredArts();
-            filtered.forEach((art, index) => buildCard(art, index));
-            if (sortSelect.value === 'popular' || sortSelect.value === 'viewed') {
-                loadAllStatsThenSort(filtered);
-            }
-            renderTags();
-        }
-        window.renderGallery = renderGallery;
-
-        window.toggleItemMenu = function(event, artId) {
-            event.stopPropagation();
-            document.querySelectorAll('.item-menu').forEach(m => m.remove());
-
-            const item = event.target.closest('.gallery-item');
-            if (!item) return;
-
-            const menu = document.createElement('div');
-            menu.className = 'item-menu';
-            menu.innerHTML = `<button class="danger" onclick="deleteArt('${artId}')">🗑 Удалить пост</button>`;
-            item.appendChild(menu);
-        };
-
-        document.addEventListener('click', () => {
-            document.querySelectorAll('.item-menu').forEach(m => m.remove());
-        });
-
-        let statsLoadingInProgress = false;
-        async function loadAllStatsThenSort(list) {
-            if (statsLoadingInProgress) return;
-            if (typeof window.loadStatsForSortReal !== 'function') {
-                setTimeout(() => loadAllStatsThenSort(list), 300);
-                return;
-            }
-            statsLoadingInProgress = true;
-            let needRerender = false;
-            for (const art of list) {
-                if (!window.statsCache[art.id]) {
-                    await window.loadStatsForSortReal(art.id);
-                    needRerender = true;
-                }
-            }
-            statsLoadingInProgress = false;
-            if (needRerender) {
-                const v = sortSelect.value;
-                if (v === 'popular' || v === 'viewed') {
-                    const filtered = getFilteredArts();
-                    galleryGrid.innerHTML = '';
-                    filtered.forEach((art, index) => buildCard(art, index));
-                }
-            }
-        }
-
-        function openLightbox(artId) {
-            const art = window.allArts.find(a => a.id === artId);
-            if (!art) return;
-            if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
-            if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
-
-            window.currentArtIndex = window.allArts.indexOf(art);
-            lightboxImg.src = art.img;
-
-            const tagsArray = (art.desc || '').split(' ');
-            const shortTags = tagsArray.slice(0, 5).join(' ');
-            const badge = creatorBadgeHTML(art.authorId, false);
-            const sourceHTML = art.authorUrl ? `<a href="${art.authorUrl}" target="_blank">🔗 Источник</a>` : '';
-
-            lightboxCaption.innerHTML = `
-                <h3>${escapeHtml(art.title)}</h3>
-                <div class="author-line" style="justify-content:center;">
-                    <span class="author-link" onclick="showAuthorInfo('${art.authorId}', '${(art.authorName || '').replace(/'/g, "\\'")}')">Автор: ${escapeHtml(art.authorName)}</span>
-                    ${badge}
-                    ${sourceHTML}
-                </div>
-                <p>${shortTags}</p>
-                <button class="toggle-tags-btn" onclick="toggleTags(this)">Показать все хэштеги</button>
-                <div class="full-tags">${art.desc || ''}</div>
-            `;
-
-            const btn = document.getElementById('likeBtn');
-            btn.disabled = true;
-            btn.classList.remove('liked');
-            btn.textContent = '⏳ Загрузка...';
-            document.getElementById('likeCount').textContent = '…';
-            document.getElementById('viewCount').textContent = '…';
-            document.getElementById('shareBtn').disabled = true;
-            document.getElementById('downloadBtn').disabled = true;
-
-            commentsPanel.classList.remove('open');
-
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            history.replaceState(null, '', '?img=' + encodeURIComponent(art.id));
-
-            if (typeof loadStats === 'function') loadStats(art.id, art.img);
-            if (typeof incrementView === 'function') incrementView(art.id, art.img);
-            if (typeof loadComments === 'function') loadComments(art.id);
-            if (typeof renderCommentForm === 'function') renderCommentForm();
-        }
-        window.openLightbox = openLightbox;
-
-        function toggleTags(btn) {
-            const fullTagsDiv = btn.nextElementSibling;
-            fullTagsDiv.classList.toggle('visible');
-            btn.textContent = fullTagsDiv.classList.contains('visible') ? 'Скрыть хэштеги' : 'Показать все хэштеги';
-        }
-
-        function toggleCommentsPanel(event) {
-            event.stopPropagation();
-            commentsPanel.classList.toggle('open');
-            if (commentsPanel.classList.contains('open')) {
-                if (window.innerWidth <= 900) {
-                    commentsList.scrollTop = 0;
-                }
-            }
-        }
-        window.toggleCommentsPanel = toggleCommentsPanel;
-
-        function closeCommentsPanel() {
-            commentsPanel.classList.remove('open');
-        }
-        window.closeCommentsPanel = closeCommentsPanel;
-
-        function closeLightbox(event) {
-            if (event && event.target) {
-                const tag = event.target.tagName;
-                if (tag === 'IMG' || tag === 'A' || tag === 'BUTTON' || tag === 'TEXTAREA' || tag === 'INPUT') return;
-                if (event.target.closest && event.target.closest('.comments-panel')) return;
-            }
-            lightbox.classList.remove('active');
-            commentsPanel.classList.remove('open');
-            document.body.style.overflow = '';
-            window.currentArtIndex = -1;
-            history.replaceState(null, '', window.location.pathname);
-            if (window.unsubscribeView) { window.unsubscribeView(); window.unsubscribeView = null; }
-            if (window.unsubscribeComments) { window.unsubscribeComments(); window.unsubscribeComments = null; }
-        }
-
-        function shareImage(event) {
-            event.stopPropagation();
-            const art = window.allArts[window.currentArtIndex];
-            if (!art) return;
-            const url = window.location.origin + window.location.pathname + '?img=' + encodeURIComponent(art.id);
-            if (navigator.share) {
-                navigator.share({ title: art.title, text: art.desc, url: url }).catch(() => {});
-            } else {
-                navigator.clipboard.writeText(url).then(() => {
-                    const btn = document.getElementById('shareBtn');
-                    const original = btn.textContent;
-                    btn.textContent = '✅ Скопировано!';
-                    setTimeout(() => btn.textContent = original, 1500);
-                });
-            }
-        }
-
-        window.addEventListener('load', () => {
-            const params = new URLSearchParams(window.location.search);
-            const imgParam = params.get('img');
-            if (imgParam) {
-                setTimeout(() => openLightbox(imgParam), 500);
-            }
-        });
-
-        searchInput.addEventListener('input', renderGallery);
-        sortSelect.addEventListener('change', renderGallery);
-
-        document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
-        document.addEventListener('dragstart', (e) => { if (e.target.tagName === 'IMG') e.preventDefault(); });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (document.getElementById('uploadModal').classList.contains('active')) closeUploadModal();
-                else if (document.getElementById('userProfileModal').classList.contains('active')) closeUserProfile();
-                else if (document.getElementById('adminConsoleModal').classList.contains('active')) closeAdminConsole();
-                else if (commentsPanel.classList.contains('open')) closeCommentsPanel();
-                else if (lightbox.classList.contains('active')) closeLightbox({ target: document.createElement('div') });
-            }
-        });
-
-        window.addEventListener('scroll', () => {
-            if (lightbox.classList.contains('active')) return;
-            const thirdItem = galleryGrid.children[2];
-            if (thirdItem) {
-                const rect = thirdItem.getBoundingClientRect();
-                if (rect.bottom < 100) scrollTopBtn.classList.add('visible');
-                else scrollTopBtn.classList.remove('visible');
-            } else {
-                if (window.scrollY > 400) scrollTopBtn.classList.add('visible');
-                else scrollTopBtn.classList.remove('visible');
-            }
-        });
-
-        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-        function downloadWithWatermark(event) {
-            event.stopPropagation();
-            const currentArt = window.allArts[window.currentArtIndex];
-            if (!currentArt) return;
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.src = lightboxImg.src;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.naturalWidth;
-                canvas.height = img.naturalHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-                const patternText = 'My Pride Fan';
-                const authorText = '© ' + currentArt.authorName;
-                const fontSize = Math.max(18, Math.round(canvas.width * 0.035));
-                ctx.font = `bold ${fontSize}px Arial`;
-                const padding = Math.round(canvas.width * 0.02);
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'bottom';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-                ctx.lineWidth = 3;
-                ctx.strokeText(authorText, canvas.width - padding, canvas.height - padding);
-                ctx.fillText(authorText, canvas.width - padding, canvas.height - padding);
-                ctx.save();
-                ctx.globalAlpha = 0.12;
-                ctx.fillStyle = '#000';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                const stepX = canvas.width / 3;
-                const stepY = canvas.height / 3;
-                for (let x = -canvas.width; x < canvas.width * 2; x += stepX) {
-                    for (let y = -canvas.height; y < canvas.height * 2; y += stepY) {
-                        ctx.save();
-                        ctx.translate(x, y);
-                        ctx.rotate(-Math.PI / 6);
-                        ctx.fillText(patternText, 0, 0);
-                        ctx.restore();
-                    }
-                }
-                ctx.restore();
-                const link = document.createElement('a');
-                link.download = 'art_' + Date.now() + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            };
-            img.onerror = () => alert('Не удалось загрузить картинку.');
-        }
-
-        // === UI КОММЕНТАРИЕВ ===
-        window.renderCommentsList = function(comments) {
-            const countEl = document.getElementById('commentsCount');
-            countEl.textContent = comments.length > 0 ? `(${comments.length})` : '';
-            commentsBtn.textContent = '💬 Комментарии' + (comments.length > 0 ? ' (' + comments.length + ')' : '');
-
-            if (comments.length === 0) {
-                commentsList.innerHTML = '<div class="comments-empty">Пока нет комментариев. Будьте первым! 💬</div>';
-                return;
-            }
-
-            const myUid = window.currentUser?.uid;
-            const myRole = getUserRole(myUid);
-
-            commentsList.innerHTML = comments.map(c => {
-                const isMine = myUid && c.userId === myUid;
-                const isCreatorComment = isCreator(c.userId);
-                const isAdminComment = isAdmin(c.userId) && !isCreatorComment;
-
-                let canManage = false;
-                if (isMine) canManage = true;
-                else if (myRole === "creator") canManage = true;
-                else if (myRole === "admin") canManage = !isCreatorComment && !isAdminComment;
-
-                const badge = isCreatorComment ? `<span class="creator-badge small">👑</span>` : 
-                              (isAdminComment ? `<span class="admin-badge small">🛡</span>` : '');
-
-                const dateStr = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
-                
-                return `
-                    <div class="comment" data-comment-id="${c.id}">
-                        <img class="comment-avatar" src="${c.userAvatar || 'https://www.gravatar.com/avatar/?d=mp'}" alt="" onclick="showAuthorInfo('${c.userId}', '${(c.userName || '').replace(/'/g, "\\'")}')">
-                        <div class="comment-body">
-                            <div class="comment-head">
-                                <span class="comment-name" onclick="showAuthorInfo('${c.userId}', '${(c.userName || '').replace(/'/g, "\\'")}')">${escapeHtml(c.userName || 'Гость')}</span>
-                                ${badge}
-                                <span class="comment-date">${dateStr}</span>
-                            </div>
-                            <div class="comment-text">${escapeHtml(c.text)}</div>
-                        </div>
-                        ${canManage ? `<button class="comment-menu-btn" onclick="toggleCommentMenu(event, '${c.id}', '${c.userId}')">⋮</button>` : ''}
-                    </div>
-                `;
-            }).join('');
-        };
-
-        window.escapeHtml = function(text) {
-            const div = document.createElement('div');
-            div.textContent = text || '';
-            return div.innerHTML;
-        };
-
-        window.toggleCommentMenu = function(event, commentId, commentUserId) {
-            event.stopPropagation();
-            document.querySelectorAll('.comment-menu').forEach(m => m.remove());
-            
-            const commentEl = document.querySelector(`[data-comment-id="${commentId}"]`);
-            if (!commentEl) return;
-            const btn = commentEl.querySelector('.comment-menu-btn');
-            if (!btn) return;
-
-            const myUid = window.currentUser?.uid;
-            const myRole = getUserRole(myUid);
-            const isMine = myUid && commentUserId === myUid;
-            const targetIsCreator = isCreator(commentUserId);
-            const targetIsAdmin = isAdmin(commentUserId);
-
-            const menu = document.createElement('div');
-            menu.className = 'comment-menu';
-
-            if (isMine) {
-                menu.innerHTML += `<button onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-            } else if (myRole === "creator") {
-                menu.innerHTML += `<button class="danger" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-                menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
-                menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
-            } else if (myRole === "admin" && !targetIsCreator && !targetIsAdmin) {
-                menu.innerHTML += `<button class="admin-action" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-                menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
-                menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
-            }
-
-            if (menu.innerHTML === '') return;
-            btn.parentElement.style.position = 'relative';
-            btn.parentElement.appendChild(menu);
-        };
-
-        document.addEventListener('click', () => {
-            document.querySelectorAll('.comment-menu').forEach(m => m.remove());
-        });
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, deleteDoc, increment, onSnapshot, collection, query, where, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCVpWbOBOJbCYfPLh-s8QZMOeRORkZ-gXg",
-            authDomain: "my-pride-fan.firebaseapp.com",
-            projectId: "my-pride-fan",
-            storageBucket: "my-pride-fan.firebasestorage.app",
-            messagingSenderId: "1087688802080",
-            appId: "1:1087688802080:web:2d77a829729f963fcb2145"
-        };
-
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFG49oBDMijLRqlHIpGacW6EarIAVYk0I_cP-n8Hjh4xVaHWxyGV65iBAWz8FIDL7fJQ/exec";
-        const APPS_SCRIPT_TOKEN = "MPF-2026-Upload-SecureKey-X9k2";
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        window.signInWithGoogle = async function() {
-            try { await signInWithPopup(auth, provider); }
-            catch (error) {
-                console.error("Ошибка входа:", error);
-                if (error.code === 'auth/popup-blocked') alert("Браузер заблокировал всплывающее окно. Разрешите всплывающие окна для этого сайта.");
-                else if (error.code === 'auth/unauthorized-domain') alert("Домен не авторизован в Firebase.");
-                else alert("Ошибка входа: " + error.message);
-            }
-        };
-
-        window.signOutUser = async function() {
-            await signOut(auth);
-            document.getElementById('userMenu').classList.remove('open');
-        };
-
-        window.toggleUserMenu = function() {
-            document.getElementById('userMenu').classList.toggle('open');
-        };
-
-        window.openProfile = function() { openProfileModal(false); };
-
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('userMenu');
-            const avatar = document.getElementById('userAvatar');
-            if (menu && menu.classList.contains('open')) {
-                if (!menu.contains(e.target) && e.target !== avatar) menu.classList.remove('open');
-            }
-        });
-
-        async function ensureUserDocument(user) {
-            const userRef = doc(db, "users", user.uid);
-            const snap = await getDoc(userRef);
-
-            if (!snap.exists()) {
-                const newData = {
-                    displayName: user.displayName || 'Пользователь',
-                    email: user.email || '',
-                    photoURL: user.photoURL || '',
-                    bio: '',
-                    registeredAt: new Date(),
-                    lastSeen: new Date(),
-                    nameCustomized: false
-                };
-                await setDoc(userRef, newData);
-                return newData;
-            }
-
-            const existing = snap.data();
-            const updates = {
-                lastSeen: new Date(),
-                photoURL: user.photoURL || existing.photoURL || ''
-            };
-            await setDoc(userRef, updates, { merge: true });
-            return { ...existing, ...updates };
-        }
-
-        async function checkBan(userId) {
-            try {
-                const banRef = doc(db, "bans", userId);
-                const banSnap = await getDoc(banRef);
-                if (!banSnap.exists()) return null;
-                const data = banSnap.data();
-                if (data.until && data.until.seconds * 1000 < Date.now()) return null;
-                return data;
-            } catch { return null; }
-        }
-
-        async function loadAdminUids() {
-            try {
-                const snap = await getDocs(collection(db, "roles"));
-                const uids = [];
-                snap.forEach(d => {
-                    const data = d.data();
-                    if (data.role === "admin") uids.push(d.id);
-                });
-                window.adminUids = uids;
-                return uids;
-            } catch (e) {
-                console.error("Ошибка загрузки админов:", e);
-                window.adminUids = [];
-                return [];
-            }
-        }
-        window.loadAdminUids = loadAdminUids;
-
-        async function loadBannedUids() {
-            try {
-                const snap = await getDocs(collection(db, "bans"));
-                const uids = [];
-                snap.forEach(d => {
-                    const data = d.data();
-                    if (data.until && data.until.seconds * 1000 < Date.now()) return;
-                    uids.push(d.id);
-                });
-                window.bannedUids = uids;
-                return uids;
-            } catch (e) {
-                console.error("Ошибка загрузки банов:", e);
-                window.bannedUids = [];
-                return [];
-            }
-        }
-        window.loadBannedUids = loadBannedUids;
-
-        async function loadArtsFromFirestore() {
-            try {
-                const [artsSnap, usersSnap] = await Promise.all([
-                    getDocs(collection(db, "arts")),
-                    getDocs(collection(db, "users"))
-                ]);
-
-                const userNames = {};
-                usersSnap.forEach(d => {
-                    const data = d.data();
-                    userNames[d.id] = data.displayName || 'Пользователь';
-                });
-
-                const list = [];
-                artsSnap.forEach(d => {
-                    const data = d.data();
-                    const authorId = data.authorId || '';
-                    const authorName = userNames[authorId] || data.authorName || 'Неизвестный';
-
-                    list.push({
-                        id: d.id,
-                        img: data.img || '',
-                        driveFileId: data.driveFileId || '',
-                        title: data.title || 'Без названия',
-                        authorName: authorName,
-                        authorId: authorId,
-                        authorUrl: data.authorUrl || '',
-                        desc: data.desc || '',
-                        sortDate: data.sortDate || '',
-                        createdAt: data.createdAt || null
-                    });
-                });
-                list.sort((a, b) => {
-                    const ta = a.createdAt?.seconds || (a.sortDate ? new Date(a.sortDate).getTime() / 1000 : 0);
-                    const tb = b.createdAt?.seconds || (b.sortDate ? new Date(b.sortDate).getTime() / 1000 : 0);
-                    return tb - ta;
-                });
-                window.allArts = list;
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (e) {
-                console.error("Ошибка загрузки постов:", e);
-            }
-        }
-        window.loadArtsFromFirestore = loadArtsFromFirestore;
-
-        // === ФОРМА ЗАГРУЗКИ ===
-        window.openUploadModal = function() {
-            document.getElementById('userMenu').classList.remove('open');
-            const myRole = getUserRole(window.currentUser?.uid);
-            if (myRole !== "creator" && myRole !== "admin") {
-                alert("Недостаточно прав.");
-                return;
-            }
-
-            document.getElementById('uploadFileInput').value = '';
-            document.getElementById('uploadPreview').style.display = 'none';
-            document.getElementById('uploadPreview').src = '';
-            document.getElementById('uploadTitle').value = '';
-            document.getElementById('uploadAuthor').value = window.currentUserProfile?.displayName || window.currentUser?.displayName || '';
-            document.getElementById('uploadSource').value = '';
-            document.getElementById('uploadDesc').value = '';
-            document.getElementById('uploadDescCounter').textContent = '0 / 500';
-            document.getElementById('uploadSaveBtn').disabled = true;
-            document.getElementById('uploadProgress').classList.remove('visible');
-            document.getElementById('uploadDropZone').style.display = 'block';
-
-            document.getElementById('uploadModal').classList.add('active');
-        };
-
-        window.closeUploadModal = function() {
-            document.getElementById('uploadModal').classList.remove('active');
-        };
-
-        const dropZone = document.getElementById('uploadDropZone');
-        const fileInput = document.getElementById('uploadFileInput');
-
-        dropZone.addEventListener('click', () => fileInput.click());
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                fileInput.files = e.dataTransfer.files;
-                handleFileSelect();
-            }
-        });
-        fileInput.addEventListener('change', handleFileSelect);
-
-        let uploadBase64 = null;
-
-        async function handleFileSelect() {
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            if (file.size > 10 * 1024 * 1024) {
-                alert("Файл слишком большой (макс 10 МБ).");
-                return;
-            }
-
-            const progress = document.getElementById('uploadProgress');
-            progress.textContent = '⏳ Конвертация в JPG...';
-            progress.classList.add('visible');
-
-            try {
-                const convertedBase64 = await convertToJpg(file);
-                uploadBase64 = convertedBase64;
-
-                document.getElementById('uploadPreview').src = convertedBase64;
-                document.getElementById('uploadPreview').style.display = 'block';
-                document.getElementById('uploadDropZone').style.display = 'none';
-                document.getElementById('uploadSaveBtn').disabled = false;
-                progress.classList.remove('visible');
-            } catch (e) {
-                console.error(e);
-                alert("Ошибка обработки картинки.");
-                progress.classList.remove('visible');
-            }
-        }
-
-        async function convertToJpg(file) {
-            return new Promise((resolve, reject) => {
-                const img = new Image();
-                const reader = new FileReader();
-                reader.onload = () => { img.src = reader.result; };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-
-                img.onload = () => {
-                    let w = img.naturalWidth;
-                    let h = img.naturalHeight;
-
-                    const maxSize = 1920;
-                    if (w > maxSize || h > maxSize) {
-                        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-                        else { w = Math.round(w * maxSize / h); h = maxSize; }
-                    }
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = w;
-                    canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, w, h);
-                    ctx.drawImage(img, 0, 0, w, h);
-
-                    resolve(canvas.toDataURL('image/jpeg', 0.85));
-                };
-                img.onerror = reject;
-            });
-        }
-
-        window.submitUpload = async function() {
-            const user = window.currentUser;
-            if (!user) return;
-            const myRole = getUserRole(user.uid);
-            if (myRole !== "creator" && myRole !== "admin") { alert("Недостаточно прав."); return; }
-
-            if (!uploadBase64) { alert("Выберите картинку."); return; }
-
-            const title = document.getElementById('uploadTitle').value.trim();
-            if (!title) { alert("Введите название."); return; }
-
-            const authorName = document.getElementById('uploadAuthor').value.trim() || 'Неизвестный';
-            const authorUrl = document.getElementById('uploadSource').value.trim();
-            const desc = document.getElementById('uploadDesc').value.trim();
-
-            const btn = document.getElementById('uploadSaveBtn');
-            const progress = document.getElementById('uploadProgress');
-            btn.disabled = true;
-            btn.textContent = 'Загрузка...';
-            progress.textContent = '⏳ Загрузка картинки в Google Drive...';
-            progress.classList.add('visible');
-
-            try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        token: APPS_SCRIPT_TOKEN,
-                        action: 'upload',
-                        base64: uploadBase64,
-                        filename: 'art_' + Date.now() + '.jpg',
-                        mimeType: 'image/jpeg'
-                    })
-                });
-
-                const result = await res.json();
-                if (!result.ok) throw new Error(result.error || 'Ошибка загрузки');
-
-                progress.textContent = '✅ Сохранение в базу...';
-
-                const now = new Date();
-                const sortDate = now.toISOString().slice(0, 16).replace('T', ' ');
-
-                await addDoc(collection(db, "arts"), {
-                    img: result.url,
-                    driveFileId: result.fileId,
-                    title: title,
-                    authorName: authorName,
-                    authorId: user.uid,
-                    authorUrl: authorUrl,
-                    desc: desc,
-                    sortDate: sortDate,
-                    createdAt: serverTimestamp()
-                });
-
-                progress.textContent = '✅ Готово!';
-                setTimeout(async () => {
-                    closeUploadModal();
-                    await loadArtsFromFirestore();
-                    btn.disabled = false;
-                    btn.textContent = 'Опубликовать';
-                    progress.classList.remove('visible');
-                    uploadBase64 = null;
-                }, 800);
-
-            } catch (e) {
-                console.error(e);
-                alert("Ошибка загрузки: " + e.message);
-                btn.disabled = false;
-                btn.textContent = 'Опубликовать';
-                progress.classList.remove('visible');
-            }
-        };
-
-        // === УДАЛЕНИЕ ПОСТА ===
-        window.deleteArt = async function(artId) {
-            const myRole = getUserRole(window.currentUser?.uid);
-            if (myRole !== "creator" && myRole !== "admin") { alert("Недостаточно прав."); return; }
-
-            const art = window.allArts.find(a => a.id === artId);
-            if (!art) return;
-            if (isCreator(art.authorId) && myRole === "admin") { alert("Админ не может удалить пост создателя."); return; }
-            if (!confirm("Удалить этот пост? Картинка также удалится из Google Drive.")) return;
-
-            try {
-                if (art.driveFileId) {
-                    try {
-                        await fetch(APPS_SCRIPT_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({
-                                token: APPS_SCRIPT_TOKEN,
-                                action: 'delete',
-                                fileId: art.driveFileId
-                            })
-                        });
-                    } catch (e) { console.error("Ошибка удаления из Drive:", e); }
-                }
-
-                await deleteDoc(doc(db, "arts", artId));
-                await loadArtsFromFirestore();
-            } catch (e) {
-                console.error(e);
-                alert("Ошибка удаления.");
-            }
-        };
-
-        // === ОТКРЫТИЕ АДМИН-КОНСОЛИ ===
-        window.openAdminConsole = async function() {
-            document.getElementById('userMenu').classList.remove('open');
-            const myRole = getUserRole(window.currentUser?.uid);
-            if (myRole !== "creator" && myRole !== "admin") {
-                alert("Недостаточно прав.");
-                return;
-            }
-
-            const adminsTabBtn = document.getElementById('adminsTabBtn');
-            adminsTabBtn.style.display = (myRole === "creator") ? "block" : "none";
-
-            document.getElementById('adminSearch').value = '';
-            window.adminCurrentTab = "users";
-            document.querySelectorAll('.admin-tab').forEach(t => {
-                t.classList.toggle('active', t.dataset.tab === "users");
-            });
-
-            document.getElementById('adminConsoleModal').classList.add('active');
-            await loadAdminUsers();
-            renderAdminList();
-        };
-
-        window.closeAdminConsole = function() {
-            document.getElementById('adminConsoleModal').classList.remove('active');
-            document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
-        };
-
-        window.switchAdminTab = function(tab) {
-            window.adminCurrentTab = tab;
-            document.querySelectorAll('.admin-tab').forEach(t => {
-                t.classList.toggle('active', t.dataset.tab === tab);
-            });
-            document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
-            renderAdminList();
-        };
-
-        async function loadAdminUsers() {
-            const list = document.getElementById('adminList');
-            list.innerHTML = '<div class="admin-empty">Загрузка...</div>';
-            try {
-                const [usersSnap, bansSnap, rolesSnap] = await Promise.all([
-                    getDocs(collection(db, "users")),
-                    getDocs(collection(db, "bans")),
-                    getDocs(collection(db, "roles"))
-                ]);
-
-                const bansMap = {};
-                bansSnap.forEach(d => {
-                    const data = d.data();
-                    if (data.until && data.until.seconds * 1000 < Date.now()) return;
-                    bansMap[d.id] = data;
-                });
-
-                const rolesMap = {};
-                rolesSnap.forEach(d => {
-                    const data = d.data();
-                    if (data.role === "admin") rolesMap[d.id] = data;
-                });
-
-                const users = [];
-                usersSnap.forEach(d => {
-                    const data = d.data();
-                    users.push({
-                        uid: d.id,
-                        displayName: data.displayName || 'Пользователь',
-                        email: data.email || '',
-                        photoURL: data.photoURL || '',
-                        isBanned: !!bansMap[d.id],
-                        banReason: bansMap[d.id]?.reason || '',
-                        isAdmin: !!rolesMap[d.id]
-                    });
-                });
-                window.adminUsersCache = users;
-            } catch (e) {
-                console.error("Ошибка загрузки пользователей:", e);
-                list.innerHTML = '<div class="admin-empty">Не удалось загрузить.</div>';
-            }
-        }
-
-        window.renderAdminList = function() {
-            const list = document.getElementById('adminList');
-            const q = (document.getElementById('adminSearch').value || '').toLowerCase().trim();
-
-            let users = window.adminUsersCache.slice();
-
-            if (window.adminCurrentTab === "banned") {
-                users = users.filter(u => u.isBanned);
-            } else if (window.adminCurrentTab === "admins") {
-                users = users.filter(u => u.isAdmin);
-            }
-
-            if (q) {
-                users = users.filter(u =>
-                    u.displayName.toLowerCase().includes(q) ||
-                    u.email.toLowerCase().includes(q)
-                );
-            }
-
-            users = users.filter(u => u.uid !== CREATOR_UID);
-
-            if (users.length === 0) {
-                list.innerHTML = '<div class="admin-empty">Никого не найдено.</div>';
-                return;
-            }
-
-            list.innerHTML = users.map(u => {
-                const isThisAdmin = u.isAdmin;
-                const isThisBanned = u.isBanned;
-                const isThisCreator = isCreator(u.uid);
-
-                let statusHTML = '';
-                if (isThisBanned) statusHTML = `<div class="admin-user-status banned">🚫 Забанен${u.banReason ? ': ' + escapeHtml(u.banReason) : ''}</div>`;
-
-                return `
-                    <div class="admin-user" data-uid="${u.uid}">
-                        <img class="admin-user-avatar" src="${u.photoURL || 'https://www.gravatar.com/avatar/?d=mp'}" alt="">
-                        <div class="admin-user-info">
-                            <div class="admin-user-name">
-                                ${escapeHtml(u.displayName)}
-                                ${isThisCreator ? '<span class="creator-badge small">👑</span>' : ''}
-                                ${isThisAdmin ? '<span class="admin-badge small">🛡</span>' : ''}
-                            </div>
-                            <div class="admin-user-email">${escapeHtml(u.email)}</div>
-                            ${statusHTML}
-                        </div>
-                        <button class="admin-user-menu-btn" onclick="toggleAdminUserMenu(event, '${u.uid}')">⋮</button>
-                    </div>
-                `;
-            }).join('');
-        };
-
-        window.toggleAdminUserMenu = function(event, userId) {
-            event.stopPropagation();
-            document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
-
-            const el = document.querySelector(`.admin-user[data-uid="${userId}"]`);
-            if (!el) return;
-            const btn = el.querySelector('.admin-user-menu-btn');
-            if (!btn) return;
-
-            const myRole = getUserRole(window.currentUser?.uid);
-            const target = window.adminUsersCache.find(u => u.uid === userId);
-            if (!target) return;
-
-            const isThisAdmin = target.isAdmin;
-            const isThisBanned = target.isBanned;
-            const isThisCreator = isCreator(userId);
-
-            const menu = document.createElement('div');
-            menu.className = 'admin-user-menu';
-
-            if (!isThisCreator) {
-                if (isThisBanned) {
-                    menu.innerHTML += `<button class="success" onclick="adminUnbanUser('${userId}')">✅ Разблокировать</button>`;
-                } else {
-                    menu.innerHTML += `<button class="danger" onclick="adminBanUser('${userId}')">🚫 Заблокировать</button>`;
-                }
-            }
-
-            if (myRole === "creator" && !isThisCreator) {
-                if (isThisAdmin) {
-                    menu.innerHTML += `<button class="danger" onclick="revokeAdmin('${userId}')">🛡 Снять админку</button>`;
-                } else {
-                    menu.innerHTML += `<button class="success" onclick="grantAdmin('${userId}')">🛡 Назначить админом</button>`;
-                }
-            }
-
-            if (menu.innerHTML === '') return;
-            el.style.position = 'relative';
-            el.appendChild(menu);
-        };
-
-        window.adminBanUser = async function(userId) {
-            const myRole = getUserRole(window.currentUser?.uid);
-            if (myRole !== "creator" && myRole !== "admin") return;
-            const target = window.adminUsersCache.find(u => u.uid === userId);
-            if (!target) return;
-            if (isCreator(userId)) { alert("Нельзя заблокировать создателя."); return; }
-            if (isAdmin(userId) && myRole === "admin") { alert("Админ не может заблокировать другого админа."); return; }
-
-            const reason = prompt("Причина блокировки (необязательно):", "");
-            if (reason === null) return;
-
-            try {
-                await setDoc(doc(db, "bans", userId), {
-                    reason: reason || "Нарушение правил",
-                    bannedBy: window.currentUser.uid,
-                    bannedAt: serverTimestamp(),
-                    until: null
-                });
-                target.isBanned = true;
-                target.banReason = reason || "Нарушение правил";
-                await loadBannedUids();
-                renderAdminList();
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (e) { console.error(e); alert("Не удалось заблокировать."); }
-        };
-
-        window.adminUnbanUser = async function(userId) {
-            try {
-                await deleteDoc(doc(db, "bans", userId));
-                const target = window.adminUsersCache.find(u => u.uid === userId);
-                if (target) { target.isBanned = false; target.banReason = ''; }
-                await loadBannedUids();
-                renderAdminList();
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (e) { console.error(e); alert("Не удалось разблокировать."); }
-        };
-
-        window.grantAdmin = async function(userId) {
-            if (getUserRole(window.currentUser?.uid) !== "creator") {
-                alert("Только создатель может назначать админов.");
-                return;
-            }
-            const target = window.adminUsersCache.find(u => u.uid === userId);
-            if (!target) return;
-
-            try {
-                await setDoc(doc(db, "roles", userId), {
-                    role: "admin",
-                    grantedBy: window.currentUser.uid,
-                    grantedAt: serverTimestamp(),
-                    userName: target.displayName,
-                    userEmail: target.email
-                });
-                await loadAdminUids();
-                target.isAdmin = true;
-                renderAdminList();
-                if (typeof renderGallery === 'function') renderGallery();
-                alert("Назначен админом: " + target.displayName);
-            } catch (e) { console.error(e); alert("Не удалось назначить."); }
-        };
-
-        window.revokeAdmin = async function(userId) {
-            if (getUserRole(window.currentUser?.uid) !== "creator") {
-                alert("Только создатель может снимать админку.");
-                return;
-            }
-            if (!confirm("Снять админку с этого пользователя?")) return;
-            try {
-                await deleteDoc(doc(db, "roles", userId));
-                await loadAdminUids();
-                const target = window.adminUsersCache.find(u => u.uid === userId);
-                if (target) target.isAdmin = false;
-                renderAdminList();
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (e) { console.error(e); alert("Не удалось снять."); }
-        };
-
-        document.addEventListener('click', () => {
-            document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
-        });
-
-        // === ЧУЖОЙ ПРОФИЛЬ ===
-        window.openUserProfile = async function(userId) {
-            const modal = document.getElementById('userProfileModal');
-
-            const [userSnap, banSnap] = await Promise.all([
-                getDoc(doc(db, "users", userId)),
-                getDoc(doc(db, "bans", userId))
-            ]);
-
-            if (!userSnap.exists()) {
-                alert("Профиль не найден.");
-                return;
-            }
-
-            const userData = userSnap.data();
-            const isBanned = banSnap.exists() && (!banSnap.data().until || banSnap.data().until.seconds * 1000 > Date.now());
-            const isThisCreator = isCreator(userId);
-            const isThisAdmin = isAdmin(userId);
-
-            document.getElementById('userProfileAvatar').src = userData.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
-            document.getElementById('userProfileName').textContent = userData.displayName || 'Пользователь';
-            document.getElementById('userProfileBio').textContent = userData.bio || 'Без описания';
-
-            document.getElementById('userProfileCreatorBadge').style.display = isThisCreator ? 'inline-flex' : 'none';
-            document.getElementById('userProfileAdminBadge').style.display = (isThisAdmin && !isThisCreator) ? 'inline-flex' : 'none';
-            document.getElementById('userProfileBannedBadge').style.display = isBanned ? 'inline' : 'none';
-
-            const actionsEl = document.getElementById('userProfileActions');
-            const myRole = getUserRole(window.currentUser?.uid);
-            const canManage = myRole === "creator" || (myRole === "admin" && !isThisCreator && !isThisAdmin);
-
-            let buttonsHTML = '';
-            if (canManage) {
-                if (isBanned) {
-                    buttonsHTML += `<button class="user-profile-action success" onclick="unbanFromProfile('${userId}')">✅ Разблокировать</button>`;
-                } else {
-                    buttonsHTML += `<button class="user-profile-action danger" onclick="banFromProfile('${userId}')">🚫 Заблокировать</button>`;
-                }
-                if (myRole === "creator") {
-                    if (isThisAdmin) {
-                        buttonsHTML += `<button class="user-profile-action danger" onclick="revokeAdminFromProfile('${userId}')">🛡 Снять админку</button>`;
-                    } else {
-                        buttonsHTML += `<button class="user-profile-action success" onclick="grantAdminFromProfile('${userId}')">🛡 Назначить админом</button>`;
-                    }
-                    buttonsHTML += `<button class="user-profile-action danger" onclick="deleteUserProfile('${userId}')">🗑 Удалить профиль</button>`;
-                }
-            }
-            actionsEl.innerHTML = buttonsHTML;
-
-            let userPosts = window.allArts.filter(a => a.authorId === userId);
-
-            if (isBanned) {
-                document.getElementById('userProfilePostsCount').textContent = '';
-                document.getElementById('userProfileSearch').style.display = 'none';
-                document.getElementById('userProfilePostsGrid').innerHTML =
-                    '<div class="user-profile-blocked-hint">🚫 Пользователь заблокирован. Посты скрыты.</div>';
-            } else {
-                window.userProfilePostsCache = userPosts;
-                document.getElementById('userProfileSearch').style.display = 'block';
-                document.getElementById('userProfileSearch').value = '';
-                document.getElementById('userProfilePostsCount').textContent = '(' + userPosts.length + ')';
-                renderUserProfilePosts();
-            }
-
-            modal.classList.add('active');
-        };
-
-        window.closeUserProfile = function() {
-            document.getElementById('userProfileModal').classList.remove('active');
-        };
-
-        document.getElementById('userProfileModal').addEventListener('click', (e) => {
-            if (e.target.id === 'userProfileModal') closeUserProfile();
-        });
-
-        window.renderUserProfilePosts = function() {
-            const q = (document.getElementById('userProfileSearch').value || '').toLowerCase().trim();
-            let posts = window.userProfilePostsCache || [];
-            if (q) {
-                posts = posts.filter(p =>
-                    (p.title || '').toLowerCase().includes(q) ||
-                    (p.desc || '').toLowerCase().includes(q)
-                );
-            }
-            const grid = document.getElementById('userProfilePostsGrid');
-            if (posts.length === 0) {
-                grid.innerHTML = '<div class="myblock-empty">Постов не найдено.</div>';
-                return;
-            }
-            grid.innerHTML = posts.map(art => `
-                <div class="myblock-item" onclick="closeUserProfile(); openLightbox('${art.id}')">
-                    <img src="${art.img}" alt="${art.title}" loading="lazy">
-                    <div class="myblock-item-title" title="${art.title}">${escapeHtml(art.title)}</div>
-                </div>
-            `).join('');
-        };
-
-        window.banFromProfile = async function(userId) {
-            const myRole = getUserRole(window.currentUser?.uid);
-            if (myRole !== "creator" && myRole !== "admin") return;
-            if (userId === CREATOR_UID) { alert("Нельзя заблокировать создателя."); return; }
-            if (isAdmin(userId) && myRole === "admin") { alert("Админ не может заблокировать другого админа."); return; }
-
-            const reason = prompt("Причина блокировки (необязательно):", "");
-            if (reason === null) return;
-
-            try {
-                await setDoc(doc(db, "bans", userId), {
-                    reason: reason || "Нарушение правил",
-                    bannedBy: window.currentUser.uid,
-                    bannedAt: serverTimestamp(),
-                    until: null
-                });
-                await loadBannedUids();
-                alert("Пользователь заблокирован.");
-                closeUserProfile();
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (e) { console.error(e); alert("Не удалось заблокировать."); }
-        };
-
-        window.unbanFromProfile = async function(userId) {
-            try {
-                await deleteDoc(doc(db, "bans", userId));
-                await loadBannedUids();
-                alert("Пользователь разблокирован.");
-                closeUserProfile();
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (e) { console.error(e); alert("Не удалось разблокировать."); }
-        };
-
-        window.grantAdminFromProfile = async function(userId) {
-            if (getUserRole(window.currentUser?.uid) !== "creator") {
-                alert("Только создатель может назначать админов.");
-                return;
-            }
-            const userSnap = await getDoc(doc(db, "users", userId));
-            if (!userSnap.exists()) return;
-            const u = userSnap.data();
-
-            try {
-                await setDoc(doc(db, "roles", userId), {
-                    role: "admin",
-                    grantedBy: window.currentUser.uid,
-                    grantedAt: serverTimestamp(),
-                    userName: u.displayName,
-                    userEmail: u.email
-                });
-                await loadAdminUids();
-                alert("Назначен админом: " + (u.displayName || userId));
-                closeUserProfile();
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (e) { console.error(e); alert("Не удалось назначить."); }
-        };
-
-        window.revokeAdminFromProfile = async function(userId) {
-            if (getUserRole(window.currentUser?.uid) !== "creator") {
-                alert("Только создатель может снимать админку.");
-                return;
-            }
-            if (!confirm("Снять админку с этого пользователя?")) return;
-            try {
-                await deleteDoc(doc(db, "roles", userId));
-                await loadAdminUids();
-                alert("Админка снята.");
-                closeUserProfile();
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (e) { console.error(e); alert("Не удалось снять."); }
-        };
-
-        window.deleteUserProfile = async function(userId) {
-            if (getUserRole(window.currentUser?.uid) !== "creator") {
-                alert("Только создатель может удалять профили.");
-                return;
-            }
-            if (userId === CREATOR_UID) { alert("Нельзя удалить свой профиль."); return; }
-            if (!confirm("⚠️ Удалить профиль и все его данные? Это действие необратимо.")) return;
-            if (!confirm("Точно удалить? Посты и комментарии будут удалены из базы.")) return;
-
-            try {
-                const commentsQ = query(collection(db, "comments"), where("userId", "==", userId));
-                const commentsSnap = await getDocs(commentsQ);
-                await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
-
-                const userArts = window.allArts.filter(a => a.authorId === userId);
-                for (const art of userArts) {
-                    if (art.driveFileId) {
-                        try {
-                            await fetch(APPS_SCRIPT_URL, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({
-                                    token: APPS_SCRIPT_TOKEN,
-                                    action: 'delete',
-                                    fileId: art.driveFileId
-                                })
-                            });
-                        } catch (e) { console.error("Drive delete err:", e); }
-                    }
-                    await deleteDoc(doc(db, "arts", art.id));
-                }
-
-                await deleteDoc(doc(db, "users", userId));
-                await deleteDoc(doc(db, "roles", userId)).catch(() => {});
-                await deleteDoc(doc(db, "bans", userId)).catch(() => {});
-
-                await loadAdminUids();
-                await loadBannedUids();
-                await loadArtsFromFirestore();
-                alert("Профиль удалён.");
-                closeUserProfile();
-            } catch (e) {
-                console.error(e);
-                alert("Ошибка удаления. Проверьте консоль.");
-            }
-        };
-
-        // === АВТОРИЗАЦИЯ ===
-        onAuthStateChanged(auth, async (user) => {
-            window.currentUser = user;
-            const loginBtn = document.getElementById('loginBtn');
-            const userInfo = document.getElementById('userInfo');
-            const userAvatar = document.getElementById('userAvatar');
-            const userName = document.getElementById('userName');
-            const userEmail = document.getElementById('userEmail');
-
-            if (user) {
-                await Promise.all([loadAdminUids(), loadBannedUids(), loadArtsFromFirestore()]);
-                window.currentUserRole = getUserRole(user.uid);
-                loginBtn.style.display = 'none';
-                userInfo.style.display = 'block';
-                userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
-                userEmail.textContent = user.email || '';
-
-                const adminConsoleBtn = document.getElementById('adminConsoleBtn');
-                const uploadBtn = document.getElementById('uploadBtn');
-                if (window.currentUserRole === "creator" || window.currentUserRole === "admin") {
-                    adminConsoleBtn.style.display = 'block';
-                    uploadBtn.style.display = 'block';
-                } else {
-                    adminConsoleBtn.style.display = 'none';
-                    uploadBtn.style.display = 'none';
-                }
-
-                try {
-                    const profile = await ensureUserDocument(user);
-                    window.currentUserProfile = profile;
-                    const displayName = profile.displayName || user.displayName || 'Пользователь';
-                    userName.innerHTML = displayName + ' ' + anyBadgeHTML(user.uid, true);
-
-                    const isFirstTime = !profile.nameCustomized &&
-                                        (!profile.displayName ||
-                                         profile.displayName === 'Пользователь' ||
-                                         !profile.bio);
-                    if (isFirstTime) {
-                        setTimeout(() => openProfileModal(true), 500);
-                    }
-                } catch (e) {
-                    console.error("Ошибка загрузки профиля:", e);
-                    userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + anyBadgeHTML(user.uid, true);
-                }
-                const ban = await checkBan(user.uid);
-                window.isBanned = !!ban;
-                if (ban) window.banReason = ban.reason || 'Нарушение правил';
-                if (typeof renderCommentForm === 'function') renderCommentForm();
-                if (typeof renderGallery === 'function') renderGallery();
-            } else {
-                window.adminUids = [];
-                window.bannedUids = [];
-                window.currentUserRole = "guest";
-                loginBtn.style.display = 'inline-flex';
-                userInfo.style.display = 'none';
-                window.currentUserProfile = null;
-                window.isBanned = false;
-                const adminConsoleBtn = document.getElementById('adminConsoleBtn');
-                const uploadBtn = document.getElementById('uploadBtn');
-                if (adminConsoleBtn) adminConsoleBtn.style.display = 'none';
-                if (uploadBtn) uploadBtn.style.display = 'none';
-                await loadArtsFromFirestore();
-                if (typeof renderGallery === 'function') renderGallery();
-                if (typeof renderCommentForm === 'function') renderCommentForm();
-            }
-        });
-
-        window.openProfileModal = function(isFirstTime) {
-            const user = window.currentUser;
-            if (!user) return;
-            const modal = document.getElementById('profileModal');
-            const title = document.getElementById('profileModalTitle');
-            const skipBtn = document.getElementById('profileSkipBtn');
-            title.textContent = isFirstTime ? 'Заполните профиль' : 'Редактировать профиль';
-            skipBtn.style.display = isFirstTime ? 'block' : 'none';
-            document.getElementById('profileAvatar').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
-            document.getElementById('profileNameInput').value = user.displayName || '';
-            document.getElementById('profileBioInput').value = '';
-            document.getElementById('bioCounter').textContent = '0 / 200';
-            getDoc(doc(db, "users", user.uid)).then(snap => {
-                if (snap.exists()) {
-                    const data = snap.data();
-                    if (data.displayName) document.getElementById('profileNameInput').value = data.displayName;
-                    if (data.bio) document.getElementById('profileBioInput').value = data.bio;
-                    document.getElementById('bioCounter').textContent = (data.bio || '').length + ' / 200';
-                }
-            });
-            modal.classList.add('active');
-        };
-
-        window.closeProfileModal = function() {
-            document.getElementById('profileModal').classList.remove('active');
-        };
-
-        window.saveProfile = async function() {
-            const user = window.currentUser;
-            if (!user) return;
-            const btn = document.getElementById('profileSaveBtn');
-            const name = document.getElementById('profileNameInput').value.trim();
-            const bio = document.getElementById('profileBioInput').value.trim();
-            if (!name) { alert("Введите имя."); return; }
-            btn.disabled = true;
-            btn.textContent = 'Сохранение...';
-            try {
-                await setDoc(doc(db, "users", user.uid), {
-                    displayName: name,
-                    bio: bio,
-                    email: user.email,
-                    photoURL: user.photoURL || '',
-                    nameCustomized: true,
-                    updatedAt: new Date()
-                }, { merge: true });
-                window.currentUserProfile = {
-                    ...(window.currentUserProfile || {}),
-                    displayName: name,
-                    bio: bio,
-                    nameCustomized: true
-                };
-                document.getElementById('userName').innerHTML = name + ' ' + anyBadgeHTML(user.uid, true);
-
-                // Перезагружаем посты с актуальными именами
-                await loadArtsFromFirestore();
-
-                // Перезагружаем комментарии, если лайтбокс открыт
-                if (lightbox.classList.contains('active')) {
-                    const art = window.allArts[window.currentArtIndex];
-                    if (art && typeof loadComments === 'function') loadComments(art.id);
-                }
-
-                btn.textContent = '✅ Сохранено!';
-                setTimeout(() => {
-                    closeProfileModal();
-                    btn.disabled = false;
-                    btn.textContent = 'Сохранить';
-                }, 800);
-            } catch (error) {
-                console.error("Ошибка сохранения профиля:", error);
-                alert("Не удалось сохранить.");
-                btn.disabled = false;
-                btn.textContent = 'Сохранить';
-            }
-        };
-
-        document.getElementById('profileBioInput').addEventListener('input', (e) => {
-            document.getElementById('bioCounter').textContent = e.target.value.length + ' / 200';
-        });
-
-        document.getElementById('profileModal').addEventListener('click', (e) => {
-            if (e.target.id === 'profileModal') closeProfileModal();
-        });
-
-        window.openMyBlock = function() {
-            const user = window.currentUser;
-            if (!user) return;
-            document.getElementById('userMenu').classList.remove('open');
-            const avatar = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
-            document.getElementById('myBlockAvatar').src = avatar;
-            document.getElementById('myBlockEmail').textContent = user.email || '';
-            const badge = document.getElementById('myBlockBadge');
-            const adminBadge = document.getElementById('myBlockAdminBadge');
-            if (isCreator(user.uid)) { badge.style.display = 'inline-flex'; adminBadge.style.display = 'none'; }
-            else if (isAdmin(user.uid)) { badge.style.display = 'none'; adminBadge.style.display = 'inline-flex'; }
-            else { badge.style.display = 'none'; adminBadge.style.display = 'none'; }
-            getDoc(doc(db, "users", user.uid)).then(snap => {
-                let displayName = user.displayName || 'Пользователь';
-                let bio = '';
-                if (snap.exists()) {
-                    const data = snap.data();
-                    displayName = data.displayName || displayName;
-                    bio = data.bio || '';
-                }
-                document.getElementById('myBlockName').textContent = displayName;
-                document.getElementById('myBlockBio').textContent = bio || 'Без описания';
-            });
-            const myArts = window.allArts.filter(a => a.authorId === user.uid);
-            const grid = document.getElementById('myBlockGrid');
-            const countEl = document.getElementById('myBlockCount');
-            countEl.textContent = '(' + myArts.length + ')';
-            if (myArts.length === 0) {
-                grid.innerHTML = '<div class="myblock-empty">У вас пока нет постов.</div>';
-            } else {
-                grid.innerHTML = myArts.map(art => `
-                    <div class="myblock-item" onclick="closeMyBlock(); openLightbox('${art.id}')">
-                        <img src="${art.img}" alt="${art.title}" loading="lazy">
-                        <div class="myblock-item-title" title="${art.title}">${escapeHtml(art.title)}</div>
-                    </div>
-                `).join('');
-            }
-            document.getElementById('myBlockModal').classList.add('active');
-        };
-
-        window.closeMyBlock = function() {
-            document.getElementById('myBlockModal').classList.remove('active');
-        };
-
-        document.getElementById('myBlockModal').addEventListener('click', (e) => {
-            if (e.target.id === 'myBlockModal') closeMyBlock();
-        });
-
-        window.renderCommentForm = function() {
-            const form = document.getElementById('commentsForm');
-            const user = window.currentUser;
-            if (!user) {
-                form.innerHTML = `<div class="comments-login-hint">Войдите через Google, чтобы оставить комментарий.<br><button onclick="signInWithGoogle()">Войти</button></div>`;
-                return;
-            }
-            if (window.isBanned) {
-                form.innerHTML = `<div class="comments-banned-hint">🚫 Вы заблокированы и не можете писать комментарии.<br><small>${escapeHtml(window.banReason || '')}</small></div>`;
-                return;
-            }
-            form.innerHTML = `
-                <textarea class="comments-textarea" id="commentInput" maxlength="500" placeholder="Написать комментарий..."></textarea>
-                <div class="comments-form-footer">
-                    <span class="comments-counter" id="commentCounter">0 / 500</span>
-                    <button class="comments-submit" id="commentSubmitBtn" onclick="submitComment()">Отправить</button>
-                </div>
-            `;
-            document.getElementById('commentInput').addEventListener('input', (e) => {
-                document.getElementById('commentCounter').textContent = e.target.value.length + ' / 500';
-            });
-        };
-
-        window.submitComment = async function() {
-            const user = window.currentUser;
-            const art = window.allArts[window.currentArtIndex];
-            if (!user || !art) return;
-            if (window.isBanned) { alert("Вы заблокированы."); return; }
-            const input = document.getElementById('commentInput');
-            const text = input.value.trim();
-            if (!text) return;
-            if (text.length > 500) { alert("Слишком длинный комментарий."); return; }
-            if (hasBadWords(text)) {
-                alert("Комментарий содержит запрещённые слова. Пожалуйста, переформулируйте.");
-                return;
-            }
-            const btn = document.getElementById('commentSubmitBtn');
-            btn.disabled = true;
-            btn.textContent = 'Отправка...';
-            try {
-                const profile = window.currentUserProfile || {};
-                await addDoc(collection(db, "comments"), {
-                    artId: art.id,
-                    artImage: art.img,
-                    userId: user.uid,
-                    userName: profile.displayName || user.displayName || 'Гость',
-                    userAvatar: user.photoURL || '',
-                    userEmail: user.email || '',
-                    text: text,
-                    createdAt: serverTimestamp()
-                });
-                input.value = '';
-                document.getElementById('commentCounter').textContent = '0 / 500';
-                btn.disabled = false;
-                btn.textContent = 'Отправить';
-            } catch (error) {
-                console.error("Ошибка отправки комментария:", error);
-                alert("Не удалось отправить. Попробуйте позже.");
-                btn.disabled = false;
-                btn.textContent = 'Отправить';
-            }
-        };
-
-        // === ОБНОВЛЕНО: onSnapshot — комментарии обновляются в реальном времени ===
-        window.loadComments = function(artId) {
-            commentsList.innerHTML = '<div class="comments-empty">Загрузка...</div>';
-
-            // Сначала подгружаем карту имён из users
-            getDocs(collection(db, "users")).then(usersSnap => {
-                const userNames = {};
-                const userAvatars = {};
-                usersSnap.forEach(d => {
-                    const data = d.data();
-                    userNames[d.id] = data.displayName || 'Пользователь';
-                    userAvatars[d.id] = data.photoURL || '';
-                });
-
-                // Подписываемся на comments в реальном времени
-                if (window.unsubscribeComments) window.unsubscribeComments();
-
-                const q = query(collection(db, "comments"), where("artId", "==", artId));
-                window.unsubscribeComments = onSnapshot(q, (snapshot) => {
-                    const comments = [];
-                    snapshot.forEach(docSnap => {
-                        const data = docSnap.data();
-                        comments.push({
-                            id: docSnap.id,
-                            ...data,
-                            userName: userNames[data.userId] || data.userName || 'Гость',
-                            userAvatar: userAvatars[data.userId] || data.userAvatar || ''
-                        });
-                    });
-                    comments.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                    window.currentArtComments = comments;
-                    window.renderCommentsList(comments);
-                }, (error) => {
-                    console.error("Ошибка загрузки комментариев:", error);
-                    commentsList.innerHTML = '<div class="comments-empty">Не удалось загрузить комментарии.</div>';
-                });
-            }).catch(error => {
-                console.error("Ошибка загрузки users:", error);
-                commentsList.innerHTML = '<div class="comments-empty">Не удалось загрузить комментарии.</div>';
-            });
-        };
-
-        window.deleteComment = async function(commentId) {
-            if (!confirm("Удалить этот комментарий?")) return;
-            try { await deleteDoc(doc(db, "comments", commentId)); }
-            catch (error) { console.error("Ошибка удаления:", error); alert("Не удалось удалить комментарий."); }
-        };
-
-        window.banUser = async function(userId, alsoDelete, commentId) {
-            const myRole = getUserRole(window.currentUser?.uid);
-            if (myRole !== "creator" && myRole !== "admin") { alert("Недостаточно прав."); return; }
-            if (userId === CREATOR_UID) { alert("Нельзя заблокировать создателя."); return; }
-            if (isAdmin(userId) && myRole === "admin") { alert("Админ не может заблокировать другого админа."); return; }
-            const reason = prompt("Причина блокировки (необязательно):", "");
-            if (reason === null) return;
-            try {
-                await setDoc(doc(db, "bans", userId), {
-                    reason: reason || "Нарушение правил",
-                    bannedBy: window.currentUser.uid,
-                    bannedAt: serverTimestamp(), until: null
-                });
-                await loadBannedUids();
-                if (alsoDelete && commentId) await deleteDoc(doc(db, "comments", commentId));
-                alert("Пользователь заблокирован.");
-                if (typeof renderGallery === 'function') renderGallery();
-            } catch (error) { console.error("Ошибка бана:", error); alert("Не удалось заблокировать."); }
-        };
-
-        window.showAuthorInfo = function(userId, userName) {
-            if (userId === window.currentUser?.uid) { openMyBlock(); return; }
-            openUserProfile(userId);
-        };
-
-        let cachedIP = null;
-        async function getUserIP() {
-            if (cachedIP) return cachedIP;
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                cachedIP = data.ip;
-                return cachedIP;
-            } catch { cachedIP = "unknown_ip"; return cachedIP; }
-        }
-        getUserIP();
-
-        window.loadStats = async function(artId, imageId) {
-            const btn = document.getElementById('likeBtn');
-            const [imgSnap, userIP] = await Promise.all([getDoc(doc(db, "images", artId)), getUserIP()]);
-            document.getElementById('likeCount').textContent = imgSnap.exists() ? (imgSnap.data().likes || 0) : 0;
-            if (window.unsubscribeView) window.unsubscribeView();
-            const viewRef = doc(db, "views", artId);
-            window.unsubscribeView = onSnapshot(viewRef, (docSnap) => {
-                if (!lightbox.classList.contains('active')) return;
-                const currentArt = window.allArts[window.currentArtIndex];
-                if (!currentArt || currentArt.id !== artId) return;
-                document.getElementById('viewCount').textContent = '👁 ' + (docSnap.exists() ? (docSnap.data().count || 0) : 0);
-            });
-            const likeRef = doc(db, "likes", `${artId}_${userIP}`);
-            const likeSnap = await getDoc(likeRef);
-            const currentArt = window.allArts[window.currentArtIndex];
-            if (!currentArt || currentArt.id !== artId) return;
-            if (likeSnap.exists()) {
-                btn.disabled = true;
-                btn.classList.add('liked');
-                btn.textContent = '❤️ Лайкнуто';
-            } else {
-                btn.disabled = false;
-                btn.classList.remove('liked');
-                btn.textContent = '❤️ Лайк';
-            }
-            document.getElementById('shareBtn').disabled = false;
-            document.getElementById('downloadBtn').disabled = false;
-        };
-
-        window.loadStatsForSortReal = async function(artId) {
-            const [imgSnap, viewSnap] = await Promise.all([getDoc(doc(db, "images", artId)), getDoc(doc(db, "views", artId))]);
-            window.statsCache[artId] = {
-                likes: imgSnap.exists() ? (imgSnap.data().likes || 0) : 0,
-                views: viewSnap.exists() ? (viewSnap.data().count || 0) : 0
-            };
-        };
-
-        window.incrementView = async function(artId, imageId) {
-            const userIP = await getUserIP();
-            const viewLogRef = doc(db, "view_logs", `${artId}_${userIP}`);
-            const viewRef = doc(db, "views", artId);
-            const now = Date.now();
-            const oneHour = 60 * 60 * 1000;
-            try {
-                const logSnap = await getDoc(viewLogRef);
-                if (logSnap.exists() && (now - (logSnap.data().timestamp || 0)) < oneHour) return;
-                await setDoc(viewLogRef, { artId: artId, imageId: imageId, ip: userIP, timestamp: now });
-                await setDoc(viewRef, { count: increment(1) }, { merge: true });
-            } catch (error) { console.error("Ошибка просмотра:", error); }
-        };
-
-        window.handleLike = async function(event) {
-            event.stopPropagation();
-            const art = window.allArts[window.currentArtIndex];
-            if (!art) return;
-            const userIP = await getUserIP();
-            const likeRef = doc(db, "likes", `${art.id}_${userIP}`);
-            const snap = await getDoc(likeRef);
-            if (snap.exists()) { alert("Вы уже лайкали эту картинку!"); return; }
-            await setDoc(likeRef, { artId: art.id, imageId: art.img, ip: userIP, timestamp: new Date() });
-            await setDoc(doc(db, "images", art.id), { likes: increment(1) }, { merge: true });
-            const btn = document.getElementById('likeBtn');
-            btn.disabled = true;
-            btn.classList.add('liked');
-            btn.textContent = '❤️ Лайкнуто';
-            window.loadStats(art.id, art.img);
-        };
-    </script>
-</body>
-</html>
