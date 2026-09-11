@@ -3440,8 +3440,18 @@
         };
 
         window.closeProfileModal = function() {
-            document.getElementById('profileModal').classList.remove('active');
-        };
+    document.getElementById('profileModal').classList.remove('active');
+    
+    // Если это был первый показ — ставим флаг, чтобы больше не вылезала
+    const user = window.currentUser;
+    if (user && window.currentUserProfile && !window.currentUserProfile.nameCustomized) {
+        setDoc(doc(db, "users", user.uid), { nameCustomized: true }, { merge: true })
+            .then(() => {
+                if (window.currentUserProfile) window.currentUserProfile.nameCustomized = true;
+            })
+            .catch(e => console.error("Не удалось сохранить флаг:", e));
+    }
+};
 
         window.saveProfile = async function() {
             const user = window.currentUser;
