@@ -879,7 +879,7 @@
             color: #c9d1d9;
             line-height: 1.4;
         }
-                .myblock-tabs {
+        .myblock-tabs {
             display: flex;
             gap: 4px;
             border-bottom: 1px solid #30363d;
@@ -1561,7 +1561,6 @@
         </div>
     </div>
 
-    <!-- === ФОРМА ЗАГРУЗКИ ПОСТА === -->
     <div class="modal-overlay" id="uploadModal">
         <div class="modal" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeUploadModal()">&times;</button>
@@ -1628,9 +1627,9 @@
                 </div>
                 <button class="myblock-edit-btn" onclick="closeMyBlock(); openProfile();">✏️ Редактировать</button>
             </div>
-                       <div class="myblock-tabs">
-                <button class="myblock-tab active" data-tab="posts" onclick="switchMyBlockTab('posts')">📁 Мои посты<span class="myblock-tab-badge" id="myPostsCountBadge" style="display:none;">0</span></button>
-                <button class="myblock-tab" data-tab="likes" onclick="switchMyBlockTab('likes')">❤️ Мои лайки<span class="myblock-tab-badge" id="myLikesCountBadge" style="display:none;">0</span></button>
+            <div class="myblock-tabs">
+                <button class="myblock-tab active" data-tab="posts" onclick="switchMyBlockTabNew('posts')">📁 Мои посты<span class="myblock-tab-badge" id="myPostsCountBadge" style="display:none;">0</span></button>
+                <button class="myblock-tab" data-tab="likes" onclick="switchMyBlockTabNew('likes')">❤️ Мои лайки<span class="myblock-tab-badge" id="myLikesCountBadge" style="display:none;">0</span></button>
             </div>
 
             <h4 class="myblock-posts-title" id="myBlockSectionTitle">
@@ -1641,7 +1640,6 @@
         </div>
     </div>
 
-    <!-- === ЧУЖОЙ ПРОФИЛЬ === -->
     <div class="modal-overlay" id="userProfileModal">
         <div class="modal wide" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeUserProfile()">&times;</button>
@@ -1671,7 +1669,6 @@
         </div>
     </div>
 
-    <!-- === МОДАЛКА ЖАЛОБЫ НА КОММЕНТАРИЙ === -->
     <div class="modal-overlay" id="reportModal">
         <div class="modal" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeReportModal()">&times;</button>
@@ -1712,7 +1709,6 @@
         </div>
     </div>
 
-    <!-- === АДМИН-КОНСОЛЬ === -->
     <div class="modal-overlay" id="adminConsoleModal">
         <div class="modal wide admin-console" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeAdminConsole()">&times;</button>
@@ -2189,11 +2185,6 @@
                 else if (myRole === "creator") canManage = true;
                 else if (myRole === "admin") canManage = !isCreatorComment && !isAdminComment;
 
-                // Кнопку «⋮» показываем всем залогиненным (кроме случая, когда это автор комментария
-                // и он уже может управлять — тогда тоже показываем с «Удалить»).
-                // Если пользователь не залогинен — не показываем.
-                // Если это моя реплика — показываем.
-                // Если это чужая реплика и я залогинен — показываем (для жалобы).
                 const canReport = iAmLoggedIn && !isMine && !iAmBanned;
                 const showMenuBtn = canManage || canReport;
 
@@ -2225,52 +2216,46 @@
             return div.innerHTML;
         };
 
-       window.toggleCommentMenu = function(event, commentId, commentUserId) {
-    event.stopPropagation();
-    document.querySelectorAll('.comment-menu').forEach(m => m.remove());
+        window.toggleCommentMenu = function(event, commentId, commentUserId) {
+            event.stopPropagation();
+            document.querySelectorAll('.comment-menu').forEach(m => m.remove());
 
-    const commentEl = document.querySelector(`[data-comment-id="${commentId}"]`);
-    if (!commentEl) return;
-    const btn = commentEl.querySelector('.comment-menu-btn');
-    if (!btn) return;
+            const commentEl = document.querySelector(`[data-comment-id="${commentId}"]`);
+            if (!commentEl) return;
+            const btn = commentEl.querySelector('.comment-menu-btn');
+            if (!btn) return;
 
-    const myUid = window.currentUser?.uid;
-    const myRole = getUserRole(myUid);
-    const isMine = myUid && commentUserId === myUid;
-    const targetIsCreator = isCreator(commentUserId);
-    const targetIsAdmin = isAdmin(commentUserId);
-    const iAmBanned = window.isBanned;
+            const myUid = window.currentUser?.uid;
+            const myRole = getUserRole(myUid);
+            const isMine = myUid && commentUserId === myUid;
+            const targetIsCreator = isCreator(commentUserId);
+            const targetIsAdmin = isAdmin(commentUserId);
+            const iAmBanned = window.isBanned;
 
-    const menu = document.createElement('div');
-    menu.className = 'comment-menu';
+            const menu = document.createElement('div');
+            menu.className = 'comment-menu';
 
-    // 1. Свой комментарий — можно удалить
-    if (isMine) {
-        menu.innerHTML += `<button onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-    }
+            if (isMine) {
+                menu.innerHTML += `<button onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
+            } else if (myRole === "creator") {
+                menu.innerHTML += `<button class="danger" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
+                menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
+                menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
+            } else if (myRole === "admin" && !targetIsCreator && !targetIsAdmin) {
+                menu.innerHTML += `<button class="admin-action" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
+                menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
+                menu.innerHTML += `<button class="admin-action" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
+            }
 
-    // 2. Модерация — создатель и админы (кроме случая «чужой админ vs админ»)
-    const canModerate = !isMine && myUid && (
-        myRole === "creator" ||
-        (myRole === "admin" && !targetIsCreator && !targetIsAdmin)
-    );
-    if (canModerate) {
-        menu.innerHTML += `<button class="danger" onclick="deleteComment('${commentId}')">🗑 Удалить</button>`;
-        menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', false)">🚫 Заблокировать</button>`;
-        menu.innerHTML += `<button class="danger" onclick="banUser('${commentUserId}', true, '${commentId}')">🚫 Заблокировать и удалить</button>`;
-    }
+            const canReport = myUid && !isMine && !iAmBanned;
+            if (canReport) {
+                menu.innerHTML += `<button class="report-action" onclick="openReportModal('${commentId}')">🚨 Пожаловаться</button>`;
+            }
 
-    // 3. Пожаловаться — всем залогиненным, кроме автора и забаненных
-    // (в том числе и админам/создателю — чтобы могли протестировать систему)
-    const canReport = myUid && !isMine && !iAmBanned;
-    if (canReport) {
-        menu.innerHTML += `<button class="report-action" onclick="openReportModal('${commentId}')">🚨 Пожаловаться</button>`;
-    }
-
-    if (menu.innerHTML === '') return;
-    btn.parentElement.style.position = 'relative';
-    btn.parentElement.appendChild(menu);
-};
+            if (menu.innerHTML === '') return;
+            btn.parentElement.style.position = 'relative';
+            btn.parentElement.appendChild(menu);
+        };
 
         function canManageComment(myRole, commentUserId) {
             const targetIsCreator = isCreator(commentUserId);
@@ -2320,7 +2305,6 @@
             const preview = document.getElementById('reportCommentPreview');
             preview.innerHTML = `<div class="author">Автор: ${escapeHtml(commentUserName)}</div>${escapeHtml(commentText)}`;
 
-            // Сброс формы
             document.querySelectorAll('input[name="reportReason"]').forEach(r => {
                 r.checked = false;
                 r.parentElement.classList.remove('selected');
@@ -2339,7 +2323,6 @@
             window.currentReportTargetUser = null;
         };
 
-        // Обработчики выбора причины
         document.querySelectorAll('input[name="reportReason"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 document.querySelectorAll('.report-reason-option').forEach(opt => opt.classList.remove('selected'));
@@ -2522,8 +2505,105 @@
                 alert("Не удалось проигнорировать.");
             }
         };
-    </script>
-    
+
+        // === НОВАЯ СИСТЕМА «МОИ ЛАЙКИ» — работает в обычном <script>, не зависит от кэша модуля ===
+        window.loadMyLikes = async function() {
+            const user = window.currentUser;
+            if (!user) return;
+
+            const grid = document.getElementById('myLikesGrid');
+            const badge = document.getElementById('myLikesCountBadge');
+            if (!grid) return;
+            grid.innerHTML = '<div class="myblock-empty">Загрузка...</div>';
+
+            const PROJECT_ID = "my-pride-fan";
+            const API_KEY = "AIzaSyCVpWbOBOJbCYfPLh-s8QZMOeRORkZ-gXg";
+            const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents:runQuery?key=${API_KEY}`;
+
+            const body = {
+                structuredQuery: {
+                    from: [{ collectionId: "likes" }],
+                    where: {
+                        fieldFilter: {
+                            field: { fieldPath: "userId" },
+                            op: "EQUAL",
+                            value: { stringValue: user.uid }
+                        }
+                    }
+                }
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+
+                const likedArtIds = [];
+                if (Array.isArray(data)) {
+                    data.forEach(item => {
+                        const fields = item.document?.fields;
+                        if (fields && fields.artId?.stringValue) {
+                            likedArtIds.push(fields.artId.stringValue);
+                        }
+                    });
+                }
+
+                const likedArts = window.allArts.filter(a => likedArtIds.includes(a.id));
+
+                if (badge) {
+                    badge.textContent = likedArts.length;
+                    badge.style.display = likedArts.length > 0 ? 'inline-block' : 'none';
+                }
+
+                if (likedArts.length === 0) {
+                    grid.innerHTML = '<div class="myblock-empty">Вы пока ничего не лайкали.</div>';
+                    return;
+                }
+
+                grid.innerHTML = likedArts.map(art => `
+                    <div class="myblock-item" onclick="closeMyBlock(); openLightbox('${art.id}')">
+                        <img src="${art.img}" alt="${art.title}" loading="lazy">
+                        <div class="myblock-item-title" title="${art.title}">${escapeHtml(art.title)}</div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error("Ошибка загрузки лайков через REST:", e);
+                grid.innerHTML = '<div class="myblock-empty">Не удалось загрузить лайки.</div>';
+            }
+        };
+
+        // Переключатель вкладок в модалке «Мой блок»
+        window.switchMyBlockTabNew = function(tab) {
+            document.querySelectorAll('.myblock-tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+            const postsTitle = document.getElementById('myBlockSectionTitle');
+            const grid = document.getElementById('myBlockGrid');
+            const likesGrid = document.getElementById('myLikesGrid');
+            if (tab === 'posts') {
+                if (postsTitle) postsTitle.style.display = 'flex';
+                grid.style.display = 'grid';
+                likesGrid.style.display = 'none';
+            } else {
+                if (postsTitle) postsTitle.style.display = 'none';
+                grid.style.display = 'none';
+                likesGrid.style.display = 'grid';
+                window.loadMyLikes();
+            }
+        };
+
+        window.closeMyBlock = function() {
+            document.getElementById('myBlockModal').classList.remove('active');
+        };
+
+        document.getElementById('myBlockModal').addEventListener('click', (e) => {
+            if (e.target.id === 'myBlockModal') closeMyBlock();
+        });
+            </script>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, increment, onSnapshot, collection, query, where, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
@@ -2695,7 +2775,6 @@
         }
         window.loadArtsFromFirestore = loadArtsFromFirestore;
 
-        // === ФОРМА ЗАГРУЗКИ ===
         window.openUploadModal = function() {
             document.getElementById('userMenu').classList.remove('open');
             const myRole = getUserRole(window.currentUser?.uid);
@@ -2877,7 +2956,6 @@
             }
         };
 
-        // === УДАЛЕНИЕ ПОСТА ===
         window.deleteArt = async function(artId) {
             const myRole = getUserRole(window.currentUser?.uid);
             if (myRole !== "creator" && myRole !== "admin") { alert("Недостаточно прав."); return; }
@@ -2910,7 +2988,6 @@
             }
         };
 
-        // === ОТКРЫТИЕ АДМИН-КОНСОЛИ ===
         window.openAdminConsole = async function() {
             document.getElementById('userMenu').classList.remove('open');
             const myRole = getUserRole(window.currentUser?.uid);
@@ -3179,7 +3256,6 @@
             document.querySelectorAll('.admin-user-menu').forEach(m => m.remove());
         });
 
-        // === ЧУЖОЙ ПРОФИЛЬ ===
         window.openUserProfile = async function(userId) {
             const modal = document.getElementById('userProfileModal');
 
@@ -3395,7 +3471,6 @@
             }
         };
 
-        // === АВТОРИЗАЦИЯ ===
         onAuthStateChanged(auth, async (user) => {
             window.currentUser = user;
             const loginBtn = document.getElementById('loginBtn');
@@ -3478,18 +3553,16 @@
         };
 
         window.closeProfileModal = function() {
-    document.getElementById('profileModal').classList.remove('active');
-    
-    // Если это был первый показ — ставим флаг, чтобы больше не вылезала
-    const user = window.currentUser;
-    if (user && window.currentUserProfile && !window.currentUserProfile.nameCustomized) {
-        setDoc(doc(db, "users", user.uid), { nameCustomized: true }, { merge: true })
-            .then(() => {
-                if (window.currentUserProfile) window.currentUserProfile.nameCustomized = true;
-            })
-            .catch(e => console.error("Не удалось сохранить флаг:", e));
-    }
-};
+            document.getElementById('profileModal').classList.remove('active');
+            const user = window.currentUser;
+            if (user && window.currentUserProfile && !window.currentUserProfile.nameCustomized) {
+                setDoc(doc(db, "users", user.uid), { nameCustomized: true }, { merge: true })
+                    .then(() => {
+                        if (window.currentUserProfile) window.currentUserProfile.nameCustomized = true;
+                    })
+                    .catch(e => console.error("Не удалось сохранить флаг:", e));
+            }
+        };
 
         window.saveProfile = async function() {
             const user = window.currentUser;
@@ -3569,11 +3642,10 @@
                 document.getElementById('myBlockName').textContent = displayName;
                 document.getElementById('myBlockBio').textContent = bio || 'Без описания';
             });
-                        // Сброс на вкладку «Мои посты» при каждом открытии
-            window.myBlockCurrentTab = 'posts';
-            switchMyBlockTab('posts');
 
-            // Рендер постов
+            // Сбрасываем на вкладку «Мои посты»
+            window.switchMyBlockTabNew('posts');
+
             const myArts = window.allArts.filter(a => a.authorId === user.uid);
             const grid = document.getElementById('myBlockGrid');
             const countEl = document.getElementById('myBlockCount');
@@ -3596,41 +3668,8 @@
                 `).join('');
             }
 
-            // Рендер лайков (асинхронно)
-            if (typeof window.renderMyLikes === 'function') window.renderMyLikes();
-
             document.getElementById('myBlockModal').classList.add('active');
         };
-
-        window.switchMyBlockTab = function(tab) {
-            window.myBlockCurrentTab = tab;
-
-            document.querySelectorAll('.myblock-tab').forEach(t => {
-                t.classList.toggle('active', t.dataset.tab === tab);
-            });
-
-            const postsTitle = document.getElementById('myBlockSectionTitle');
-            const grid = document.getElementById('myBlockGrid');
-            const likesGrid = document.getElementById('myLikesGrid');
-
-            if (tab === 'posts') {
-                if (postsTitle) postsTitle.style.display = 'flex';
-                grid.style.display = 'grid';
-                likesGrid.style.display = 'none';
-            } else if (tab === 'likes') {
-                if (postsTitle) postsTitle.style.display = 'none';
-                grid.style.display = 'none';
-                likesGrid.style.display = 'grid';
-            }
-        };
-                window.closeMyBlock = function() {
-            document.getElementById('myBlockModal').classList.remove('active');
-        };
-
-
-        document.getElementById('myBlockModal').addEventListener('click', (e) => {
-            if (e.target.id === 'myBlockModal') closeMyBlock();
-        });
 
         window.renderCommentForm = function() {
             const form = document.getElementById('commentsForm');
@@ -3794,14 +3833,14 @@
             const currentArt = window.allArts[window.currentArtIndex];
             if (!currentArt || currentArt.id !== artId) return;
             if (likeSnap.exists()) {
-           btn.disabled = false;
-           btn.classList.add('liked');
-           btn.textContent = '❤️ Лайкнуто';
-           } else {
-           btn.disabled = false;
-           btn.classList.remove('liked');
-           btn.textContent = '❤️ Лайк';
-           }
+                btn.disabled = false;
+                btn.classList.add('liked');
+                btn.textContent = '❤️ Лайкнуто';
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('liked');
+                btn.textContent = '❤️ Лайк';
+            }
             document.getElementById('shareBtn').disabled = false;
             document.getElementById('downloadBtn').disabled = false;
         };
@@ -3828,7 +3867,7 @@
             } catch (error) { console.error("Ошибка просмотра:", error); }
         };
 
-                window.handleLike = async function(event) {
+        window.handleLike = async function(event) {
             event.stopPropagation();
             const art = window.allArts[window.currentArtIndex];
             if (!art) return;
@@ -3838,22 +3877,13 @@
             const btn = document.getElementById('likeBtn');
 
             if (snap.exists()) {
-                // === УБИРАЕМ ЛАЙК ===
                 await deleteDoc(likeRef);
                 await setDoc(doc(db, "images", art.id), { likes: increment(-1) }, { merge: true });
                 btn.disabled = false;
                 btn.classList.remove('liked');
                 btn.textContent = '❤️ Лайк';
                 window.loadStats(art.id, art.img);
-                // Обновляем «Мои лайки», если открыт «Мой блок»
-                if (typeof window.renderMyLikes === 'function') {
-                    const blockModal = document.getElementById('myBlockModal');
-                    if (blockModal && blockModal.classList.contains('active')) {
-                        window.renderMyLikes();
-                    }
-                }
             } else {
-                // === СТАВИМ ЛАЙК ===
                 await setDoc(likeRef, {
                     artId: art.id,
                     imageId: art.img,
@@ -3866,26 +3896,13 @@
                 btn.classList.add('liked');
                 btn.textContent = '❤️ Лайкнуто';
                 window.loadStats(art.id, art.img);
-                if (typeof window.renderMyLikes === 'function') {
-                    const blockModal = document.getElementById('myBlockModal');
-                    if (blockModal && blockModal.classList.contains('active')) {
-                        window.renderMyLikes();
-                    }
-                }
             }
         };
 
-
-        // ============================================
-        // === СИСТЕМА ЖАЛОБ НА КОММЕНТАРИИ ===
-        // ============================================
-
-        // Создание жалобы. Возвращает {duplicate: true}, если пользователь уже жаловался на этот комментарий.
         window.reportComment = async function({ commentId, commentText, commentUserId, commentUserName, artId, reason }) {
             const user = window.currentUser;
             if (!user) throw new Error("Не залогинен");
 
-            // Проверка дубля: тот же reporterId + commentId + status pending
             const dupQ = query(
                 collection(db, "reports"),
                 where("commentId", "==", commentId),
@@ -3899,7 +3916,6 @@
 
             const profile = window.currentUserProfile || {};
 
-            // Находим комментарий, чтобы сохранить его автора и аватар (для отображения в админке)
             let commentUserAvatar = '';
             let commentCreatedAt = null;
             try {
@@ -3932,7 +3948,6 @@
             return { ok: true };
         };
 
-        // Загрузка всех pending-жалоб и группировка по commentId
         window.loadReports = async function() {
             try {
                 const q = query(collection(db, "reports"), where("status", "==", "pending"));
@@ -3965,12 +3980,10 @@
                     });
                 });
 
-                // Сортируем отчёты внутри каждой группы — сначала свежие
                 Object.values(byComment).forEach(g => {
                     g.reports.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
                 });
 
-                // Сортируем карточки — сначала те, где больше жалоб, потом по свежести
                 window.allReports = Object.values(byComment).sort((a, b) => {
                     if (b.reports.length !== a.reports.length) return b.reports.length - a.reports.length;
                     const ta = a.reports[0]?.createdAt?.seconds || 0;
@@ -3995,7 +4008,6 @@
             }
         };
 
-        // Помечаем все pending-жалобы к комментарию статусом resolved
         async function markReportsResolved(commentId, status) {
             const q = query(
                 collection(db, "reports"),
@@ -4010,7 +4022,6 @@
             }, { merge: true })));
         }
 
-        // Удалить комментарий + пометить жалобы как resolved
         window.resolveReportDeleteFirebase = async function(commentId) {
             await deleteDoc(doc(db, "comments", commentId));
             await markReportsResolved(commentId, "resolved");
@@ -4019,7 +4030,6 @@
             renderReportsList();
         };
 
-        // Заблокировать пользователя + пометить жалобы как resolved
         window.resolveReportBanFirebase = async function(commentId, userId, reason) {
             await setDoc(doc(db, "bans", userId), {
                 reason: reason || "Нарушение правил",
@@ -4034,7 +4044,6 @@
             renderReportsList();
         };
 
-        // Удалить комментарий + заблокировать автора + пометить жалобы resolved
         window.resolveReportDeleteBanFirebase = async function(commentId, userId, reason) {
             await deleteDoc(doc(db, "comments", commentId));
             await setDoc(doc(db, "bans", userId), {
@@ -4050,7 +4059,6 @@
             renderReportsList();
         };
 
-        // Игнорировать: пометить как ignored (записи остаются в базе для истории)
         window.resolveReportIgnoreFirebase = async function(commentId) {
             await markReportsResolved(commentId, "ignored");
             await loadReports();
@@ -4058,8 +4066,6 @@
             renderReportsList();
         };
 
-        // Обновляем бейдж при загрузке страницы — если пользователь админ/создатель
-        // (вызывается после авторизации в onAuthStateChanged)
         window.refreshReportsBadge = async function() {
             const myRole = getUserRole(window.currentUser?.uid);
             if (myRole !== "creator" && myRole !== "admin") return;
