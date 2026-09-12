@@ -1941,7 +1941,7 @@
                         ${badge}
                         ${sourceHTML}
                     </div>
-                    <p>${shortTags}</p>
+                    <p>${escapeHtml(shortTags)}</p>
                 </div>
             `;
             galleryGrid.appendChild(item);
@@ -2023,9 +2023,9 @@
                     ${badge}
                     ${sourceHTML}
                 </div>
-                <p>${shortTags}</p>
+                               <p>${escapeHtml(shortTags)}</p>
                 <button class="toggle-tags-btn" onclick="toggleTags(this)">Показать все хэштеги</button>
-                <div class="full-tags">${art.desc || ''}</div>
+                <div class="full-tags">${escapeHtml(art.desc || '')}</div>
             `;
 
             const btn = document.getElementById('likeBtn');
@@ -2710,18 +2710,19 @@
 
                 btn.textContent = '⏳ Загрузка...';
 
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        token: APPS_SCRIPT_TOKEN,
-                        action: 'upload',
-                        folder: 'Avatars',
-                        base64: base64,
-                        filename: 'avatar_' + user.uid + '_' + Date.now() + '.jpg',
-                        mimeType: 'image/jpeg'
-                    })
-                });
+                const idToken = await user.getIdToken();
+const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+        idToken: idToken,
+        action: 'upload',
+        folder: 'Avatars',
+        base64: base64,
+        filename: 'avatar_' + user.uid + '_' + Date.now() + '.jpg',
+        mimeType: 'image/jpeg'
+    })
+});
                 const result = await res.json();
                 if (!result.ok) throw new Error(result.error || 'Ошибка загрузки');
 
@@ -2739,17 +2740,17 @@
                 document.getElementById('userAvatar').src = result.url;
 
                 if (oldAvatarFileId) {
-                    try {
-                        await fetch(APPS_SCRIPT_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({
-                                token: APPS_SCRIPT_TOKEN,
-                                secretKey: APPS_SCRIPT_TOKEN,
-                                action: 'delete',
-                                fileId: oldAvatarFileId
-                            })
-                        });
+    try {
+        const delIdToken = await user.getIdToken();
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                idToken: delIdToken,
+                action: 'delete',
+                fileId: oldAvatarFileId
+            })
+        });
                         console.log('🗑 Старая аватарка удалена:', oldAvatarFileId);
                     } catch (err) {
                         console.error('Не удалось удалить старую аватарку:', err);
@@ -2773,7 +2774,6 @@
         });
 
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFG49oBDMijLRqlHIpGacW6EarIAVYk0I_cP-n8Hjh4xVaHWxyGV65iBAWz8FIDL7fJQ/exec";
-        const APPS_SCRIPT_TOKEN = "MPF-2026-Upload-SecureKey-X9k2";
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -3097,17 +3097,18 @@
             progress.classList.add('visible');
 
             try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify({
-                        token: APPS_SCRIPT_TOKEN,
-                        action: 'upload',
-                        base64: uploadBase64,
-                        filename: 'art_' + Date.now() + '.jpg',
-                        mimeType: 'image/jpeg'
-                    })
-                });
+                const idToken = await user.getIdToken();
+const res = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+        idToken: idToken,
+        action: 'upload',
+        base64: uploadBase64,
+        filename: 'art_' + Date.now() + '.jpg',
+        mimeType: 'image/jpeg'
+    })
+});
 
                 const result = await res.json();
                 if (!result.ok) throw new Error(result.error || 'Ошибка загрузки');
@@ -3159,19 +3160,19 @@
 
             try {
                 if (art.driveFileId) {
-                    try {
-                        await fetch(APPS_SCRIPT_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                            body: JSON.stringify({
-                            token: APPS_SCRIPT_TOKEN,
-                            secretKey: APPS_SCRIPT_TOKEN,
-                            action: 'delete',
-                            fileId: art.driveFileId
-                            })
-                        });
-                    } catch (e) { console.error("Ошибка удаления из Drive:", e); }
-                }
+    try {
+        const idToken = await window.currentUser.getIdToken();
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                idToken: idToken,
+                action: 'delete',
+                fileId: art.driveFileId
+            })
+        });
+    } catch (e) { console.error("Ошибка удаления из Drive:", e); }
+}
 
                 await deleteDoc(doc(db, "arts", artId));
                 await loadArtsFromFirestore();
@@ -3630,45 +3631,57 @@
                 const userSnap = await getDoc(doc(db, "users", userId));
                 const avatarFileId = userSnap.data()?.avatarFileId;
                 if (avatarFileId) {
-                    await fetch(APPS_SCRIPT_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({
-                            token: APPS_SCRIPT_TOKEN,
-                            secretKey: APPS_SCRIPT_TOKEN,
-                            action: 'delete',
-                            fileId: avatarFileId
-                        })
-                    });
+                    const idToken = await window.currentUser.getIdToken();
+await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({
+        idToken: idToken,
+        action: 'delete',
+        fileId: avatarFileId
+    })
+});
                     console.log('🗑 Аватарка удалена:', avatarFileId);
                 }
             } catch (err) {
                 console.error('Не удалось удалить аватарку:', err);
             }
 
-            try {
-                 const commentsQ = query(collection(db, "comments"), where("userId", "==", userId));
+                        try {
+                // Удаляем комментарии
+                const commentsQ = query(collection(db, "comments"), where("userId", "==", userId));
                 const commentsSnap = await getDocs(commentsQ);
                 await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
 
+                // Удаляем лайки юзера
+                const likesQ = query(collection(db, "likes"), where("userId", "==", userId));
+                const likesSnap = await getDocs(likesQ);
+                await Promise.all(likesSnap.docs.map(d => deleteDoc(d.ref)));
+
+                // Удаляем жалобы юзера
+                const reportsQ = query(collection(db, "reports"), where("reporterId", "==", userId));
+                const reportsSnap = await getDocs(reportsQ);
+                await Promise.all(reportsSnap.docs.map(d => deleteDoc(d.ref)));
+
+                // Удаляем посты
                 const userArts = window.allArts.filter(a => a.authorId === userId);
-for (const art of userArts) {
-    if (art.driveFileId) {
-        try {
-            await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({
-                    token: APPS_SCRIPT_TOKEN,
-                    secretKey: APPS_SCRIPT_TOKEN,
-                    action: 'delete',
-                    fileId: art.driveFileId
-                })
-            });
-        } catch (e) { console.error("Drive delete err:", e); }
-    }
-    await deleteDoc(doc(db, "arts", art.id));
-}
+                for (const art of userArts) {
+                    if (art.driveFileId) {
+                        try {
+                            const idToken = await window.currentUser.getIdToken();
+                            await fetch(APPS_SCRIPT_URL, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({
+                                    idToken: idToken,
+                                    action: 'delete',
+                                    fileId: art.driveFileId
+                                })
+                            });
+                        } catch (e) { console.error("Drive delete err:", e); }
+                    }
+                    await deleteDoc(doc(db, "arts", art.id));
+                }
 
                 await deleteDoc(doc(db, "users", userId));
                 await deleteDoc(doc(db, "roles", userId)).catch(() => {});
