@@ -2696,6 +2696,43 @@
                 return data;
             } catch { return null; }
         }
+                // 🔄 Миграция анонимных лайков с текущего IP на UID при входе
+        async function migrateAnonymousLikes(user) {
+            if (!user) return;
+            try {
+                const userIP = await getUserIP();
+                const q = query(
+                    collection(db, "likes"),
+                    where("ip", "==", userIP),
+                    where("userId", "==", null)
+                );
+                const snap = await getDocs(q);
+                if (snap.empty) return;
+
+                console.log(`🔄 Миграция: найдено ${snap.size} анонимных лайков с IP ${userIP}`);
+
+                for (const d of snap.docs) {
+                    const data = d.data();
+                    const newRef = doc(db, "likes", `${data.artId}_${user.uid}`);
+                    const existing = await getDoc(newRef);
+                    if (existing.exists()) {
+                        await deleteDoc(d.ref);  // уже есть лайк от юзера — просто удаляем анонимный
+                    } else {
+                        await setDoc(newRef, {
+                            artId: data.artId,
+                            imageId: data.imageId,
+                            ip: userIP,
+                            userId: user.uid,
+                            timestamp: data.timestamp || new Date()
+                        });
+                        await deleteDoc(d.ref);
+                    }
+                }
+                console.log('✅ Миграция лайков завершена');
+            } catch (e) {
+                console.error("Ошибка миграции лайков:", e);
+            }
+        }
 
         async function loadAdminUids() {
             try {
@@ -3485,8 +3522,9 @@ for (const art of userArts) {
             const userName = document.getElementById('userName');
             const userEmail = document.getElementById('userEmail');
 
-            if (user) {
+                        if (user) {
                 await Promise.all([loadAdminUids(), loadBannedUids(), loadArtsFromFirestore()]);
+                await migrateAnonymousLikes(user);  // 🔄 миграция анонимных лайков на UID
                 window.currentUserRole = getUserRole(user.uid);
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
@@ -3835,7 +3873,9 @@ for (const art of userArts) {
                 if (!currentArt || currentArt.id !== artId) return;
                 document.getElementById('viewCount').textContent = '👁 ' + (docSnap.exists() ? (docSnap.data().count || 0) : 0);
             });
-            const likeRef = doc(db, "likes", `${artId}_${userIP}`);
+                        // 🔑 Тот же ключ, что и в handleLike
+            const likeKey = window.currentUser?.uid || userIP;
+            const likeRef = doc(db, "likes", `${artId}_${likeKey}`);
             const likeSnap = await getDoc(likeRef);
             const currentArt = window.allArts[window.currentArtIndex];
             if (!currentArt || currentArt.id !== artId) return;
@@ -3879,7 +3919,9 @@ for (const art of userArts) {
     const art = window.allArts[window.currentArtIndex];
     if (!art) return;
     const userIP = await getUserIP();
-    const likeRef = doc(db, "likes", `${art.id}_${userIP}`);
+        // 🔑 Залогинен → ID по UID (стабильно, VPN не влияет). Аноним → по IP.
+    const likeKey = window.currentUser?.uid || userIP;
+    const likeRef = doc(db, "likes", `${art.id}_${likeKey}`);
     const snap = await getDoc(likeRef);
     const btn = document.getElementById('likeBtn');
 
