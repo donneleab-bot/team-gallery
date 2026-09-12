@@ -3870,36 +3870,48 @@ for (const art of userArts) {
         };
 
         window.handleLike = async function(event) {
-            event.stopPropagation();
-            const art = window.allArts[window.currentArtIndex];
-            if (!art) return;
-            const userIP = await getUserIP();
-            const likeRef = doc(db, "likes", `${art.id}_${userIP}`);
-            const snap = await getDoc(likeRef);
-            const btn = document.getElementById('likeBtn');
+    event.stopPropagation();
+    const art = window.allArts[window.currentArtIndex];
+    if (!art) return;
+    const userIP = await getUserIP();
+    const likeRef = doc(db, "likes", `${art.id}_${userIP}`);
+    const snap = await getDoc(likeRef);
+    const btn = document.getElementById('likeBtn');
 
-            if (snap.exists()) {
-                await deleteDoc(likeRef);
-                await setDoc(doc(db, "images", art.id), { likes: increment(-1) }, { merge: true });
-                btn.disabled = false;
-                btn.classList.remove('liked');
-                btn.textContent = '❤️ Лайк';
-                window.loadStats(art.id, art.img);
-            } else {
-                await setDoc(likeRef, {
-                    artId: art.id,
-                    imageId: art.img,
-                    ip: userIP,
-                    userId: window.currentUser?.uid || null,
-                    timestamp: new Date()
-                });
-                await setDoc(doc(db, "images", art.id), { likes: increment(1) }, { merge: true });
-                btn.disabled = false;
-                btn.classList.add('liked');
-                btn.textContent = '❤️ Лайкнуто';
-                window.loadStats(art.id, art.img);
-            }
-        };
+    if (snap.exists()) {
+        await deleteDoc(likeRef);
+        await setDoc(doc(db, "images", art.id), { likes: increment(-1) }, { merge: true });
+        btn.disabled = false;
+        btn.classList.remove('liked');
+        btn.textContent = '❤️ Лайк';
+        window.loadStats(art.id, art.img);
+    } else {
+        await setDoc(likeRef, {
+            artId: art.id,
+            imageId: art.img,
+            ip: userIP,
+            userId: window.currentUser?.uid || null,
+            timestamp: new Date()
+        });
+        await setDoc(doc(db, "images", art.id), { likes: increment(1) }, { merge: true });
+        btn.disabled = false;
+        btn.classList.add('liked');
+        btn.textContent = '❤️ Лайкнуто';
+        window.loadStats(art.id, art.img);
+    }
+
+    // 🔄 Обновить «Мои лайки», если модалка открыта на этой вкладке
+    refreshMyLikesIfOpen();
+            
+};
+        window.refreshMyLikesIfOpen = function() {
+    const modal = document.getElementById('myBlockModal');
+    const likesGrid = document.getElementById('myLikesGrid');
+    if (!modal || !modal.classList.contains('active')) return;
+    if (!likesGrid || likesGrid.style.display === 'none') return;
+    // Вкладка «Мои лайки» активна — перезагружаем
+    window.loadMyLikes();
+};
 
         window.reportComment = async function({ commentId, commentText, commentUserId, commentUserName, artId, reason }) {
             const user = window.currentUser;
