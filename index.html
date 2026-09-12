@@ -2811,10 +2811,11 @@
                 return newData;
             }
 
-            const existing = snap.data();
+                        const existing = snap.data();
             const updates = {
-                lastSeen: new Date(),
-                photoURL: user.photoURL || existing.photoURL || ''
+                lastSeen: new Date()
+                // ⚠️ photoURL НЕ трогаем — если юзер загрузил кастомную аву,
+                //    мы не должны её затирать Google-аватаром
             };
             await setDoc(userRef, updates, { merge: true });
             return { ...existing, ...updates };
@@ -3777,20 +3778,15 @@ for (const art of userArts) {
             btn.disabled = true;
             btn.textContent = 'Сохранение...';
             try {
-                await setDoc(doc(db, "users", user.uid), {
+                                                await setDoc(doc(db, "users", user.uid), {
                     displayName: name,
                     bio: bio,
                     email: user.email,
-                    photoURL: user.photoURL || '',
+                    // ⚠️ photoURL НЕ трогаем — иначе кастомная аватарка затрётся
                     nameCustomized: true,
                     updatedAt: new Date()
                 }, { merge: true });
-                window.currentUserProfile = {
-                    ...(window.currentUserProfile || {}),
-                    displayName: name,
-                    bio: bio,
-                    nameCustomized: true
-                };
+
                 document.getElementById('userName').innerHTML = name + ' ' + anyBadgeHTML(user.uid, true);
 
                 await loadArtsFromFirestore();
