@@ -2569,15 +2569,18 @@
                         <div class="myblock-item-title" title="${art.title}">${escapeHtml(art.title)}</div>
                     </div>
                 `).join('');
+
+                console.log('✅ loadMyLikes: найдено артов =', likedArtIds.length, likedArtIds);
+                console.log('✅ loadMyLikes: отфильтровано =', likedArts.length);
             } catch (e) {
                 console.error("Ошибка загрузки лайков через REST:", e);
                 grid.innerHTML = '<div class="myblock-empty">Не удалось загрузить лайки.</div>';
             }
         };
 
-                // Переключатель вкладок в модалке «Мой блок»
+        // Переключатель вкладок в модалке «Мой блок»
         window.switchMyBlockTabNew = function(tab) {
-            window.currentMyBlockTab = tab;  // ← запоминаем вкладку
+            window.currentMyBlockTab = tab;
             document.querySelectorAll('.myblock-tab').forEach(t => {
                 t.classList.toggle('active', t.dataset.tab === tab);
             });
