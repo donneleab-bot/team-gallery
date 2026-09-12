@@ -3676,12 +3676,13 @@ for (const art of userArts) {
             const userName = document.getElementById('userName');
             const userEmail = document.getElementById('userEmail');
 
-                        if (user) {
+                                    if (user) {
                 await Promise.all([loadAdminUids(), loadBannedUids(), loadArtsFromFirestore()]);
-                await migrateAnonymousLikes(user);  // 🔄 миграция анонимных лайков на UID
+                await migrateAnonymousLikes(user);
                 window.currentUserRole = getUserRole(user.uid);
                 loginBtn.style.display = 'none';
                 userInfo.style.display = 'block';
+                // ⏳ Сначала временно ставим Google-аватар
                 userAvatar.src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
                 userEmail.textContent = user.email || '';
 
@@ -3694,12 +3695,15 @@ for (const art of userArts) {
                     adminConsoleBtn.style.display = 'none';
                     uploadBtn.style.display = 'none';
                 }
-
                 try {
                     const profile = await ensureUserDocument(user);
                     window.currentUserProfile = profile;
                     const displayName = profile.displayName || user.displayName || 'Пользователь';
                     userName.innerHTML = displayName + ' ' + anyBadgeHTML(user.uid, true);
+                    // 🔑 Если есть кастомная аватарка из Drive — показываем её
+                    if (profile.photoURL) {
+                        userAvatar.src = profile.photoURL;
+                    }
                 } catch (e) {
                     console.error("Ошибка загрузки профиля:", e);
                     userName.innerHTML = (user.displayName || 'Пользователь') + ' ' + anyBadgeHTML(user.uid, true);
@@ -3822,7 +3826,7 @@ for (const art of userArts) {
             const user = window.currentUser;
             if (!user) return;
             document.getElementById('userMenu').classList.remove('open');
-            const avatar = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+            const avatar = window.currentUserProfile?.photoURL || user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
             document.getElementById('myBlockAvatar').src = avatar;
             document.getElementById('myBlockEmail').textContent = user.email || '';
             const badge = document.getElementById('myBlockBadge');
