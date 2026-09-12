@@ -2575,8 +2575,9 @@
             }
         };
 
-        // Переключатель вкладок в модалке «Мой блок»
+                // Переключатель вкладок в модалке «Мой блок»
         window.switchMyBlockTabNew = function(tab) {
+            window.currentMyBlockTab = tab;  // ← запоминаем вкладку
             document.querySelectorAll('.myblock-tab').forEach(t => {
                 t.classList.toggle('active', t.dataset.tab === tab);
             });
@@ -3645,8 +3646,9 @@ for (const art of userArts) {
                 document.getElementById('myBlockBio').textContent = bio || 'Без описания';
             });
 
-            // Сбрасываем на вкладку «Мои посты»
-            window.switchMyBlockTabNew('posts');
+                        // Открываем ту вкладку, на которой пользователь остановился
+            const lastTab = window.currentMyBlockTab || 'posts';
+            window.switchMyBlockTabNew(lastTab);
 
             const myArts = window.allArts.filter(a => a.authorId === user.uid);
             const grid = document.getElementById('myBlockGrid');
@@ -3904,14 +3906,11 @@ for (const art of userArts) {
     refreshMyLikesIfOpen();
             
 };
-        window.refreshMyLikesIfOpen = function() {
-    const modal = document.getElementById('myBlockModal');
-    const likesGrid = document.getElementById('myLikesGrid');
-    if (!modal || !modal.classList.contains('active')) return;
-    if (!likesGrid || likesGrid.style.display === 'none') return;
-    // Вкладка «Мои лайки» активна — перезагружаем
-    window.loadMyLikes();
-};
+                window.refreshMyLikesIfOpen = function() {
+            // Если пользователь находится на вкладке «Мои лайки» — обновляем список
+            if (window.currentMyBlockTab !== 'likes') return;
+            window.loadMyLikes();
+        };
 
         window.reportComment = async function({ commentId, commentText, commentUserId, commentUserName, artId, reason }) {
             const user = window.currentUser;
