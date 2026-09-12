@@ -2646,7 +2646,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, increment, onSnapshot, collection, query, where, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCVpWbOBOJbCYfPLh-s8QZMOeRORkZ-gXg",
@@ -2781,14 +2781,21 @@ const res = await fetch(APPS_SCRIPT_URL, {
         const provider = new GoogleAuthProvider();
 
         window.signInWithGoogle = async function() {
-            try { await signInWithPopup(auth, provider); }
-            catch (error) {
-                console.error("Ошибка входа:", error);
-                if (error.code === 'auth/popup-blocked') alert("Браузер заблокировал всплывающее окно. Разрешите всплывающие окна для этого сайта.");
-                else if (error.code === 'auth/unauthorized-domain') alert("Домен не авторизован в Firebase.");
-                else alert("Ошибка входа: " + error.message);
-            }
-        };
+    try {
+        await signInWithRedirect(auth, provider);
+    } catch (error) {
+        console.error("Ошибка входа:", error);
+        alert("Ошибка входа: " + error.message);
+    }
+};
+// Обработка возврата после редиректа
+getRedirectResult(auth).then((result) => {
+    if (result && result.user) {
+        console.log("✅ Вход через редирект успешен:", result.user.email);
+    }
+}).catch((error) => {
+    console.error("Ошибка редиректа:", error);
+});
 
         window.signOutUser = async function() {
             await signOut(auth);
