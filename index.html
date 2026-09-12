@@ -786,6 +786,23 @@
             margin-top: 8px;
             text-align: center;
         }
+        .modal-avatar-upload-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #c9d1d9;
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.modal-avatar-upload-btn:hover {
+    background: #30363d;
+    border-color: #58a6ff;
+    color: #58a6ff;
+}
         .modal-label {
             display: block;
             color: #8b949e;
@@ -1598,9 +1615,11 @@
             <button class="modal-close" onclick="closeProfileModal()">&times;</button>
             <h2 id="profileModalTitle">Заполните профиль</h2>
             <div class="modal-avatar-block">
-                <img class="modal-avatar" id="profileAvatar" src="" alt="Аватар">
-                <div class="modal-avatar-hint">Аватар берётся из Google-аккаунта</div>
-            </div>
+    <img class="modal-avatar" id="profileAvatar" src="" alt="Аватар">
+    <input type="file" id="avatarFileInput" accept="image/*" style="display:none;">
+    <button type="button" class="modal-avatar-upload-btn" onclick="document.getElementById('avatarFileInput').click()">📷 Загрузить аватарку</button>
+    <div class="modal-avatar-hint">PNG, JPG. Автоматически сожмётся до 200×200.</div>
+</div>
             <label class="modal-label">Имя (отображается в комментариях)</label>
             <input type="text" class="modal-input" id="profileNameInput" maxlength="40" placeholder="Ваше имя">
             <label class="modal-label">О себе (необязательно)</label>
@@ -2621,6 +2640,121 @@
             messagingSenderId: "1087688802080",
             appId: "1:1087688802080:web:2d77a829729f963fcb2145"
         };
+                async function convertAvatarToJpg(file) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const reader = new FileReader();
+                reader.onload = () => { img.src = reader.result; };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+
+                img.onload = () => {
+                    // Квадрат 200×200, обрезаем по центру
+                    const size = 200;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+
+                    // Обрезка по центру
+                    const minSide = Math.min(img.naturalWidth, img.naturalHeight);
+                    const sx = (img.naturalWidth - minSide) / 2;
+                    const sy = (img.naturalHeight - minSide) / 2;
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, size, size);
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
+                };
+                                img.onerror = reject;
+            });
+        }
+
+        // Обработчик выбора файла аватарки
+        document.getElementById('avatarFileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert("Файл слишком большой (макс 5 МБ).");
+                return;
+            }
+
+            const btn = document.querySelector('.modal-avatar-upload-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Обработка...';
+
+            try {
+                const base64 = await convertAvatarToJpg(file);
+                const user = window.currentUser;
+                if (!user) throw new Error("Не залогинен");
+
+                const oldAvatarFileId = window.currentUserProfile?.avatarFileId || null;
+
+                btn.textContent = '⏳ Загрузка...';
+
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        token: APPS_SCRIPT_TOKEN,
+                        action: 'upload',
+                        folder: 'Avatars',
+                        base64: base64,
+                        filename: 'avatar_' + user.uid + '_' + Date.now() + '.jpg',
+                        mimeType: 'image/jpeg'
+                    })
+                });
+                const result = await res.json();
+                if (!result.ok) throw new Error(result.error || 'Ошибка загрузки');
+
+                await setDoc(doc(db, "users", user.uid), {
+                    avatarFileId: result.fileId,
+                    photoURL: result.url
+                }, { merge: true });
+
+                if (window.currentUserProfile) {
+                    window.currentUserProfile.avatarFileId = result.fileId;
+                    window.currentUserProfile.photoURL = result.url;
+                }
+
+                document.getElementById('profileAvatar').src = result.url;
+                document.getElementById('userAvatar').src = result.url;
+
+                if (oldAvatarFileId) {
+                    try {
+                        await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                token: APPS_SCRIPT_TOKEN,
+                                secretKey: APPS_SCRIPT_TOKEN,
+                                action: 'delete',
+                                fileId: oldAvatarFileId
+                            })
+                        });
+                        console.log('🗑 Старая аватарка удалена:', oldAvatarFileId);
+                    } catch (err) {
+                        console.error('Не удалось удалить старую аватарку:', err);
+                    }
+                }
+
+                btn.textContent = '✅ Готово!';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '📷 Загрузить аватарку';
+                }, 1200);
+
+            } catch (err) {
+                console.error(err);
+                alert("Ошибка загрузки аватарки: " + err.message);
+                btn.disabled = false;
+                btn.textContent = '📷 Загрузить аватарку';
+            }
+
+            e.target.value = '';
+        });
 
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFG49oBDMijLRqlHIpGacW6EarIAVYk0I_cP-n8Hjh4xVaHWxyGV65iBAWz8FIDL7fJQ/exec";
         const APPS_SCRIPT_TOKEN = "MPF-2026-Upload-SecureKey-X9k2";
@@ -3474,9 +3608,29 @@
             if (userId === CREATOR_UID) { alert("Нельзя удалить свой профиль."); return; }
             if (!confirm("⚠️ Удалить профиль и все его данные? Это действие необратимо.")) return;
             if (!confirm("Точно удалить? Посты и комментарии будут удалены из базы.")) return;
+                            // Удаляем аватарку из Drive
+            try {
+                const userSnap = await getDoc(doc(db, "users", userId));
+                const avatarFileId = userSnap.data()?.avatarFileId;
+                if (avatarFileId) {
+                    await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            token: APPS_SCRIPT_TOKEN,
+                            secretKey: APPS_SCRIPT_TOKEN,
+                            action: 'delete',
+                            fileId: avatarFileId
+                        })
+                    });
+                    console.log('🗑 Аватарка удалена:', avatarFileId);
+                }
+            } catch (err) {
+                console.error('Не удалось удалить аватарку:', err);
+            }
 
             try {
-                const commentsQ = query(collection(db, "comments"), where("userId", "==", userId));
+                 const commentsQ = query(collection(db, "comments"), where("userId", "==", userId));
                 const commentsSnap = await getDocs(commentsQ);
                 await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
 
@@ -3581,7 +3735,8 @@ for (const art of userArts) {
             const skipBtn = document.getElementById('profileSkipBtn');
             title.textContent = isFirstTime ? 'Заполните профиль' : 'Редактировать профиль';
             skipBtn.style.display = isFirstTime ? 'block' : 'none';
-            document.getElementById('profileAvatar').src = user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+                        const currentAvatar = window.currentUserProfile?.photoURL || user.photoURL || 'https://www.gravatar.com/avatar/?d=mp';
+            document.getElementById('profileAvatar').src = currentAvatar;
             document.getElementById('profileNameInput').value = user.displayName || '';
             document.getElementById('profileBioInput').value = '';
             document.getElementById('bioCounter').textContent = '0 / 200';
